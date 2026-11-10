@@ -1,0 +1,180 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>未来导演计划 · 课程全景海报</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 竖版 2:3 招生海报（1200×1800，导出时 2 倍 = 2400×3600）
+   第二张：展示课程内容。配色与第一张一致：近黑深蓝 + 暖琥珀 + 冷蓝。 */
+:root {
+  --bg: #070b16; --navy: #0d1528; --line: rgba(214,226,255,.14);
+  --fg: #f1efe8; --muted: #9aa3ba; --amber: #f2b45c; --amber2: #ffd89a; --blue: #6f9bff; --red: #ff5468; --green: #49d6a0;
+  --sans: "Noto Sans SC", "PingFang SC", sans-serif; --mono: "JetBrains Mono", Menlo, monospace; --en: "Bricolage Grotesque", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; }
+.poster {
+  position: relative; width: 1200px; height: 1800px; overflow: hidden; color: var(--fg); font-family: var(--sans);
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(242,180,92,.20), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 0% 55%, rgba(111,155,255,.13), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 75%, rgba(242,180,92,.09), transparent 70%),
+    linear-gradient(180deg, #0a1122 0%, var(--bg) 40%, #060912 100%);
+  padding: 34px 54px 0;
+}
+.grain { position: absolute; inset: 0; pointer-events: none; opacity: .16; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.beam { position: absolute; left: 50%; top: -120px; width: 900px; height: 620px; transform: translateX(-50%); pointer-events: none;
+  background: conic-gradient(from 180deg at 50% 0%, transparent 160deg, rgba(255,216,154,.10) 175deg, rgba(255,216,154,.16) 180deg, rgba(255,216,154,.10) 185deg, transparent 200deg); filter: blur(6px); }
+
+/* 顶部条 */
+.top { position: relative; display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 15px; letter-spacing: .26em; color: #e6e2d8; }
+.top .holes { flex: 1; height: 10px; background: radial-gradient(circle, rgba(230,226,216,.5) 0 3px, transparent 3.5px) 0 50% / 26px 10px repeat-x; }
+.top b { font-weight: 600; letter-spacing: .12em; font-family: var(--sans); }
+
+/* 标题 */
+.head { position: relative; text-align: center; margin-top: 30px; }
+.kicker { font-size: 18px; letter-spacing: .5em; color: var(--amber2); font-weight: 500; }
+.title { font-family: "Noto Serif SC", var(--sans); font-weight: 900; font-size: 136px; line-height: 1.04; letter-spacing: .04em; margin-top: 8px;
+  background: linear-gradient(180deg, #fff6df 0%, #f6cf8a 45%, #c98a3c 78%, #f2c27a 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 6px 22px rgba(242,180,92,.28)); }
+.sub { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 6px; font-size: 38px; font-weight: 900; letter-spacing: .06em; }
+.sub::before, .sub::after { content: ""; width: 120px; height: 1px; background: linear-gradient(90deg, transparent, var(--amber)); }
+.sub::after { transform: scaleX(-1); }
+.sub em { font-style: normal; font-family: var(--en); font-weight: 800; color: var(--amber); letter-spacing: .02em; }
+.slogan { margin-top: 10px; font-size: 19px; letter-spacing: .5em; color: #cfd3df; }
+
+/* 数字条 */
+.stats { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 26px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stats div { padding: 12px 0 11px; text-align: center; border-right: 1px solid var(--line); }
+.stats div:last-child { border-right: 0; }
+.stats b { display: block; font-family: var(--en); font-weight: 800; font-size: 34px; line-height: 1.1; color: var(--fg); }
+.stats b small { font-family: var(--sans); font-size: 17px; font-weight: 700; color: var(--amber); margin-left: 4px; }
+.stats span { font-size: 14px; color: var(--muted); letter-spacing: .12em; }
+
+/* 三幕 × 12 课 */
+.acts { position: relative; margin-top: 22px; display: flex; flex-direction: column; gap: 16px; }
+.act-h { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+.act-h .no { font-family: var(--mono); font-size: 13px; letter-spacing: .2em; color: var(--c); border: 1px solid var(--c); padding: 2px 9px; border-radius: 4px; }
+.act-h h2 { font-size: 26px; font-weight: 900; letter-spacing: .04em; }
+.act-h p { font-size: 15px; color: var(--muted); }
+.act-h .out { margin-left: auto; font-size: 14px; color: var(--c); font-weight: 700; letter-spacing: .04em; }
+.row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.ls { position: relative; padding: 13px 14px 12px; border-radius: 10px; background: linear-gradient(180deg, rgba(20,30,54,.82), rgba(11,17,32,.82)); border: 1px solid var(--line); border-top: 2px solid var(--c); min-height: 150px; display: flex; flex-direction: column; gap: 5px; }
+.ls .n { font-family: var(--en); font-weight: 800; font-size: 30px; line-height: 1; color: var(--c); opacity: .9; }
+.ls h3 { font-size: 19px; font-weight: 900; line-height: 1.28; letter-spacing: .01em; }
+.ls p { font-size: 13.5px; line-height: 1.55; color: #b8bfd0; }
+.ls p b { color: var(--amber2); font-weight: 700; }
+.ls .gate { position: absolute; right: 10px; top: 11px; font-size: 12px; font-weight: 700; color: #1a1206; background: var(--amber); padding: 2px 8px; border-radius: 999px; letter-spacing: .04em; }
+
+/* 成果 */
+.take { position: relative; margin-top: 22px; display: grid; grid-template-columns: 210px 1fr; gap: 18px; align-items: stretch; }
+.take .lab { border-right: 1px solid var(--line); padding-right: 14px; display: flex; flex-direction: column; justify-content: center; }
+.take .lab small { font-family: var(--mono); font-size: 12px; letter-spacing: .24em; color: var(--muted); }
+.take .lab b { font-size: 28px; font-weight: 900; line-height: 1.25; margin-top: 4px; }
+.take .lab b i { font-style: normal; color: var(--amber); }
+.items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.it { padding: 11px 13px; border-radius: 10px; border: 1px solid rgba(242,180,92,.35); background: rgba(242,180,92,.06); }
+.it b { display: block; font-size: 18px; font-weight: 900; }
+.it span { font-size: 13px; color: #b8bfd0; line-height: 1.5; display: block; margin-top: 2px; }
+.extra { grid-column: 2; font-size: 14px; color: var(--muted); margin-top: -8px; }
+.extra b { color: var(--fg); font-weight: 700; }
+
+/* 能力 */
+.abil { position: relative; margin-top: 18px; display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--muted); }
+.abil .k { font-family: var(--mono); font-size: 12px; letter-spacing: .24em; margin-right: 6px; }
+.abil span.c { padding: 5px 13px; border-radius: 999px; border: 1px solid var(--line); color: var(--fg); font-weight: 700; font-size: 15px; background: rgba(13,21,40,.7); }
+.abil span.c i { font-style: normal; font-family: var(--en); color: var(--amber); margin-right: 6px; font-size: 13px; }
+
+/* 片尾字幕块 + 报名 */
+.foot { position: absolute; left: 54px; right: 54px; bottom: 40px; display: grid; grid-template-columns: 1fr 168px; gap: 30px; align-items: end; }
+.credits { border-top: 1px solid rgba(214,226,255,.25); padding-top: 16px; }
+.credits .l1 { display: flex; align-items: baseline; gap: 18px; font-size: 26px; font-weight: 500; letter-spacing: .1em; }
+.credits .l1 small { font-size: 16px; color: var(--muted); letter-spacing: .2em; }
+.credits .l1 .you { font-family: "Noto Serif SC"; font-weight: 900; font-size: 46px; color: var(--amber); line-height: 1; }
+.credits .l2 { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 28px; font-size: 14.5px; color: #c7ccd8; }
+.credits .l2 b { color: var(--fg); font-weight: 700; margin-right: 8px; }
+.credits .l3 { margin-top: 10px; font-size: 13.5px; color: var(--muted); letter-spacing: .06em; }
+.qr { text-align: center; }
+.qr .box { width: 168px; height: 168px; border: 2px solid #f1efe8; border-radius: 6px; }
+.qr p { margin-top: 10px; font-size: 15px; letter-spacing: .14em; color: #e6e2d8; white-space: nowrap; }
+</style>
+
+<div class="poster" id="poster">
+  <div class="beam"></div>
+
+  <div class="top"><span>FUTURE DIRECTORS PROGRAM</span><span class="holes"></span><b>2026 · 冬季招生</b></div>
+
+  <div class="head">
+    <div class="kicker">一部由你执导的 12 集课程</div>
+    <h1 class="title">未来导演计划</h1>
+    <div class="sub"><span><em>AIGC</em> 影像创作课 · 课程全景</span></div>
+    <p class="slogan">看懂智能，驾驭影像，成为讲述未来的人</p>
+  </div>
+
+  <div class="stats">
+    <div><b>12<small>节</small></b><span>每节 90 分钟</span></div>
+    <div><b>12<small>人</small></b><span>小班 · 3 人一组</span></div>
+    <div><b>15–18<small>岁</small></b><span>高中生</span></div>
+    <div><b>60<small>秒</small></b><span>小组 AI 短片</span></div>
+  </div>
+
+  <div class="acts">
+    <section style="--c: var(--blue)">
+      <div class="act-h"><span class="no">ACT I</span><h2>第一幕 · 看见与构思</h2><p>先学会看，再决定拍什么</p><span class="out">产出 → 创作圣经</span></div>
+      <div class="row">
+        <div class="ls"><span class="n">01</span><h3>AI 是怎样工作的</h3><p>从数据到模型，看懂大模型和生图背后的原理；<b>亲手训练一个会写诗的小模型</b></p></div>
+        <div class="ls"><span class="n">02</span><h3>摄影基础</h3><p>曝光、焦段、构图、光线；<b>校园实拍五组照片</b>，把照片写成专业生图指令</p></div>
+        <div class="ls"><span class="n">03</span><h3>视听语言</h3><p>机位、运镜、剪辑与声音；<b>同一段画面配三种音乐</b>，情绪完全不同</p></div>
+        <div class="ls"><span class="gate">关卡 1</span><span class="n">04</span><h3>拉片、叙事与选题</h3><p>和 AI 一起拉片，学会 60 秒讲一个故事；<b>写出 logline 和分场剧本</b></p></div>
+      </div>
+    </section>
+    <section style="--c: var(--amber)">
+      <div class="act-h"><span class="no">ACT II</span><h2>第二幕 · AI Studio</h2><p>从原理到生成，完成全部镜头</p><span class="out">产出 → 带声音粗剪</span></div>
+      <div class="row">
+        <div class="ls"><span class="n">05</span><h3>图形学与视觉系统</h3><p>像素、3D 管线、扩散模型；<b>搭一个 3D 场景</b>，看 AI 怎样从噪点里生成画面</p></div>
+        <div class="ls"><span class="gate">关卡 2</span><span class="n">06</span><h3>AI 生图</h3><p>指令结构、参考图与角色一致性；<b>做出角色设定集和 8–12 张关键帧</b></p></div>
+        <div class="ls"><span class="n">07</span><h3>AI 生视频</h3><p>从关键帧到镜头；<b>一镜三试</b>，学会诊断和修好每一个失败镜头</p></div>
+        <div class="ls"><span class="gate">关卡 2</span><span class="n">08</span><h3>剪辑与声音设计</h3><p>节奏、混音、AI 配音配乐与字幕；<b>完成粗剪，中期放映听观众反馈</b></p></div>
+      </div>
+    </section>
+    <section style="--c: var(--green)">
+      <div class="act-h"><span class="no">ACT III</span><h2>第三幕 · 完成与展示</h2><p>打磨作品，造工具，走向观众</p><span class="out">产出 → 定剪 + Skill + 影展</span></div>
+      <div class="row">
+        <div class="ls"><span class="n">09</span><h3>智能体与 Skill</h3><p>智能体怎样思考和行动；<b>把自己的工作流做成一个 AI Skill</b>，测试再迭代</p></div>
+        <div class="ls"><span class="gate">关卡 3</span><span class="n">10</span><h3>精修与责任创作</h3><p>开场、节奏、调色；<b>AI 标识、著作权、肖像与声音权</b>一次讲清</p></div>
+        <div class="ls"><span class="n">11</span><h3>发布与路演</h3><p>封面与海报设计、观众测试；<b>准备一场 5 分钟路演</b></p></div>
+        <div class="ls"><span class="gate">关卡 4</span><span class="n">12</span><h3>结课影展</h3><p><b>你的短片公开首映</b>；复盘创作过程，整理个人作品集</p></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="take">
+    <div class="lab"><small>TAKE HOME</small><b>结课时<br>你会<i>带走</i></b></div>
+    <div class="items">
+      <div class="it"><b>60 秒 AI 短片</b><span>小组原创，1080p，结课影展首映</span></div>
+      <div class="it"><b>剧本与分镜本</b><span>从 logline 到每一个镜头</span></div>
+      <div class="it"><b>你的 AI Skill</b><span>一个真正能用、测过的 AI 助手</span></div>
+      <div class="it"><b>电影海报</b><span>为你们的短片设计的海报和封面</span></div>
+    </div>
+    <p class="extra">每组再选做一项：<b>原创片尾曲</b> · <b>3D 角色模型</b> · <b>角色小游戏</b>　　另附：作品集页与 300 字创作反思</p>
+  </div>
+
+  <div class="abil"><span class="k">FIVE SKILLS</span>
+    <span class="c"><i>01</i>提问</span><span class="c"><i>02</i>审美</span><span class="c"><i>03</i>叙事</span><span class="c"><i>04</i>驾驭工具</span><span class="c"><i>05</i>负责任地创作</span>
+  </div>
+
+  <div class="foot">
+    <div class="credits">
+      <div class="l1"><small>监制</small>马琪芮　赵子健<small style="margin-left:22px">导演</small><span class="you">你</span></div>
+      <div class="l2">
+        <span><b>马琪芮</b>清华大学建筑学博士</span>
+        <span><b>赵子健</b>清华大学建筑学院硕士</span>
+      </div>
+      <p class="l3">审美先于工具 · 先手工、后 AI · 核心制作在课内完成 · 过程与结果同等重要</p>
+    </div>
+    <div class="qr"><div class="box"></div><p>扫码报名 · 每班限 12 人</p></div>
+  </div>
+
+  <div class="grain"></div>
+</div>
