@@ -1,0 +1,1190 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 05 课 · 计算机图形学与视觉系统</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：像素放大、RGB 混色、位深断层、位图/矢量、三角网格、材质球、光栅化、扩散去噪 */
+.fit { display: block; width: auto; height: auto; max-width: 100%; margin-inline: auto; border-radius: 10px; border: 1px solid var(--line); background: #05060a; }
+.stat { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.stat b { color: var(--warm); }
+.pipe { display: flex; flex-wrap: wrap; gap: 6px; }
+.pipe > div { flex: 1 1 110px; padding: 8px 12px; border-radius: 10px; background: var(--panel2); border-top: 3px solid var(--c, var(--b)); font-size: 13px; color: var(--muted); line-height: 1.45; }
+.pipe > div b { display: block; color: var(--fg); font-family: var(--display); font-size: 16px; }
+.pipe > div.on { background: rgba(255,196,107,.12); }
+.sl { display: grid; grid-template-columns: 1.4em 1fr 2.6em; gap: 8px; align-items: center; font-family: var(--mono); font-size: 13px; }
+.sl b { text-align: right; }
+.sw { width: 52px; height: 52px; border-radius: 10px; border: 1px solid var(--line); flex: none; }
+.readout { font-family: var(--mono); font-size: 14px; line-height: 1.5; }
+.readout b { font-size: 18px; color: var(--fg); }
+#mixSvg { width: 100%; max-width: 300px; height: auto; display: block; margin-inline: auto; border-radius: 10px; }
+.zoom2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.zoom2 figure { margin: 0; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.zoom2 figcaption { font-size: 12.5px; color: var(--muted); text-align: center; }
+.zoom2 canvas, .zoom2 svg { width: 100%; height: auto; aspect-ratio: 1; display: block; border-radius: 10px; border: 1px solid var(--line); background: #f3efe6; }
+.kf { display: flex; gap: 4px; }
+.kf span { flex: 1; min-width: 0; padding: 8px 0; border-radius: 6px; text-align: center; font-size: 12px; font-family: var(--mono); background: var(--panel2); color: var(--muted); }
+.kf span.k { background: rgba(91,140,255,.3); color: var(--fg); font-weight: 700; }
+.lights4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lights4 div { padding: 9px 11px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--warm); font-size: 13px; color: var(--muted); line-height: 1.45; }
+.lights4 div b { display: block; color: var(--fg); font-size: 15px; }
+.fov svg { width: 100%; height: auto; display: block; }
+.fov text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+.vs { width: 100%; border-collapse: collapse; font-size: 14px; }
+.vs th, .vs td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.45; }
+.vs th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.vs td:first-child { color: var(--muted); white-space: nowrap; }
+.vs .c1 { color: var(--b); } .vs .c2 { color: var(--g); }
+.film { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.film figure { margin: 0; min-width: 0; }
+.film canvas { width: 100%; height: auto; aspect-ratio: 1; display: block; border-radius: 6px; border: 1px solid var(--line); }
+.film figcaption { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; }
+.dview { display: grid; grid-template-columns: 1fr; gap: 10px; align-items: start; }
+@media (min-width: 600px) { .dview { grid-template-columns: minmax(0, 220px) 1fr; } }
+.dcv { width: 100%; height: auto; aspect-ratio: 1; display: block; border-radius: 10px; border: 1px solid var(--line); background: #05060a; }
+.hist { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.hist figure { margin: 0; min-width: 0; }
+.hist canvas { width: 100%; height: auto; aspect-ratio: 1; display: block; border-radius: 6px; border: 1px solid var(--line); }
+.hist figcaption { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-align: center; line-height: 1.3; }
+.lab select, .lab input[type=number] { border-radius: 8px; border: 1px solid var(--line); background: #05060a; padding: 5px 8px; font-size: 13px; }
+.lab input[type=number] { width: 6em; }
+#rsCv, #meshCv { touch-action: none; }
+.rec { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.rec th, .rec td { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+.rec th { color: var(--muted); font-weight: 500; }
+.rec i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--line); }
+.mono { font-family: var(--mono); }
+.three4 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .three4 { grid-template-columns: repeat(3, 1fr); } }
+.feedrow { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 900px) { .feedrow { grid-template-columns: repeat(3, 1fr); } }
+/* 投影仪常见的 1280×720：压缩画布和卡片 */
+@media (max-height: 800px) {
+  .card { padding: 11px 14px; gap: 6px; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.55; }
+  .inner { gap: 14px; }
+  .h-l { font-size: clamp(26px, 3vw, 40px); }
+  .lab { padding: 10px 12px; gap: 7px; }
+  #pxCv { max-height: 34vh; }
+  #bdCv { max-height: 10vh; }
+  #mixSvg { max-width: 220px; }
+  .zoom2 { max-width: 420px; margin-inline: auto; width: 100%; }
+  #meshCv, #rsCv { max-height: 38vh; }
+  #pbrCv { max-height: 30vh; }
+  #fwCv { max-height: 30vh; }
+  .dview { grid-template-columns: minmax(0, 170px) 1fr; }
+  .film { max-width: 420px; }
+  #t1Cv { max-height: 22vh; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .pipe > div { padding: 6px 10px; font-size: 12.5px; }
+  .vs th, .vs td { padding: 5px 8px; font-size: 13px; }
+  .lights4 div { padding: 7px 10px; font-size: 12.5px; }
+  .done-box { padding: 9px 12px; font-size: 13.5px; }
+}
+</style>
+
+<body data-lesson="L05">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="第二幕的第一节课，开口要有“换场”的感觉：“前四节课我们一直在纸上：看片、拍照、写剧本、填创作圣经。从今天开始，进入第二幕 AI Studio，要把纸上的东西变成画面了。在动手生成之前，先搞清楚一件事：屏幕上的画面到底是怎样被‘造’出来的？”今天走三层：最底层是像素，中间一层是 3D 游戏和动画怎样算出画面，最上层是 AI 怎样从一片噪点里画出图。把三个问题念一遍，告诉学生下课前每人都要能回答。然后马上发反馈卡。">
+  <div class="lesson-no" aria-hidden="true">05</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第二幕 · AI Studio</span><span>LESSON 05 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">计算机图形学<br><span class="rgbword">与视觉系统</span></h1>
+    <p class="lead">从屏幕上的一个像素，到游戏里的一帧画面，再到 AI 从噪点里“认”出的一张图：<b>画面是怎样被造出来的</b>。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--r)"><span class="n">问题 1</span><b>AI 海报放大打印会糊，文字标志为什么不会？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>游戏里的一帧画面，是怎样“算”出来的？</b></div>
+      <div class="q" style="--c:var(--b)"><span class="n">问题 3</span><b>同一句提示词，为什么每次出的图都不一样？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–03</b>关卡 1 反馈卡</span>
+      <span><b>03–43</b>知识讲解 · 像素 / 3D 管线 / 扩散模型</span>
+      <span><b>43–85</b>实操 · 像素与颜色 / 3D 搭景摆机位 / 读懂扩散</span>
+      <span><b>85–90</b>主机位展示 · 总结</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 关卡 1 反馈卡 ============ -->
+<section class="slide" data-min="3" data-note="关卡反馈，3 分钟，课前已经写好每组的反馈卡。边发边说三件事。第一，反馈卡分三栏：已经通过的项、需要修订的项、一条最重要的建议，先看最重要的那条。第二，需要修订的小组，今天不占用讲课时间，在实操任务 3 之后用剩余时间改，下课前交修订版；改不完的，下节课开始前交。第三，为什么现在就改：讲一个比方，剧组开机前都会做剧本围读，所有人坐在一起把剧本读一遍、挑毛病，因为改剧本最便宜的时候就是开机之前。从下节课开始，我们要按创作圣经批量生成角色、场景和关键帧，到那时再改方向，前面生成的图就全部作废了。发完卡，过渡：“今天先搞懂画面是怎样被造出来的，这是你们接下来六节课所有生成工作的底层。”">
+  <div class="inner">
+    <div class="tc"><span class="ch">关卡 1 · 反馈</span><span>3 MIN</span></div>
+    <h2 class="h-l">先看反馈卡：创作圣经过关了吗？</h2>
+    <div class="feedrow">
+      <div class="card idea"><span class="tag">反馈卡上有三栏</span>
+        <ul><li><b>已通过</b>的项</li><li><b>需要修订</b>的项</li><li><b>一条最重要的建议</b>：先看这一条</li></ul>
+      </div>
+      <div class="card idea"><span class="tag">需要修订的小组</span>
+        <p>不占用讲课时间。<b>实操任务 3 之后</b>用剩余时间修改，下课前交修订版。</p>
+      </div>
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>剧组开机前都要做<b>剧本围读</b>：大家一起读、一起挑毛病。<b>改剧本最便宜的时候，就是开机之前。</b></p>
+      </div>
+    </div>
+    <div class="punch">第二幕 · AI Studio：从今天起，创作圣经要一步步变成画面。<small>下节课开始批量生成角色、场景和关键帧。今天先弄懂画面是怎样被“造”出来的。</small></div>
+  </div>
+</section>
+
+<!-- ============ 03 像素 ============ -->
+<section class="slide" id="s-pixel" data-min="2.5" data-note="进入模块 1，数字图像与视频，12 分钟。先讲一个故事：1957 年，美国国家标准局的工程师拉塞尔·基尔希，把他三个月大的儿子沃尔登的一张照片扫描进了一台叫 SEAC 的计算机，得到一张 176×176 的黑白图，这被认为是最早的数字照片之一。他决定把图切成一个个小方格，每个格子存一个数字，这就是像素。课前核实：图像尺寸与年份。他晚年说过，当初选方形像素其实不太聪明，后来还研究过用不同形状的像素让图像更平滑，可作为趣闻一提。然后做右边的互动：拖动分辨率滑块，从 320 降到 16，画面变成一格格的色块；把鼠标放在任意一格上，下面显示这一格存的三个数字。打比方：像十字绣，或者运动会开幕式上全场观众举起彩色卡片拼出的图案，每个人只负责一种颜色，站远了就是一幅画。落点：数字图像就是一张写满颜色数字的格子表。1920×1080 的高清画面，横 1920 格、竖 1080 格，约 207 万个像素。分辨率就是格子有多少。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 数字图像与视频</span><span>12 MIN</span><span>① 像素</span></div>
+    <h2 class="h-l">放大，再放大：图像是一张格子表</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 美国 1957</span>
+          <b>第一张数字照片</b>
+          <p>工程师拉塞尔·基尔希把三个月大的儿子的照片扫描进计算机，得到一张 <b>176×176</b> 的黑白图：画面被切成小方格，<b>每格存一个数字</b>。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>像运动会上全场观众举起彩色卡片拼出的图案：<b>每人只负责一个颜色</b>，站远了就是一幅画。</p>
+        </div>
+        <div class="punch">1920 × 1080 ≈ 207 万个像素<small>分辨率 = 横向格子数 × 纵向格子数</small></div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 降低分辨率，把鼠标放到任意一格上</span>
+        <canvas id="pxCv" class="fit" width="640" height="360" aria-label="一张日落图，可调分辨率"></canvas>
+        <label class="row small">分辨率<input type="range" id="pxRes" min="0" max="4" step="1" value="4" style="flex:1"><span class="stat" id="pxInfo"></span></label>
+        <div class="row"><span class="sw" id="pxSw" style="width:34px;height:34px"></span><span class="stat" id="pxPick">鼠标移到画面上，看这一格存了什么</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 RGB ============ -->
+<section class="slide" id="s-rgb" data-min="3" data-note="第二个概念：每个格子里存的颜色，是怎样表示的？屏幕用的是 RGB 加色：每个像素其实是红、绿、蓝三个小发光点，三个亮度一组合，就是一种颜色。现场演示右边：先把三个滑块都推满，中间三色重叠处是白色；只开红和绿，重叠出来的是黄色，很多学生会意外，因为颜料里红加绿是脏棕色。再点 #FF8800，得到橙色。打比方：三支手电筒，分别蒙上红、绿、蓝玻璃纸，照在白墙上，光叠得越多越亮，三束全叠上是白光。印刷正好相反，用 CMYK 减色：青、品红、黄、黑四种油墨，颜料吸收光，叠得越多越暗。所以同一张图，屏幕上鲜艳，打印出来常常发灰，海报打印前要转成 CMYK 预览。最后布置一个小实验：回家在手机屏幕上滴一小滴水，凑近看，水滴像放大镜，能看到红绿蓝三色小点。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 数字图像与视频</span><span>② RGB 加色</span></div>
+    <h2 class="h-l">屏幕上的颜色，是三盏灯调出来的</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card idea"><span class="tag">原理</span>
+          <p><b>屏幕 · RGB 加色</b>：每个像素是红、绿、蓝三个小发光点，<b>光越叠越亮</b>，三色全亮 = 白。</p>
+          <p><b>印刷 · CMYK 减色</b>：青、品红、黄、黑四种油墨，颜料吸收光，<b>越叠越暗</b>。所以屏幕上鲜艳的图，打印出来常常发灰。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>三支手电筒，分别蒙上红、绿、蓝玻璃纸，照在白墙上：<b>三束光叠在一起，是白光</b>；而三种颜料混在一起，是一摊深褐色。</p>
+        </div>
+        <div class="card ask"><span class="tag">回家试试</span><p>在手机屏幕上滴一小滴水，凑近看：水滴像放大镜，你会看到什么？</p></div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 三束光的混合</span>
+        <svg id="mixSvg" viewBox="0 0 300 250" role="img" aria-label="红绿蓝三个圆形光斑重叠混色">
+          <rect width="300" height="250" fill="#000"/>
+          <g style="isolation:isolate">
+            <circle id="mixCR" cx="113" cy="95" r="72" style="mix-blend-mode:screen"/>
+            <circle id="mixCG" cx="187" cy="95" r="72" style="mix-blend-mode:screen"/>
+            <circle id="mixCB" cx="150" cy="158" r="72" style="mix-blend-mode:screen"/>
+          </g>
+        </svg>
+        <div class="sl"><b class="rgb-r">R</b><input type="range" id="mixR" min="0" max="255" value="255"><b id="mixRv">255</b></div>
+        <div class="sl"><b class="rgb-g">G</b><input type="range" id="mixG" min="0" max="255" value="136"><b id="mixGv">136</b></div>
+        <div class="sl"><b class="rgb-b">B</b><input type="range" id="mixB" min="0" max="255" value="0"><b id="mixBv">0</b></div>
+        <div class="row"><span class="sw" id="mixSw"></span><div class="readout">三色合在一起 = <b id="mixHex">#FF8800</b><br><span class="small" id="mixDec">R=255 · G=136 · B=0</span></div></div>
+        <div class="row">
+          <button class="btn" type="button" data-mix="255,255,255">全亮</button>
+          <button class="btn" type="button" data-mix="255,255,0">红 + 绿</button>
+          <button class="btn" type="button" data-mix="0,255,255">绿 + 蓝</button>
+          <button class="btn" type="button" data-mix="255,136,0">#FF8800</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 位深 ============ -->
+<section class="slide" id="s-bits" data-min="2" data-note="第三个概念：位深，也就是每个颜色通道能分多少级。按 → 分两步。先看上面的渐变条：滑块拉到 8 位，每个通道 256 级，三个通道组合起来 256 的三次方，约 1677 万种颜色，渐变看起来很顺滑。网页里的 #FF8800 就是三组十六进制数：FF 是 255，88 是 136，00 是 0，和上一页的滑块是一回事。然后往左拉，拉到 4 位、3 位，天空的渐变变成一圈一圈的台阶，这叫色彩断层。打比方：上坡有两种，一种是平滑的坡道，一种是楼梯；台阶分得越细，走起来越像坡道。专业调色用 10 位，每个通道 1024 级，大幅调亮调暗也不容易出断层。联系创作：AI 生成的图大多是 8 位的，如果你在后期把天空拉得很亮或很暗，就可能出现一圈圈的断层，第 9 课剪辑调色时会再碰到。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 数字图像与视频</span><span>③ 位深</span></div>
+    <h2 class="h-l">每种颜色，能分多少级？</h2>
+    <div class="lab">
+      <span class="label">互动 · 把位深降下来，看天空</span>
+      <canvas id="bdCv" class="fit" width="1200" height="120" style="width:100%" aria-label="一条日落渐变，可调位深"></canvas>
+      <label class="row small">每个通道的位深<input type="range" id="bdBits" min="1" max="8" step="1" value="8" style="flex:1"><span class="stat" id="bdInfo"></span></label>
+    </div>
+    <div class="g3">
+      <div class="step"><div class="card idea"><span class="tag">8 位 = 256 级</span>
+        <p>每个通道 0–255 共 256 级，三通道组合：<b>256³ ≈ 1677 万</b>种颜色。</p>
+        <p><span class="code">#FF8800</span> = FF / 88 / 00 = <b>R 255 · G 136 · B 0</b>（十六进制写法）。</p>
+      </div></div>
+      <div class="step"><div class="card analogy"><span class="tag">打个比方</span>
+        <p>平滑的坡道和楼梯：<b>台阶分得越细，走起来越像坡道</b>。台阶太少，天空的渐变就会出现一圈圈“断层”。</p>
+      </div></div>
+      <div class="step"><div class="card idea"><span class="tag">10 位及以上</span>
+        <p>每通道 1024 级，用于<b>专业调色</b>：把画面大幅调亮调暗也不容易出断层。AI 生成的图大多是 8 位。</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 位图与矢量 ============ -->
+<section class="slide" id="s-vec" data-min="2" data-note="这一页回答本课的第一个问题。现场演示：把放大倍数拉到 8 倍、16 倍。左边是位图，放大以后是一格一格的方块，边缘是锯齿；勾上“放大时自动柔化”，锯齿变成一片模糊，这就是打印机和看图软件常做的事，所以你看到的是“糊”。右边是矢量，放多大边缘都清楚。原因：位图记录的是每个格子的颜色，格子数量是固定的，放大只是把每个格子变大；矢量记录的是一份“画法说明”：从这个点到那个点画一条弧线、填上红色，放大时按说明重新画一遍，所以永远清楚。打比方：位图像一幅马赛克拼贴画，凑近看全是瓷砖；矢量像一份菜谱，做一人份还是十人份，都按菜谱现做。落点：AI 生成的图全是位图。所以海报要大幅打印，生成时就选高分辨率，或者用放大工具补细节；标志、片名、字幕这类文字，用矢量做，最后叠上去。请一位同学用自己的话回答屏幕上的问题。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 数字图像与视频</span><span>④ 位图与矢量</span></div>
+    <h2 class="h-l">为什么 AI 海报放大会糊，标志不会？</h2>
+    <div class="g2 wide-l">
+      <div class="lab">
+        <span class="label">互动 · 同一个标志，两种存法</span>
+        <div class="zoom2">
+          <figure><canvas id="vbCv" width="440" height="440" aria-label="位图版本"></canvas><figcaption>位图：记录每个格子的颜色</figcaption></figure>
+          <figure><svg id="vbSvg" viewBox="0 0 220 220" role="img" aria-label="矢量版本"><rect x="-500" y="-500" width="1300" height="1300" fill="#f3efe6"/><circle cx="110" cy="110" r="80" fill="none" stroke="#e2463c" stroke-width="14"/><text x="110" y="142" text-anchor="middle" font-size="92" font-weight="900" font-family="Bricolage Grotesque, Noto Sans SC, sans-serif" fill="#14161f">AI</text></svg><figcaption>矢量：记录“画法说明”</figcaption></figure>
+        </div>
+        <label class="row small">放大倍数<input type="range" id="vbZoom" min="1" max="16" step="1" value="1" style="flex:1"><b id="vbZv" class="warm">1×</b></label>
+        <label class="row small"><input type="checkbox" id="vbSmooth"> 放大时自动柔化（打印机和看图软件常这样做 → 看起来就是“糊”）</label>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p><b>位图像马赛克拼贴画</b>：瓷砖数量是固定的，凑近看全是方块。</p>
+          <p><b>矢量像一份菜谱</b>：“从这点到那点画一条弧线，填红色”。做一人份还是十人份，都按菜谱现做，所以放多大都清楚（SVG 格式）。</p>
+        </div>
+        <div class="card idea"><span class="tag">落到创作</span>
+          <p><b>AI 生成的图都是位图。</b>要大幅打印，生成时选高分辨率或用放大工具；<b>片名、标志、字幕用矢量</b>做，最后叠上去。</p>
+        </div>
+        <div class="card ask"><span class="tag">请你回答</span><p>为什么一张 AI 海报放大打印会模糊，而文字标志不会？</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 视频 ============ -->
+<section class="slide" data-min="2" data-note="模块 1 最后一页：视频。先讲故事：1878 年，加州前州长利兰·斯坦福想弄清楚一个问题：马奔跑时，四只蹄子会不会同时离地？肉眼看不清。摄影师埃德沃德·迈布里奇在跑道边排了一排相机（常见说法是 12 台），马跑过时依次触发，拍下一组连续照片，证明了四蹄确实会同时离地，而且是收在肚子下面，不是很多油画里画的那样前后伸开。把这组照片快速连续放，马就跑起来了。这就是视频的本质：快速连续播放的图像序列，每一张叫一帧。电影从有声片时代起基本固定为每秒 24 帧，网络视频常用 30 或 60 帧。可以放这组照片做成的动图。然后讲压缩：一分钟 1080p、30 帧的视频，就是 1800 张图，每张约 207 万像素，不压缩的话非常大。所以视频只完整保存少量关键帧，中间的帧只记录和前面相比哪里变了。打比方：玩“大家来找茬”，第二张图不用重画，只要标出几处不同。落点：关键帧这个词第 6、7 课会反复用到，生成视频时就是先做关键帧，再让 AI 补中间。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 数字图像与视频</span><span>⑤ 帧率与关键帧</span></div>
+    <h2 class="h-l">视频 = 很快地翻一本画册</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 加州 1878</span>
+          <b>马跑起来，四只蹄子会同时离地吗？</b>
+          <p>摄影师迈布里奇在跑道边排了一排相机，马跑过时依次触发，拍下一组连续照片：<b>四蹄真的会同时离地</b>。把照片连续快放，马就“跑”了起来。</p>
+        </div>
+        <div class="slot" data-slot="muybridge" style="aspect-ratio:16/8"></div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">帧率</span>
+          <p>每一张图叫一<b>帧</b>。电影常用 <b>24 帧/秒</b>，网络视频常用 <b>30 或 60 帧/秒</b>。</p>
+        </div>
+        <div class="card idea"><span class="tag">关键帧 · 为了压缩</span>
+          <p>1 分钟 30 帧的视频 = 1800 张图。所以只<b>完整保存少量关键帧</b>，其余帧只记录“哪里变了”。</p>
+          <div class="kf" aria-hidden="true"><span class="k">关键帧</span><span>变化</span><span>变化</span><span>变化</span><span class="k">关键帧</span><span>变化</span></div>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>玩“大家来找茬”：第二张图不用重画，<b>只标出几处不同</b>。第 6、7 课还会用到“关键帧”。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 3D 管线 + 网格 ============ -->
+<section class="slide" id="s-mesh" data-min="3" data-note="进入模块 2，3D 图形管线，13 分钟。先看上面这一排：做一个 3D 画面要经过五步，建模、材质、灯光、摄影机、渲染，接下来几页一步一步讲。先讲一个故事：1975 年，犹他大学的研究生马丁·纽厄尔需要一个测试用的 3D 物体，他妻子建议用家里的一把茶壶。他把茶壶画在方格纸上，手工量出曲面上的一组坐标点，输入计算机。这把茶壶后来成了整个图形学界最有名的测试模型，被叫做犹他茶壶，原物现在收藏在美国计算机历史博物馆。它还在《玩具总动员》里客串过一次（课前核实：出现的具体场景）。顺带一提，同一时期在犹他大学读博的艾德·卡特姆，1972 年做了一部电脑动画短片《一只电脑动画的手》，他后来成为皮克斯的创始人之一。然后讲建模：3D 物体由顶点和三角面组成网格。演示右边：把细分拉到最低，球变成一个八面体；拉高，越来越圆，但三角面数量也飞涨，电脑要算的就越多。打比方：老式足球由 12 块五边形和 20 块六边形皮缝成，看起来就是圆的。游戏里的角色要实时算，面数要省着用；电影可以用很多面。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 3D 图形管线</span><span>13 MIN</span><span>① 建模</span></div>
+    <h2 class="h-l">一把茶壶，走完整条 3D 管线</h2>
+    <div class="pipe">
+      <div class="on" style="--c:var(--warm)"><b>① 建模</b>顶点 + 三角面</div>
+      <div style="--c:var(--g)"><b>② 材质</b>颜色、粗糙度、金属度</div>
+      <div style="--c:var(--b)"><b>③ 灯光</b>方向、软硬、色温</div>
+      <div style="--c:#c58bff"><b>④ 摄影机</b>机位、焦距、景深</div>
+      <div style="--c:var(--r)"><b>⑤ 渲染</b>算成一张 2D 画面</div>
+    </div>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 犹他大学 1975</span>
+          <b>犹他茶壶</b>
+          <p>研究生马丁·纽厄尔把家里的一把茶壶画在<b>方格纸</b>上，手工量出一组坐标点输入计算机。它成了图形学界最有名的测试模型，原物收藏在美国计算机历史博物馆。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>老式足球由 <b>12 块五边形 + 20 块六边形</b>皮缝成，看起来就是圆的。3D 模型也一样：用很多小三角面拼出曲面。</p>
+        </div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 网格：面数越多越精细，计算量也越大</span>
+        <canvas id="meshCv" class="fit" width="560" height="320" aria-label="旋转的三角网格球体"></canvas>
+        <label class="row small">细分<input type="range" id="meshN" min="2" max="24" step="1" value="4" style="flex:1"><span class="stat"><b id="meshT">0</b> 个三角面</span></label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 材质与贴图 ============ -->
+<section class="slide" id="s-pbr" data-min="3" data-note="第二步：材质与贴图。先讲贴图：要把一张 2D 图片“包”到 3D 模型表面上，得先把模型表面剪开、摊平，这叫 UV 展开。打比方：数学课上学过正方体的展开图，骰子的六个面摊平是一个十字形纸样；反过来，把一张画好的十字形纸样折起来，就是一个画着点数的骰子。地球仪和世界地图也是同样的关系。再讲材质：现代 3D 软件用几个参数描述物体怎样反光，叫 PBR 材质。最重要的三个：基础色，物体本身的颜色；粗糙度，表面有多光滑；金属度，是不是金属。现场演示右边：粗糙度拉到 0，高光变成一个很小很亮的点，像台球、新车漆；拉到 1，高光散开，像磨砂塑料、粉笔。金属度拉到 1，物体开始映出周围的环境，颜色也染在反光上，像金戒指。提醒：实操任务 2 第 3 步就是在 3D 编辑器里把一个物体的粗糙度调到 0，到时候对照这个。注意：右边是简化示意，不是真实的渲染器。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 3D 图形管线</span><span>② 材质与贴图</span></div>
+    <h2 class="h-l">给模型“穿衣服”：贴图与材质</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card analogy"><span class="tag">贴图 · 打个比方</span>
+          <b>UV 展开 = 正方体的展开图</b>
+          <p>骰子的六个面摊平，是一个十字形纸样；在纸样上画好点数，再折回去，就是骰子。把 2D 图片“包”到 3D 表面上，<b>先要把表面剪开、摊平</b>。</p>
+        </div>
+        <div class="card idea"><span class="tag">PBR 材质 · 三个参数</span>
+          <ul>
+            <li><b>基础色</b>：物体本身的颜色</li>
+            <li><b>粗糙度</b>：0 = 镜面般光滑（台球、车漆），1 = 磨砂（粉笔、陶土）</li>
+            <li><b>金属度</b>：1 = 金属，会映出环境，反光带上自身颜色</li>
+          </ul>
+        </div>
+        <p class="small">实操任务 2 第 3 步：把一个物体的粗糙度调到 0，对照这里看。</p>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 材质球（简化示意）</span>
+        <canvas id="pbrCv" class="fit" width="240" height="240" aria-label="一个可调材质的球"></canvas>
+        <div class="sl" style="grid-template-columns:4em 1fr 2.6em"><span>粗糙度</span><input type="range" id="pbrR" min="0" max="1" step="0.05" value="0.5"><b id="pbrRv">0.50</b></div>
+        <div class="sl" style="grid-template-columns:4em 1fr 2.6em"><span>金属度</span><input type="range" id="pbrM" min="0" max="1" step="0.05" value="0"><b id="pbrMv">0.00</b></div>
+        <div class="row small">基础色
+          <button class="btn" type="button" data-base="red">红色</button>
+          <button class="btn" type="button" data-base="gold">金色</button>
+          <button class="btn" type="button" data-base="white">白色</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 灯光与摄影机 ============ -->
+<section class="slide" data-min="2.5" data-note="第三、四步：灯光和摄影机。好消息是，第 2 课学的东西在 3D 里全部用得上。先讲四种灯：平行光，光线互相平行，模拟太阳，能投出清晰的影子；点光源，从一个点向四面八方发光，像灯泡；聚光灯，一个锥形光束，像舞台追光；环境光，没有方向，整体提亮，太多了画面会发平。第 2 课学的光线方向、软硬、色温在这里都有对应的参数。再讲虚拟摄影机：它和真相机一样有焦距、视角、景深。看右边的图：视角大就是广角，装进的东西多，空间显得深；视角小就是长焦，只框住一小块，背景被压缩。打比方：3D 场景是一个不要钱的摄影棚，你可以随便搬灯、随便换镜头，摄影机还能飞到任何地方。游戏的过场动画就是这样做的：在虚拟场景里摆机位、设计运镜。实操任务 2 的第 4、5 步就是练这两件事：把太阳放到前、侧、后，把镜头设成广角和长焦。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 3D 图形管线</span><span>③ 灯光 ④ 摄影机</span></div>
+    <h2 class="h-l">在 3D 里，你是灯光师，也是摄影师</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="lights4">
+          <div><b>平行光</b>模拟太阳，光线互相平行，影子清晰</div>
+          <div><b>点光源</b>像灯泡，向四面八方发光</div>
+          <div><b>聚光灯</b>像舞台追光，一个锥形光束</div>
+          <div><b>环境光</b>没有方向，整体提亮；太多会发平</div>
+        </div>
+        <div class="card idea"><span class="tag">回扣第 2 课</span>
+          <p>光线<b>方向</b>（顺光、侧光、逆光）、<b>软硬</b>、<b>色温</b>，在 3D 里都是可以直接调的参数。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>3D 场景是一个<b>不要钱的摄影棚</b>：灯随便搬，镜头随便换，摄影机还能飞到任何位置。游戏过场动画就是这样“摆机位”的。</p>
+        </div>
+      </div>
+      <div class="lab fov">
+        <span class="label">示意 · 虚拟摄影机的视角</span>
+        <svg viewBox="0 0 560 300" role="img" aria-label="广角和长焦两种视角的俯视示意">
+          <g font-size="15" font-weight="700">
+            <path d="M40 80 L300 10 L300 150 Z" fill="rgba(91,140,255,.16)" stroke="#5b8cff" stroke-width="2"/>
+            <rect x="22" y="68" width="30" height="24" rx="4" fill="#eef0f6"/>
+            <circle cx="250" cy="80" r="14" fill="#ffc46b"/><rect x="200" y="40" width="20" height="20" fill="#3fe0a0"/><rect x="270" y="110" width="18" height="18" fill="#ff5468"/>
+            <text x="320" y="70" fill="#5b8cff">广角 · 视角大（约 75°）</text>
+            <text x="320" y="92" fill="#9097ad" font-size="13" font-weight="400">装得多，空间显得深</text>
+            <path d="M40 230 L520 206 L520 254 Z" fill="rgba(255,196,107,.16)" stroke="#ffc46b" stroke-width="2"/>
+            <rect x="22" y="218" width="30" height="24" rx="4" fill="#eef0f6"/>
+            <circle cx="470" cy="230" r="14" fill="#ffc46b"/>
+            <text x="300" y="196" fill="#ffc46b">长焦 · 视角小（约 20°）</text>
+            <text x="300" y="282" fill="#9097ad" font-size="13" font-weight="400">只框住一小块，背景被压缩</text>
+          </g>
+        </svg>
+        <p class="small">虚拟摄影机和真相机一样有焦距、视角、景深。实操任务 2 第 5 步会分别截一张广角和长焦。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 渲染：光栅化 vs 光线追踪 ============ -->
+<section class="slide" id="s-raster" data-min="3" data-note="第五步，渲染：把 3D 场景计算成一张 2D 画面。两种主要办法。第一种，光栅化，游戏用的：把每个三角面投到屏幕上，然后判断屏幕上每一个像素格子在不在这个三角形里面，在就涂上颜色。现场演示右边：拖动三角形的顶点，看哪些格子被涂上；把格子调粗，边缘就是锯齿。这一招非常快，游戏要做到每秒 60 帧，每一帧只有大约 16.7 毫秒。第二种，光线追踪，电影常用：从摄影机出发，向每个像素射出一条视线，看它打到什么物体，再顺着反射、折射、阴影继续追下去。打比方：光栅化像十字绣，看图案在哪些格子上就绣哪些格子；光线追踪像打台球，要算球在桌边反弹好几次之后落在哪里。真实，但慢。讲故事：1995 年皮克斯的《玩具总动员》是第一部完全由电脑制作的长篇动画，常见说法是它用了一百多台工作站组成的渲染农场，每一帧要算 45 分钟到 30 个小时不等（课前核实具体数字）。游戏 16.7 毫秒一帧，电影可以几个小时一帧，这就是两种方法的区别。补充一句：2018 年起，显卡开始支持游戏里的实时光线追踪，两种方法正在靠近。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 3D 图形管线</span><span>⑤ 渲染</span></div>
+    <h2 class="h-l">把 3D 场景算成一张 2D 画面</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">两种渲染方法</span>
+          <p><b>光栅化</b>（游戏）：判断每个像素格子在不在三角形里，在就涂色。快，要做到 <b>60 帧/秒，每帧约 16.7 毫秒</b>。</p>
+          <p><b>光线追踪</b>（电影）：从镜头向每个像素射出视线，追着它反射、折射、找阴影。更真实，也更慢。</p>
+        </div>
+        <div class="card story"><span class="tag">故事 · 皮克斯 1995</span>
+          <b>《玩具总动员》：第一部完全由电脑制作的长篇动画</b>
+          <p>常见说法：一百多台工作站日夜计算，<b>每一帧要算 45 分钟到 30 小时</b>。游戏 16.7 毫秒一帧，电影可以几小时一帧。</p>
+        </div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 光栅化：拖动三个顶点</span>
+        <canvas id="rsCv" class="fit" width="600" height="380" aria-label="一个三角形在像素网格上被光栅化"></canvas>
+        <label class="row small">格子数（分辨率）<input type="range" id="rsN" min="6" max="60" step="1" value="16" style="flex:1"><span class="stat" id="rsInfo"></span></label>
+        <p class="small">打个比方：光栅化像<b>十字绣</b>，图案落在哪些格子上就绣哪些；光线追踪像<b>打台球</b>，要算视线反弹几次后落在哪里。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 碰撞体与先摆机位 ============ -->
+<section class="slide" data-min="1.5" data-note="模块 2 最后一页，两件事。第一，穿模。游戏里给每个角色算物理碰撞，用的不是角色本身精细的网格，而是外面套的一个看不见的简化盒子或胶囊，叫碰撞体，这样算得快。可是盒子和真实外形对不上，所以角色的手会插进墙里、头发会穿过肩膀，这就是游戏穿模。打比方：像给每个人套一个看不见的纸箱，箱子撞上了才算碰到。提醒学生：AI 视频里也常见东西互相穿过去，但那是另一回事：AI 视频模型里根本没有碰撞体，它并没有真正理解物理，只是在模仿画面看起来的样子，第 7 课展开。第二，这一切对创作的意义。讲故事：2019 年的美剧《曼达洛人》，拍摄时演员站在一圈巨大的 LED 屏幕中间，屏幕上播放的是游戏引擎实时渲染的 3D 外景，摄影机一移动，背景的透视也跟着变，这叫虚拟制片。落点：专业创作者已经在用这个方法：先在 3D 场景里摆好机位与构图，再交给 AI 或者渲染器出画面。今天实操的任务 2，你们就要这样给本组故事的一个场景摆主机位。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 3D 图形管线</span><span>穿模 · 先摆机位</span></div>
+    <h2 class="h-l">两种“穿模”，和一种专业做法</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card analogy"><span class="tag">游戏穿模 · 打个比方</span>
+          <p>游戏算碰撞时，给每个角色套一个看不见的<b>简化盒子或胶囊</b>（碰撞体），像套了个纸箱。箱子和真实外形对不上，手就插进了墙里。</p>
+        </div>
+        <div class="card idea"><span class="tag">AI 视频穿模 · 是另一回事</span>
+          <p>AI 视频模型里<b>没有碰撞体</b>，它并没有真正理解物理，只是在模仿画面“看起来的样子”。第 7 课展开。</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 《曼达洛人》2019</span>
+          <p>演员站在一圈巨大的 <b>LED 屏幕</b>中间，屏幕上是游戏引擎<b>实时渲染</b>的 3D 外景；摄影机一动，背景透视跟着变。这叫<b>虚拟制片</b>。</p>
+        </div>
+        <div class="punch">先在 3D 里摆好机位与构图，再交给 AI 生成。<small>这是专业创作者正在用的方法，也是今天实操任务 2 要做的事。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 扩散：前向加噪 ============ -->
+<section class="slide" id="s-fwd" data-min="3" data-note="进入模块 3，扩散模型，15 分钟，回扣第 1 课结尾留的问题：图片是怎样从一片噪点里画出来的？先讲一个反直觉的起点：要学会画图，先学会把图毁掉。现场演示右边：拖动滑块，一张清晰的日落图被一点点加上噪点，到 100% 就是一片雪花，看不出原来是什么。这叫前向过程，下面五张小图就是加噪的五个阶段。名字从哪里来？打比方：一滴墨水滴进清水，会慢慢散开，最后整杯水变成均匀的淡灰色，物理学里这叫扩散。2015 年，斯坦福的研究者从物理学的扩散过程得到启发，提出了这种模型：既然墨水散开的过程可以一步步描述，能不能学会把它倒着放？2020 年，伯克利的研究者把方法改进到能生成高质量图片，之后的 Stable Diffusion、Midjourney 等生图工具都建立在这条思路上。落点：前向加噪不用学，随便加就行；难的是反过来，下一页讲模型到底学什么。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 扩散模型</span><span>15 MIN</span><span>① 前向过程</span></div>
+    <h2 class="h-l">要学会画图，先学会把图“毁掉”</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card analogy"><span class="tag">名字的由来 · 打个比方</span>
+          <p>一滴墨水滴进清水，慢慢散开，最后整杯水变成均匀的淡灰色。物理学里这叫<b>扩散</b>。</p>
+        </div>
+        <div class="card story"><span class="tag">故事 · 2015 → 2020</span>
+          <p>2015 年，研究者从物理学的扩散过程得到启发：<b>墨水散开的过程能一步步描述，能不能学会把它倒着放？</b>2020 年，方法被改进到能生成高质量图片，今天的生图工具大多建立在这条思路上。</p>
+        </div>
+        <p class="src">来源：Sohl-Dickstein 等，2015；Ho、Jain &amp; Abbeel，DDPM，2020</p>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 前向过程：一步步加噪</span>
+        <canvas id="fwCv" class="fit dcv" width="96" height="96" style="max-width:300px" aria-label="逐渐加噪的图像"></canvas>
+        <label class="row small">加噪程度<input type="range" id="fwT" min="0" max="100" step="1" value="0" style="flex:1"><b id="fwTv" class="warm">0%</b></label>
+        <div class="film" id="fwFilm"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 模型学什么 + 与渲染的区别 ============ -->
+<section class="slide" data-min="3" data-note="这一页讲模型到底学什么。上面四步，回扣第 1 课的训练循环：拿一张清晰的图，随机加上一些噪声，加多加少都有；把加了噪的图给模型看，让它猜加进去的噪声长什么样；对答案，算误差，拧旋钮。在数亿张图上反复这样练，模型就学会了一种本事：看一张带噪点的图，能分辨出哪些是噪声、哪些是图像本身。按 → 出下面的对比表，这是本节课的一个关键：扩散模型和上一个模块讲的渲染完全不是一回事。渲染手里有完整的 3D 场景、灯光和摄影机，按光学规律精确计算，同样的输入永远得到同一张图，阴影位置、透视都是对的。扩散模型手里没有任何场景，它是凭着在数亿张图里学到的经验，从噪声里猜出一张看起来合理的图，所以质感丰富、想象力强，但手指数量、物体透视、物理关系可能是错的。打比方：渲染像照着建筑图纸盖房子，每块砖放在哪都算好了；扩散像盯着天上的云认形状，越看越像一只兔子，但它其实没有图纸。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 扩散模型</span><span>② 模型学什么</span></div>
+    <h2 class="h-l">模型学的是：猜出“加进去的噪声”</h2>
+    <div class="pipe">
+      <div style="--c:var(--b)"><b>① 拿一张清晰图</b>来自数亿张训练图</div>
+      <div style="--c:var(--warm)"><b>② 随机加噪</b>加多加少都有</div>
+      <div style="--c:var(--r)"><b>③ 让模型猜</b>加进去的噪声长什么样</div>
+      <div style="--c:var(--g)"><b>④ 对答案、拧旋钮</b>和第 1 课的训练一样</div>
+    </div>
+    <div class="step">
+      <div class="g2 wide-l">
+        <div class="card idea"><span class="tag">渲染 vs 扩散</span>
+          <table class="vs">
+            <tr><th></th><th class="c1">3D 渲染</th><th class="c2">扩散模型</th></tr>
+            <tr><td>手里有什么</td><td>完整的 3D 场景、灯光、摄影机</td><td>一片噪声 + 提示词</td></tr>
+            <tr><td>怎么算</td><td>按光学规律<b>精确计算</b></td><td>凭学到的经验<b>猜</b>出合理的画面</td></tr>
+            <tr><td>同样的输入</td><td>永远是同一张图</td><td>换个种子就不同</td></tr>
+            <tr><td>容易出错</td><td>几乎不会画错透视和阴影</td><td>手指、透视、物理关系可能错</td></tr>
+          </table>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p><b>渲染</b>像照着建筑图纸盖房子：每块砖放在哪，都算好了。</p>
+          <p><b>扩散</b>像盯着天上的云认形状：越看越像一只兔子，但<b>它手里并没有图纸</b>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 生成过程 + 潜空间 ============ -->
+<section class="slide" id="s-gen" data-min="3" data-note="这一页讲生成：从一张纯随机噪声出发，模型预测出其中的噪声，减去一小部分，得到稍微清楚一点的图；再预测、再减，重复几十步，图像逐渐浮现。每一步都受提示词引导，这里用到的就是第 1 课讲的图文对齐：模型知道“海边日落”应该往哪个方向去噪。现场点“开始去噪”：先是一片雪花，大约十步左右能认出大的色块和构图，后面几步才出细节。下面五张小图，就是实操任务 3 你们要观察的第 1、5、10、20、30 步。再把“显示”切到“模型此刻预测的成品”，不用重放，五张小图会换成每一步模型心里猜的成品：第 1 步是一团模糊色块，第 5 步有了大构图，越往后细节越多。很多生图工具生成时显示的进度预览就是这一种，任务 3 老师导出的序列图也可能是这一种，到时候对照着看。注意：右边是课件做的示意，不是真实模型，但先出大轮廓、后出细节的顺序和真实模型一致。打比方：冬天窗玻璃起了雾，你用手一遍一遍擦，先看出外面大概是一栋楼，再擦，才看清窗户和招牌。再讲潜空间：在 512×512 的图上直接去噪太慢，所以 2022 年的 Stable Diffusion 先把图压缩成一个 64×64 的小“草稿”，在小草稿上去噪，最后再解码放大成图片，数据量小了几十倍。打比方：画家先在小本子上画草图，定了再画到大画布上。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 扩散模型</span><span>③ 生成过程 · 潜空间</span></div>
+    <h2 class="h-l">从一片雪花里，一步步“认”出画面</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">生成过程</span>
+          <p>从<b>纯随机噪声</b>出发：预测噪声 → 减去一小部分 → 再预测……重复几十步，图像逐渐浮现。<b>每一步都受提示词引导</b>（第 1 课的图文对齐）。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>擦起雾的窗玻璃：<b>先看出外面大概是一栋楼，再擦，才看清窗户和招牌</b>。</p>
+        </div>
+        <div class="card idea"><span class="tag">潜空间 · 为了更快</span>
+          <p>Stable Diffusion（2022）先把 512×512 的图压缩成 <b>64×64 的“小草稿”</b>，在草稿上去噪，最后再解码成图片。像画家先画小草图，再上大画布。</p>
+        </div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 去噪生成（课件示意，不是真实模型）</span>
+        <div class="dview">
+          <canvas id="dfCv" class="dcv" width="96" height="96" aria-label="去噪过程"></canvas>
+          <div class="col" style="gap:8px">
+            <label class="row small">提示词 <select id="dfP" aria-label="提示词"><option value="sunset">海边日落</option><option value="apple">桌上的红苹果</option><option value="house">雪地里的小木屋</option></select></label>
+            <div class="row"><button class="btn primary" id="dfPlay" type="button">开始去噪（30 步）</button></div>
+            <label class="row small">显示 <select id="dfView" aria-label="显示内容"><option value="x">当前的带噪画面</option><option value="x0">模型此刻预测的成品</option></select></label>
+            <div class="stat">当前：第 <b id="dfStep">0</b> / 30 步</div>
+          </div>
+        </div>
+        <div class="film" id="dfFilm"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 三个参数 ============ -->
+<section class="slide" id="s-param" data-min="4" data-note="这一页是模块 3 的重点，回答本课第三个问题。三个参数一个个演示。第一，种子：种子决定一开始那张噪声长什么样。演示：提示词不变，点“换种子”生成两三次，构图都不一样；再把种子手动改回第一次的数字，生成，和第一张一模一样，下面的历史记录可以并排对比。结论：同样的提示词 + 同样的种子 + 同样的参数 = 几乎相同的图，这是可复现的基础。打比方：种子像一副洗好的扑克牌的洗牌方式，洗法一样，发到手里的牌就一样。很多工具默认每次随机换种子，所以你每次得到的图都不同；想复现一张满意的图，就要记下它的种子。第二，步数：去噪的次数。演示：步数设成 2，画面是一团模糊色块；设成 10，基本成形；30 和 50 几乎看不出区别。结论：太少粗糙，增加到一定程度后提升不再明显，只是更慢。第三，提示词遵循度，也叫引导强度：设成 1，模型几乎不听提示词，画面是一片说不清的东西；7 左右正常；拉到 15 以上，颜色过饱和、画面发硬。打比方：像做菜放盐，不放没味道，放太多就齁了。最后请一位同学回答屏幕上的问题。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 扩散模型</span><span>④ 三个关键参数</span></div>
+    <h2 class="h-l">种子、步数、引导强度</h2>
+    <div class="g2 wide-l">
+      <div class="lab">
+        <span class="label">互动 · 调参数生成（课件示意，不是真实模型）</span>
+        <div class="dview">
+          <canvas id="gpCv" class="dcv" width="96" height="96" aria-label="生成结果"></canvas>
+          <div class="col" style="gap:7px">
+            <label class="row small">提示词 <select id="gpP" aria-label="提示词"><option value="sunset">海边日落</option><option value="apple">桌上的红苹果</option><option value="house">雪地里的小木屋</option></select></label>
+            <label class="row small">种子 <input type="number" id="gpSeed" value="42" min="0" max="99999" aria-label="种子"><button class="btn" id="gpDice" type="button">换种子</button></label>
+            <div class="sl" style="grid-template-columns:4.2em 1fr 2.4em"><span>步数</span><input type="range" id="gpSteps" min="1" max="50" step="1" value="30"><b id="gpStepsV">30</b></div>
+            <div class="sl" style="grid-template-columns:4.2em 1fr 2.4em"><span>引导强度</span><input type="range" id="gpCfg" min="1" max="20" step="0.5" value="7"><b id="gpCfgV">7</b></div>
+            <div class="row"><button class="btn primary" id="gpGo" type="button">生成</button><button class="btn" id="gpClear" type="button">清空记录</button></div>
+          </div>
+        </div>
+        <div class="hist" id="gpHist"></div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">种子 · 决定初始噪声</span>
+          <p>同提示词 + <b>同种子</b> + 同参数 = 几乎相同的图。像洗牌：<b>洗法一样，发到的牌就一样</b>。</p>
+        </div>
+        <div class="card idea"><span class="tag">步数 · 去噪的次数</span>
+          <p>太少画面粗糙；增加到一定程度后<b>提升不再明显</b>，只是更慢。</p>
+        </div>
+        <div class="card analogy"><span class="tag">引导强度 · 像放盐</span>
+          <p>越高越听提示词；<b>过高颜色过饱和、画面发硬</b>，像盐放多了齁。</p>
+        </div>
+        <div class="card ask"><span class="tag">请你回答</span><p>为什么同一句提示词每次生成的图都不一样？怎样让它变得一样？</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 从 2D 到 3D ============ -->
+<section class="slide" data-min="2" data-note="模块 3 最后一页，把两个模块连起来：AI 能不能直接从一张图生成 3D 模型？能，这类工具叫图生 3D，比如今天任务 3 老师要演示的腾讯混元 3D。常见的做法是两步：先让模型推测这个物体从其他角度看是什么样子，生成几张不同角度的图，叫多视图；再根据这几张图重建出 3D 网格和贴图。也有新一点的工具直接生成 3D 形状，但道理相同：背面是猜出来的。打比方：只给你看一个同学的正面证件照，让你画他的后脑勺，你只能凭经验猜：大概是短发、大概是这个颜色，但发旋在哪、有没有扎辫子，你不知道。所以图生 3D 的模型，正面通常很像，背面和被遮住的地方常常不准。任务 3 演示时，我们一起把模型转到背面看。落点：AI 生成的 3D 模型适合做参考和摆机位，不要指望它一次就完美。讲完进入实操。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 扩散模型</span><span>⑤ 从 2D 到 3D</span></div>
+    <h2 class="h-l">一张图，能变成 3D 模型吗？</h2>
+    <div class="pipe">
+      <div style="--c:var(--b)"><b>一张设定图</b>只有正面</div>
+      <div style="--c:var(--warm)"><b>推测其他角度</b>生成“多视图”</div>
+      <div style="--c:var(--g)"><b>重建</b>3D 网格 + 贴图</div>
+      <div style="--c:var(--r)"><b>3D 模型</b>可以旋转、摆机位</div>
+    </div>
+    <div class="g2">
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>只给你看一个同学的<b>正面证件照</b>，让你画他的后脑勺：短发还是长发，你能猜个大概；<b>发旋在哪、有没有扎辫子，你不知道</b>。</p>
+      </div>
+      <div class="card idea"><span class="tag">所以</span>
+        <p>图生 3D 的结果，<b>正面通常很像，背面和被遮挡的部分常常不准</b>。适合做参考、摆机位，不要指望一次完美。任务 3 老师用混元 3D 演示，一起转到背面看。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 实操总览 ============ -->
+<section class="slide chapter practice" data-min="0.5" data-note="进入实操，42 分钟，三个任务。快速确认三件事：每台电脑都能打开这份课件的 RGB 实验页（任务 1 那一页）；能访问 three.js 在线编辑器，课前已测试，打不开就用降级方案；记录表已经发到每组。任务 1 每人独立做，任务 2 每人先做 1 到 5 步，第 6 步全组合作选一个场景，任务 3 每人填记录表。">
+  <div class="inner">
+    <span class="num">实操 · 42 MIN</span>
+    <h2 class="h-xl">从像素，到机位，<br>到一张图的诞生</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 10 分钟</span><b>像素与颜色</b><p>放大照片、调出 3 个颜色、对比位图与矢量。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 25 分钟</span><b>3D 编辑器搭景、摆机位</b><p>3 张光线对比 + 2 张焦段对比 + 1 张本组主机位。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 7 分钟</span><b>读懂扩散过程</b><p>看去噪序列和种子对比，看混元 3D 演示。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool">RGB / 像素实验页 <i>课件内置 · 离线可用</i></span>
+      <span class="tool">图片查看器 <i>电脑自带</i></span>
+      <span class="tool">three.js 编辑器 <i>threejs.org/editor</i></span>
+      <span class="tool"><img src="../media/logos/hunyuan.png" alt="">混元 3D <i>教师示范</i></span>
+      <span class="tool">去噪序列图 <i>教师预先导出</i></span>
+      <span class="tool">记录表 <i>飞书表格或纸质</i></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 任务 1：像素与颜色 ============ -->
+<section class="slide practice" id="s-t1" data-min="9.5" data-note="任务 1，10 分钟（含上一页半分钟）。第 1 步：用电脑自带的图片查看器打开第 2 课自己拍的照片，一直放大到 800% 以上，直到看到一个个方格，截图。第 2 步：用右边的实验页。先点“载入我的照片”把同一张照片放进来（照片只在本机浏览器里，不会上传）。在照片里找三个位置：天空、皮肤、阴影。先别点照片，用 RGB 三个滑块凭眼睛调出你认为的颜色，点“记为天空”；然后点照片上那个位置，看照片里的真实值，对比自己调的差多少。三个位置都做完，把表里的 RGB 值和十六进制色值抄到记录表。巡视时常见的发现：阴影往往不是灰黑色，而是带蓝或带紫；皮肤的红色比想象的高、蓝色比想象的低。第 3 步：在浏览器里打开老师提供的同一个标志的 PNG 和 SVG 文件，都放大到 1000%（按住 Ctrl 或 Command 加号），截图对比边缘。没有照片的同学用实验页默认的日落图做。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">10 分钟</span><span>工具：图片查看器 · RGB 实验页（本页）· 浏览器</span></div>
+    <h2 class="h-m">像素与颜色：放大、取色、对比位图和矢量</h2>
+    <div class="g2">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>用图片查看器打开第 2 课自己拍的照片</b><span>，放大到 800% 以上，看到方格后截图。</span></div></li>
+          <li><div><b>在右边实验页找 3 个位置：天空、皮肤、阴影。</b><span>先用滑块凭眼睛调出颜色，点“记为……”；再点照片上那个位置，看真实值差多少。RGB 与十六进制抄进记录表。</span></div></li>
+          <li><div><b>在浏览器打开老师给的同一个标志的 PNG 和 SVG</b><span>，都放大到 1000%，截图对比边缘。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>1 张像素网格截图 + <b>3 个颜色的 RGB 与十六进制值</b> + 1 组 PNG/SVG 边缘对比截图。</div>
+        <p class="small">照片只在本机浏览器中读取，不会上传。没有照片就用默认的日落图。</p>
+        <div class="lab" style="padding:8px 12px"><span class="label">本页取色记录（抄进记录表）</span>
+          <table class="rec"><thead><tr><th>位置</th><th>我调的</th><th>照片真实值</th></tr></thead><tbody id="t1Tab"></tbody></table>
+        </div>
+      </div>
+      <div class="lab">
+        <span class="label">RGB / 像素实验页</span>
+        <div class="row"><button class="btn" id="t1Load" type="button">载入我的照片</button><input type="file" id="t1File" accept="image/*" hidden><span class="small">点照片任意位置 = 读出真实颜色</span></div>
+        <canvas id="t1Cv" class="fit" width="480" height="270" style="cursor:crosshair" aria-label="照片取色区"></canvas>
+        <div class="sl"><b class="rgb-r">R</b><input type="range" id="t1R" min="0" max="255" value="128"><b id="t1Rv">128</b></div>
+        <div class="sl"><b class="rgb-g">G</b><input type="range" id="t1G" min="0" max="255" value="128"><b id="t1Gv">128</b></div>
+        <div class="sl"><b class="rgb-b">B</b><input type="range" id="t1B" min="0" max="255" value="128"><b id="t1Bv">128</b></div>
+        <div class="row"><span class="sw" id="t1Sw" style="width:40px;height:40px"></span><span class="stat">我调的 <b id="t1Hex">#808080</b></span><span class="sw" id="t1Pk" style="width:40px;height:40px;background:#000"></span><span class="stat">照片真实值 <b id="t1PkHex">–</b></span></div>
+        <div class="row"><button class="btn" type="button" data-rec="天空">记为天空</button><button class="btn" type="button" data-rec="皮肤">记为皮肤</button><button class="btn" type="button" data-rec="阴影">记为阴影</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 任务 2（上）：搭场景、材质、灯光 ============ -->
+<section class="slide practice" data-min="12" data-note="任务 2 前半段，12 分钟，第 1 到 4 步。老师先投屏把第 1、2 步完整示范一遍，大约 2 分钟，然后学生自己做。菜单名称以开课前测试的版本为准，课前核实：Add 菜单下是否有 Mesh、Light、Camera 子菜单，以及新建场景时有没有默认光源。常见问题：一、物体加进来是黑的：因为场景里还没有灯，先做第 4 步加一个平行光。二、地面是竖着的：平面默认是立着的，要把 Rotation X 改成 -90。三、找不到物体：在右侧 Scene 列表里点它的名字，视口会选中它；在视口里双击可以聚焦。第 3 步提醒学生对照模块 2 的材质球：粗糙度 0 的物体，高光变成一个小亮点，还会映出别的物体。第 4 步，平行光的方向由它的位置决定，它默认照向场景中心：放在物体正前方（比如 Position 0、5、10）是顺光；放到侧面（10、5、0）是侧光；放到背后（0、5、-10）是逆光，物体正面会变暗、只剩轮廓，这就是第 2 课的剪影效果。每个位置截一张。降级方案：如果编辑器打不开，改用纸面俯视图：在纸上画出场景布局，用箭头标出光源方向和摄影机位置，再用手机和桌面上的物体（文具盒、水杯）模拟拍摄。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2（上）</span><span class="timechip">12 分钟</span><span>工具：three.js 编辑器 threejs.org/editor（或学校批准的等效 3D 编辑器）</span></div>
+    <h2 class="h-m">在 3D 编辑器里搭一个场景：几何体、材质、太阳</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>打开 3D 编辑器，新建场景</b><span>（File → New）。如有默认光源，先删掉。</span></div></li>
+        <li><div><b>加地面和“建筑”</b><span>：Add → Mesh → Plane 作地面，Rotation X 设为 -90，Scale 放大；再加 2–3 个 Box 或 Cylinder，改 Position 和 Scale 摆成建筑或家具。</span></div></li>
+        <li><div><b>设材质</b><span>：选中物体，在 Material 面板改 Color；把其中一个的</span> <b>Roughness 调到 0</b><span>，观察反光变化。</span></div></li>
+        <li><div><b>加太阳</b><span>：Add → Light → Directional（平行光）。把它的 Position 依次放到物体</span><b>正前方、侧面、背后</b><span>，各截一张：顺光 / 侧光 / 逆光。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="card idea"><span class="tag">常见问题</span>
+          <ul>
+            <li><b>物体是黑的？</b>场景里还没有灯，先加平行光</li>
+            <li><b>地面竖着？</b>平面默认立着，Rotation X 改成 -90</li>
+            <li><b>找不到物体？</b>在右侧 Scene 列表点它的名字</li>
+          </ul>
+        </div>
+        <div class="card"><b>光的位置参考</b>
+          <p class="mono">顺光 (0, 5, 10) · 侧光 (10, 5, 0) · 逆光 (0, 5, -10)</p>
+          <p>平行光默认照向场景中心，<b>方向由它的位置决定</b>。</p>
+        </div>
+        <div class="done-box"><span class="label">这一半的完成标准</span>场景里有地面 + 2–3 个物体；<b>3 张光线对比截图</b>（顺光、侧光、逆光）。</div>
+        <p class="small">编辑器无法访问时：在纸上画俯视图，标出光源方向和机位，再用手机和桌面物体模拟拍摄。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 21 任务 2（下）：摄影机与主机位 ============ -->
+<section class="slide practice" data-min="13" data-note="任务 2 后半段，13 分钟，第 5、6 步。第 5 步：加一台透视摄影机，先把 Position 设成 0、2、10，Rotation 全部为 0，它就朝着场景中心看。在 Object 面板里把 FOV 设为 75，这是广角；然后在视口右上角的下拉框里切换到这台摄影机的视角（课前核实这个下拉框的位置和名称），截图。再把 FOV 改成 20，这是长焦，画面一下子推得很近，把摄影机往后拉，比如 Position Z 改成 35，直到主体在画面里的大小和广角时差不多，再截一张。让学生对比两张图：主体一样大，背景却完全不同，长焦的背景被压缩、显得更近更大，这就是第 2 课讲的焦段效果。第 6 步是重点，全组合作：从本组的分场剧本里选最重要的一个场景，用方块和圆柱简单还原空间布局：教室就是几排方块课桌加一面墙，街道就是两排方块楼。然后讨论主机位：这一场最重要的信息是什么？观众应该从哪里看？用什么焦段？光从哪边来？确定后截图，命名为“组号_L05_主机位”。这张图下节课生成场景图和关键帧时要用来参考构图。巡视时重点看第 6 步，追问每组为什么这样摆。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2（下）</span><span class="timechip">13 分钟</span><span>工具：three.js 编辑器</span></div>
+    <h2 class="h-m">摆摄影机：广角与长焦，然后给本组故事定主机位</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps" start="5" style="counter-reset:s 4">
+          <li><div><b>加一台透视摄影机</b><span>：Add → Camera → Perspective，Position 设 (0, 2, 10)、Rotation 全 0，它就朝场景中心看。</span><b>FOV 设 75（广角）</b><span>，在视口右上角切到这台摄影机的视角，截图；再把</span> <b>FOV 改成 20（长焦）</b><span>，把摄影机往后拉到主体大小差不多，再截图。</span></div></li>
+          <li><div><b>全组：还原本组最重要的一个场景</b><span>。用方块和圆柱摆出空间布局（课桌、墙、楼、路），确定一个</span><b>主机位</b><span>，截图命名</span> <span class="code">组号_L05_主机位</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准（任务 2 全部）</span>至少 <b>3 张光线对比</b>截图 + <b>2 张焦段对比</b>截图 + <b>1 张本组场景主机位</b>截图。</div>
+      </div>
+      <div class="col">
+        <div class="card ask"><span class="tag">定主机位前，全组回答 4 个问题</span>
+          <p>这一场最重要的信息是什么？观众从哪里看？用广角还是长焦？光从哪边来？</p>
+        </div>
+        <div class="card idea"><span class="tag">对比两张焦段截图</span>
+          <p>主体一样大，<b>背景却完全不同</b>：长焦把背景压缩得更近、更大。和第 2 课的焦段实验对一对。</p>
+        </div>
+        <p class="small">这张主机位图下节课生成场景图和关键帧时，用来参考构图。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 22 任务 3：读懂扩散 ============ -->
+<section class="slide practice" data-min="7" data-note="任务 3，7 分钟。第 1 步，老师投出课前用生图工具导出的去噪序列：同一张图第 1、5、10、20、30 步的样子（把图片拖进下面的媒体位，或存成 lessons/media/denoiseSeq.jpg）。每人在记录表写：第几步能认出主体？第几步细节基本完整？答案因模型不同而不同，鼓励学生写自己看到的，和模块 3 的示意对照。第 2 步，两组对比图：同提示词不同种子，四张构图各不相同；同提示词同种子，几乎一模一样。写出一句结论，例如：种子决定初始噪声，种子相同、其他参数相同，图就几乎相同。第 3 步，老师示范混元 3D：把一张角色设定图生成 3D 模型，旋转到背面和侧面，请学生指出哪里不准，并用“多视图是猜出来的”来解释。学生在第 6 课完成角色设定后可以自己选做。降级：如果现场网络不行，播放课前录好的演示录屏。做完任务 3 后，需要修订创作圣经的小组，用剩余时间完成修订。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">7 分钟</span><span>工具：教师导出的序列图 · 混元 3D（教师示范）</span></div>
+    <h2 class="h-m">读懂扩散过程：看序列、比种子、转到 3D 模型的背面</h2>
+    <div class="g3">
+      <div class="col">
+        <div class="slot" data-slot="denoiseSeq" style="aspect-ratio:16/8"></div>
+        <ol class="steps"><li><div><b>看去噪序列（第 1/5/10/20/30 步）</b><span>：第几步能认出主体？第几步细节基本完整？</span></div></li></ol>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="seedPair" style="aspect-ratio:16/8"></div>
+        <ol class="steps" style="counter-reset:s 1"><li><div><b>比较两组图</b><span>：“同提示词不同种子”和“同提示词同种子”，写出一句结论。</span></div></li></ol>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="hunyuan3d" style="aspect-ratio:16/8"></div>
+        <ol class="steps" style="counter-reset:s 2"><li><div><b>看老师示范混元 3D</b><span>：角色设定图 → 3D 模型，转到背面，哪里不准？为什么？</span></div></li></ol>
+      </div>
+    </div>
+    <div class="done-box"><span class="label">完成标准</span>记录表里有<b>两个步数</b>（认出主体 / 细节完整）+ <b>一句种子结论</b> + <b>一处 3D 模型不准的地方和原因</b>。</div>
+    <p class="small">做完后，需要修订创作圣经的小组用剩余时间完成修订，下课前交。</p>
+  </div>
+</section>
+
+<!-- ============ 23 总结 ============ -->
+<section class="slide" data-min="5" data-note="最后 5 分钟。第一步，请 2 组上来展示本组场景主机位截图，每组 1 分钟，说清两件事：为什么选这个机位，光从哪边来、为什么。老师各给一句点评，重点看机位是否服务于这一场最重要的信息。第二步，按 → 出三个问题，各请一位同学用一句话回答。参考答案：一、AI 生成的图是位图，记录的是固定数量的像素，放大只是把格子变大，所以会糊；标志是矢量，记录的是画法，放大时重新画，所以清楚。二、游戏画面经过建模、材质、灯光、摄影机，再用光栅化把三角形算成像素，每帧只有约 16.7 毫秒；电影常用光线追踪，更真实但更慢。三、生成从随机噪声开始，种子决定初始噪声，大多数工具每次自动换种子；固定提示词、种子和参数，就能得到几乎相同的图。第三步，布置课后任务：每组的视觉总监，根据创作圣经写出主要角色和主要场景的文字设定，下节课生成角色设定集和场景图时直接用。提醒：没交修订版创作圣经的小组，下节课开始前交。">
+  <div class="inner">
+    <div class="tc"><span class="ch">展示与总结</span><span>5 MIN</span></div>
+    <h2 class="h-l">两组展示主机位，然后回答三个问题</h2>
+    <div class="card idea"><span class="tag">展示 · 2 组 × 1 分钟</span>
+      <p>展示 <span class="code">组号_L05_主机位</span>，说清：<b>为什么选这个机位？光从哪边来？</b></p>
+    </div>
+    <div class="step">
+      <div class="qlist">
+        <div class="q" style="--c:var(--r)"><span class="n">像素</span><b>AI 海报放大打印会糊，标志为什么不会？</b></div>
+        <div class="q" style="--c:var(--g)"><span class="n">3D 管线</span><b>游戏里的一帧画面，是怎样算出来的？</b></div>
+        <div class="q" style="--c:var(--b)"><span class="n">扩散</span><b>同一句提示词每次都不一样，怎样让它一样？</b></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务：视觉总监根据创作圣经，写出主要角色与主要场景的文字设定。<small>第 6 课生成角色设定集、场景图和关键帧时直接使用。还没交修订版创作圣经的小组，第 6 课开始前交。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适素材后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  muybridge: { type: 'media', label: '迈布里奇《运动中的马》· 1878', hint: '连续照片或快放成的动图，10 秒以内', find: 'https://search.bilibili.com/all?keyword=%E8%BF%88%E5%B8%83%E9%87%8C%E5%A5%87%20%E5%A5%94%E9%A9%AC', cred: 'Eadweard Muybridge · The Horse in Motion · 1878' },
+  denoiseSeq: { type: 'media', label: '去噪序列图 · 第 1/5/10/20/30 步', hint: '教师课前用生图工具导出，五张拼成一排', find: 'https://search.bilibili.com/all?keyword=%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%20%E5%8E%BB%E5%99%AA%E8%BF%87%E7%A8%8B%20%E5%8F%AF%E8%A7%86%E5%8C%96', cred: '教师导出' },
+  seedPair: { type: 'media', label: '同提示词：不同种子 / 同种子', hint: '上排 4 张不同种子，下排 4 张同种子', find: 'https://search.bilibili.com/all?keyword=AI%E7%BB%98%E7%94%BB%20%E7%A7%8D%E5%AD%90%20seed%20%E5%9B%BA%E5%AE%9A', cred: '教师导出' },
+  hunyuan3d: { type: 'media', label: '混元 3D · 图生 3D 演示', hint: '现场演示；网络不好时播放课前录屏', find: 'https://search.bilibili.com/all?keyword=%E6%B7%B7%E5%85%833D%20%E5%9B%BE%E7%94%9F3D', cred: '腾讯混元 3D' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const hex2 = v => Math.round(v).toString(16).toUpperCase().padStart(2, '0');
+  const toHex = (r, g, b) => '#' + hex2(r) + hex2(g) + hex2(b);
+  const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+  const rng = seed => { let s = (seed >>> 0) || 1; return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+  const visible = el => !document.body.classList.contains('deck-on') || el.classList.contains('active');
+  const shrink = (src, w, h) => {
+    let cur = src;
+    while (cur.width / 2 > w) { const n = mk(Math.round(cur.width / 2), Math.round(cur.height / 2)); n.getContext('2d').drawImage(cur, 0, 0, n.width, n.height); cur = n; }
+    const out = mk(w, h); out.getContext('2d').drawImage(cur, 0, 0, w, h); return out;
+  };
+
+  /* ---------- 示例照片：日落（像素页、任务 1 默认图） ---------- */
+  const SRC = mk(320, 180);
+  (() => {
+    const x = SRC.getContext('2d');
+    let g = x.createLinearGradient(0, 0, 0, 110); g.addColorStop(0, '#1d2b6b'); g.addColorStop(.55, '#c8577a'); g.addColorStop(1, '#ffb35c');
+    x.fillStyle = g; x.fillRect(0, 0, 320, 110);
+    x.fillStyle = '#ffe9a8'; x.beginPath(); x.arc(205, 100, 24, 0, 7); x.fill();
+    x.fillStyle = '#5a3268'; x.beginPath(); x.moveTo(0, 111); x.lineTo(38, 72); x.lineTo(70, 92); x.lineTo(118, 58); x.lineTo(170, 111); x.closePath(); x.fill();
+    x.fillStyle = '#3a2048'; x.beginPath(); x.moveTo(250, 111); x.lineTo(292, 80); x.lineTo(320, 92); x.lineTo(320, 111); x.closePath(); x.fill();
+    g = x.createLinearGradient(0, 110, 0, 180); g.addColorStop(0, '#e0896a'); g.addColorStop(1, '#1a2147');
+    x.fillStyle = g; x.fillRect(0, 110, 320, 70);
+    x.fillStyle = 'rgba(255,233,168,.6)';
+    for (let i = 0; i < 8; i++) { const w = 46 - i * 5; x.fillRect(205 - w / 2, 114 + i * 7, w, 2.4); }
+    x.fillStyle = '#140d22'; x.beginPath(); x.moveTo(78, 140); x.lineTo(112, 140); x.lineTo(106, 147); x.lineTo(84, 147); x.closePath(); x.fill();
+    x.fillRect(94, 118, 2, 22);
+    x.beginPath(); x.moveTo(97, 120); x.lineTo(110, 137); x.lineTo(97, 137); x.closePath(); x.fill();
+  })();
+
+  /* ---------- ① 像素放大 ---------- */
+  const PX = [16, 32, 64, 160, 320];
+  const pxCv = $('#pxCv'), pxCtx = pxCv.getContext('2d');
+  let pxSmall = null;
+  const pxDraw = () => {
+    const w = PX[+$('#pxRes').value], h = w * 9 / 16;
+    pxSmall = shrink(SRC, w, h);
+    pxCtx.imageSmoothingEnabled = false;
+    pxCtx.drawImage(pxSmall, 0, 0, 640, 360);
+    if (w <= 64) {
+      pxCtx.strokeStyle = 'rgba(0,0,0,.35)'; pxCtx.lineWidth = 1; pxCtx.beginPath();
+      for (let i = 1; i < w; i++) { const X = Math.round(i * 640 / w) + .5; pxCtx.moveTo(X, 0); pxCtx.lineTo(X, 360); }
+      for (let j = 1; j < h; j++) { const Y = Math.round(j * 360 / h) + .5; pxCtx.moveTo(0, Y); pxCtx.lineTo(640, Y); }
+      pxCtx.stroke();
+    }
+    $('#pxInfo').innerHTML = `<b>${w} × ${h}</b> = <b>${(w * h).toLocaleString('zh-CN')}</b> 个像素`;
+  };
+  $('#pxRes').oninput = pxDraw;
+  pxCv.addEventListener('pointermove', e => {
+    if (!pxSmall) return;
+    const r = pxCv.getBoundingClientRect();
+    const px = clamp(Math.floor((e.clientX - r.left) / r.width * pxSmall.width), 0, pxSmall.width - 1);
+    const py = clamp(Math.floor((e.clientY - r.top) / r.height * pxSmall.height), 0, pxSmall.height - 1);
+    const d = pxSmall.getContext('2d').getImageData(px, py, 1, 1).data;
+    $('#pxSw').style.background = `rgb(${d[0]},${d[1]},${d[2]})`;
+    $('#pxPick').innerHTML = `第 ${px + 1} 列 · 第 ${py + 1} 行 → <b>R ${d[0]} · G ${d[1]} · B ${d[2]}</b>（${toHex(d[0], d[1], d[2])}）`;
+  });
+  pxDraw();
+
+  /* ---------- ② RGB 混色 ---------- */
+  const mix = () => {
+    const r = +$('#mixR').value, g = +$('#mixG').value, b = +$('#mixB').value;
+    $('#mixCR').setAttribute('fill', `rgb(${r},0,0)`); $('#mixCG').setAttribute('fill', `rgb(0,${g},0)`); $('#mixCB').setAttribute('fill', `rgb(0,0,${b})`);
+    $('#mixRv').textContent = r; $('#mixGv').textContent = g; $('#mixBv').textContent = b;
+    $('#mixSw').style.background = `rgb(${r},${g},${b})`;
+    $('#mixHex').textContent = toHex(r, g, b); $('#mixDec').textContent = `R=${r} · G=${g} · B=${b}`;
+  };
+  ['#mixR', '#mixG', '#mixB'].forEach(s => { $(s).oninput = mix; });
+  document.querySelectorAll('[data-mix]').forEach(b => b.addEventListener('click', () => {
+    const [r, g, bl] = b.dataset.mix.split(',');
+    $('#mixR').value = r; $('#mixG').value = g; $('#mixB').value = bl; mix();
+  }));
+  mix();
+
+  /* ---------- ③ 位深断层 ---------- */
+  const bdCv = $('#bdCv'), bdCtx = bdCv.getContext('2d');
+  const BD_STOPS = [[22, 34, 92], [96, 70, 150], [214, 104, 120], [255, 176, 96], [255, 222, 160]];
+  const bdDraw = () => {
+    const bits = +$('#bdBits').value, L = 2 ** bits;
+    const q = v => Math.round(v / 255 * (L - 1)) / (L - 1) * 255;
+    const W = bdCv.width, H = bdCv.height;
+    for (let x = 0; x < W; x++) {
+      const t = x / (W - 1) * (BD_STOPS.length - 1), i = Math.min(Math.floor(t), BD_STOPS.length - 2), f = t - i;
+      const c = [0, 1, 2].map(k => q(BD_STOPS[i][k] + (BD_STOPS[i + 1][k] - BD_STOPS[i][k]) * f));
+      bdCtx.fillStyle = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`; bdCtx.fillRect(x, 0, 1, H);
+    }
+    $('#bdInfo').innerHTML = `<b>${bits} 位</b> = 每通道 <b>${L}</b> 级 · 三通道共 <b>${(L ** 3).toLocaleString('zh-CN')}</b> 种颜色`;
+  };
+  $('#bdBits').oninput = bdDraw; bdDraw();
+
+  /* ---------- ④ 位图 vs 矢量 ---------- */
+  const VB = mk(220, 220);
+  (() => {
+    const x = VB.getContext('2d');
+    x.fillStyle = '#f3efe6'; x.fillRect(0, 0, 220, 220);
+    x.strokeStyle = '#e2463c'; x.lineWidth = 14; x.beginPath(); x.arc(110, 110, 80, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = '#14161f'; x.font = '900 92px "Bricolage Grotesque", "Noto Sans SC", sans-serif'; x.textAlign = 'center'; x.fillText('AI', 110, 142);
+  })();
+  const vbDraw = () => {
+    const z = +$('#vbZoom').value, s = 220 / z, cx = 58, cy = 60;
+    const x0 = clamp(cx - s / 2, 0, 220 - s), y0 = clamp(cy - s / 2, 0, 220 - s);
+    const c = $('#vbCv').getContext('2d');
+    c.imageSmoothingEnabled = $('#vbSmooth').checked;
+    c.clearRect(0, 0, 440, 440); c.drawImage(VB, x0, y0, s, s, 0, 0, 440, 440);
+    $('#vbSvg').setAttribute('viewBox', `${x0} ${y0} ${s} ${s}`);
+    $('#vbZv').textContent = z + '×';
+  };
+  $('#vbZoom').oninput = vbDraw; $('#vbSmooth').onchange = vbDraw;
+  vbDraw();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+    const x = VB.getContext('2d');
+    x.fillStyle = '#f3efe6'; x.fillRect(0, 0, 220, 220);
+    x.strokeStyle = '#e2463c'; x.lineWidth = 14; x.beginPath(); x.arc(110, 110, 80, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = '#14161f'; x.font = '900 92px "Bricolage Grotesque", "Noto Sans SC", sans-serif'; x.textAlign = 'center'; x.fillText('AI', 110, 142);
+    vbDraw();
+  });
+
+  /* ---------- ⑤ 三角网格球 ---------- */
+  const meshCv = $('#meshCv'), meshCtx = meshCv.getContext('2d'), meshSlide = $('#s-mesh');
+  let mesh = null, ang = 0.6;
+  const buildMesh = n => {
+    const m = n * 2, V = [], T = [];
+    for (let i = 0; i <= n; i++) { const th = i / n * Math.PI; for (let j = 0; j <= m; j++) { const ph = j / m * Math.PI * 2; V.push([Math.sin(th) * Math.cos(ph), Math.cos(th), Math.sin(th) * Math.sin(ph)]); } }
+    const id = (i, j) => i * (m + 1) + j;
+    for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) {
+      if (i !== 0) T.push([id(i, j), id(i + 1, j), id(i, j + 1)]);
+      if (i !== n - 1) T.push([id(i + 1, j), id(i + 1, j + 1), id(i, j + 1)]);
+    }
+    return { V, T };
+  };
+  const LGT = (() => { const v = [-0.45, 0.6, 0.66], l = Math.hypot(...v); return v.map(a => a / l); })();
+  const meshDraw = () => {
+    const W = meshCv.width, H = meshCv.height, S = H * 0.42, cx = W / 2, cy = H / 2;
+    const ca = Math.cos(ang), sa = Math.sin(ang), tilt = 0.35, ct = Math.cos(tilt), st = Math.sin(tilt);
+    const P = mesh.V.map(([x, y, z]) => { const x1 = x * ca + z * sa, z1 = -x * sa + z * ca; const y2 = y * ct - z1 * st, z2 = y * st + z1 * ct; return [x1, y2, z2]; });
+    meshCtx.fillStyle = '#05060a'; meshCtx.fillRect(0, 0, W, H);
+    const faces = [];
+    for (const t of mesh.T) {
+      const a = P[t[0]], b = P[t[1]], c = P[t[2]];
+      const mz = (a[2] + b[2] + c[2]) / 3; if (mz < -0.02) continue;
+      const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+      let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx; const nl = Math.hypot(nx, ny, nz) || 1;
+      nx /= nl; ny /= nl; nz /= nl;
+      const mx = (a[0] + b[0] + c[0]) / 3, my = (a[1] + b[1] + c[1]) / 3;
+      if (nx * mx + ny * my + nz * mz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      faces.push([mz, a, b, c, Math.max(0, nx * LGT[0] + ny * LGT[1] + nz * LGT[2])]);
+    }
+    faces.sort((p, q) => p[0] - q[0]);
+    const wire = mesh.T.length < 1200;
+    for (const [, a, b, c, d] of faces) {
+      const k = 0.22 + 0.78 * d;
+      meshCtx.fillStyle = `rgb(${(91 * k + 20) | 0},${(140 * k + 18) | 0},${(255 * k) | 0})`;
+      meshCtx.beginPath(); meshCtx.moveTo(cx + a[0] * S, cy - a[1] * S); meshCtx.lineTo(cx + b[0] * S, cy - b[1] * S); meshCtx.lineTo(cx + c[0] * S, cy - c[1] * S); meshCtx.closePath();
+      meshCtx.fill();
+      if (wire) { meshCtx.strokeStyle = 'rgba(255,255,255,.45)'; meshCtx.lineWidth = 1; meshCtx.stroke(); }
+    }
+  };
+  const meshSet = () => { mesh = buildMesh(+$('#meshN').value); $('#meshT').textContent = mesh.T.length.toLocaleString('zh-CN'); meshDraw(); };
+  $('#meshN').oninput = meshSet; meshSet();
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let last = 0;
+  const loop = ts => {
+    if (visible(meshSlide) && !reduceMotion) { ang += Math.min(50, ts - last) * 0.0006; meshDraw(); }
+    last = ts; requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+  /* 拖动也能转 */
+  let dragX = null;
+  meshCv.addEventListener('pointerdown', e => { dragX = e.clientX; meshCv.setPointerCapture(e.pointerId); });
+  meshCv.addEventListener('pointermove', e => { if (dragX === null) return; ang += (e.clientX - dragX) * 0.01; dragX = e.clientX; meshDraw(); });
+  meshCv.addEventListener('pointerup', () => { dragX = null; });
+
+  /* ---------- ⑥ 材质球（简化示意） ---------- */
+  const BASES = { red: [0.80, 0.06, 0.05], gold: [1.0, 0.71, 0.29], white: [0.85, 0.85, 0.85] };
+  let pbrBase = 'red';
+  const pbrCv = $('#pbrCv'), pbrCtx = pbrCv.getContext('2d');
+  const norm3 = v => { const l = Math.hypot(...v); return v.map(a => a / l); };
+  const PL = norm3([-0.55, 0.62, 0.56]), PH = norm3([PL[0], PL[1], PL[2] + 1]);
+  const env = (ry) => ry > 0 ? [0.55 + 0.25 * (1 - ry), 0.68 + 0.17 * (1 - ry), 0.95 - 0.1 * (1 - ry)].map(v => v * 1.1) : [0.16, 0.13, 0.11];
+  const pbrDraw = () => {
+    const R = +$('#pbrR').value, M = +$('#pbrM').value, base = BASES[pbrBase];
+    $('#pbrRv').textContent = R.toFixed(2); $('#pbrMv').textContent = M.toFixed(2);
+    const W = pbrCv.width, rad = W * 0.42, c0 = W / 2, img = pbrCtx.createImageData(W, W), d = img.data;
+    const a = Math.max(0.025, R * R), shin = Math.min(6000, 2 / (a * a) - 2);
+    const F0 = base.map(b => 0.04 + (b - 0.04) * M);
+    const avgEnv = [0.45, 0.48, 0.55];
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4;
+      const nx = (x + 0.5 - c0) / rad, ny = -(y + 0.5 - c0) / rad, rr = nx * nx + ny * ny;
+      if (rr > 1) { const g = 10 + 14 * (y / W); d[i] = g; d[i + 1] = g; d[i + 2] = g + 6; d[i + 3] = 255; continue; }
+      const nz = Math.sqrt(1 - rr);
+      const ndl = Math.max(0, nx * PL[0] + ny * PL[1] + nz * PL[2]), ndh = Math.max(0, nx * PH[0] + ny * PH[1] + nz * PH[2]);
+      const spec = Math.min(60, (shin + 2) / 8 * Math.pow(ndh, shin)) * ndl;
+      const ry = 2 * nz * ny;
+      const e = env(ry).map((v, k) => v + (avgEnv[k] - v) * R);
+      const fr = Math.pow(1 - nz, 5) * (1 - R) * (1 - M);
+      for (let k = 0; k < 3; k++) {
+        const diff = base[k] * (1 - M) * (ndl * 0.85 + 0.12);
+        const refl = (F0[k] + fr) * e[k] * (0.25 + 0.75 * (1 - R * 0.6));
+        let v = diff + refl + F0[k] * spec * 0.9 + (M > 0 ? 0 : 0);
+        v = v / (1 + v * 0.35);
+        d[i + k] = clamp(Math.pow(v, 1 / 2.2) * 255, 0, 255);
+      }
+      d[i + 3] = 255;
+    }
+    pbrCtx.putImageData(img, 0, 0);
+  };
+  $('#pbrR').oninput = pbrDraw; $('#pbrM').oninput = pbrDraw;
+  document.querySelectorAll('[data-base]').forEach(b => b.addEventListener('click', () => { pbrBase = b.dataset.base; pbrDraw(); }));
+  pbrDraw();
+
+  /* ---------- ⑦ 光栅化 ---------- */
+  const rsCv = $('#rsCv'), rsCtx = rsCv.getContext('2d');
+  const tri = [[0.16, 0.84], [0.48, 0.12], [0.86, 0.66]];
+  const edge = (a, b, p) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]);
+  const rsDraw = () => {
+    const W = rsCv.width, H = rsCv.height, N = +$('#rsN').value, Mr = Math.max(4, Math.round(N * H / W));
+    const cw = W / N, ch = H / Mr; let k = 0;
+    const A = tri.map(([x, y]) => [x * W, y * H]);
+    const s = Math.sign(edge(A[0], A[1], A[2])) || 1;
+    for (let j = 0; j < Mr; j++) for (let i = 0; i < N; i++) {
+      const p = [(i + 0.5) * cw, (j + 0.5) * ch];
+      const inside = s * edge(A[0], A[1], p) >= 0 && s * edge(A[1], A[2], p) >= 0 && s * edge(A[2], A[0], p) >= 0;
+      if (inside) k++;
+      rsCtx.fillStyle = inside ? '#ffc46b' : ((i + j) % 2 ? '#141826' : '#10131d');
+      rsCtx.fillRect(Math.floor(i * cw), Math.floor(j * ch), Math.ceil(cw), Math.ceil(ch));
+    }
+    if (N <= 40) {
+      rsCtx.strokeStyle = 'rgba(8,9,14,.7)'; rsCtx.lineWidth = 1; rsCtx.beginPath();
+      for (let i = 1; i < N; i++) { const X = Math.round(i * cw) + .5; rsCtx.moveTo(X, 0); rsCtx.lineTo(X, H); }
+      for (let j = 1; j < Mr; j++) { const Y = Math.round(j * ch) + .5; rsCtx.moveTo(0, Y); rsCtx.lineTo(W, Y); }
+      rsCtx.stroke();
+    }
+    rsCtx.strokeStyle = '#5b8cff'; rsCtx.lineWidth = 2.5; rsCtx.beginPath(); rsCtx.moveTo(...A[0]); rsCtx.lineTo(...A[1]); rsCtx.lineTo(...A[2]); rsCtx.closePath(); rsCtx.stroke();
+    for (const [x, y] of A) { rsCtx.fillStyle = '#eef0f6'; rsCtx.beginPath(); rsCtx.arc(x, y, 9, 0, Math.PI * 2); rsCtx.fill(); rsCtx.strokeStyle = '#08090e'; rsCtx.lineWidth = 2; rsCtx.stroke(); }
+    $('#rsInfo').innerHTML = `<b>${N} × ${Mr}</b> 格 · 涂了 <b>${k}</b> 格`;
+  };
+  let rsDrag = -1;
+  const rsPos = e => { const r = rsCv.getBoundingClientRect(); return [clamp((e.clientX - r.left) / r.width, 0, 1), clamp((e.clientY - r.top) / r.height, 0, 1)]; };
+  rsCv.addEventListener('pointerdown', e => {
+    const [x, y] = rsPos(e), r = rsCv.getBoundingClientRect();
+    let best = -1, bd = 1e9;
+    tri.forEach(([tx, ty], i) => { const dd = Math.hypot((tx - x) * r.width, (ty - y) * r.height); if (dd < bd) { bd = dd; best = i; } });
+    if (bd < 40) { rsDrag = best; rsCv.setPointerCapture(e.pointerId); }
+  });
+  rsCv.addEventListener('pointermove', e => { if (rsDrag < 0) return; tri[rsDrag] = rsPos(e); rsDraw(); });
+  rsCv.addEventListener('pointerup', () => { rsDrag = -1; });
+  $('#rsN').oninput = rsDraw; rsDraw();
+
+  /* ---------- ⑧ 扩散（课件示意）：三个“提示词”对应三类程序画出的画面，种子决定构图 ---------- */
+  const S = 96, NP = S * S;
+  const SCENES = {
+    sunset(x, r) {
+      const pal = [['#1c2a6e', '#d0607e', '#ffb35c'], ['#2a1846', '#e0605a', '#ffd27a'], ['#183a6a', '#f08a5d', '#ffe2a0']][Math.floor(r() * 3)];
+      const hz = 54 + r() * 14, sx = 14 + r() * 68, sr = 7 + r() * 7;
+      let g = x.createLinearGradient(0, 0, 0, hz); g.addColorStop(0, pal[0]); g.addColorStop(.6, pal[1]); g.addColorStop(1, pal[2]);
+      x.fillStyle = g; x.fillRect(0, 0, S, hz + 1);
+      x.fillStyle = '#fff1c1'; x.beginPath(); x.arc(sx, hz - sr * (0.2 + r() * 0.9), sr, 0, 7); x.fill();
+      if (r() < 0.65) { const left = r() < 0.5; x.fillStyle = '#3a2350'; x.beginPath(); if (left) { x.moveTo(0, hz); x.lineTo(0, hz - 14 - r() * 10); x.lineTo(20 + r() * 20, hz); } else { x.moveTo(S, hz); x.lineTo(S, hz - 14 - r() * 10); x.lineTo(S - 20 - r() * 20, hz); } x.closePath(); x.fill(); }
+      g = x.createLinearGradient(0, hz, 0, S); g.addColorStop(0, '#e08a6a'); g.addColorStop(1, '#16204a');
+      x.fillStyle = g; x.fillRect(0, hz, S, S - hz);
+      x.fillStyle = 'rgba(255,240,190,.6)';
+      for (let i = 0; i < 6; i++) { const w = sr * 2.2 - i * 2.5; if (w > 0) x.fillRect(sx - w / 2, hz + 3 + i * 4.5, w, 1.6); }
+    },
+    apple(x, r) {
+      x.fillStyle = ['#e9dcc4', '#c9dbe6', '#d8e6c8', '#f0c9b8'][Math.floor(r() * 4)]; x.fillRect(0, 0, S, S);
+      const ty = 58 + r() * 12; x.fillStyle = '#8a5a3a'; x.fillRect(0, ty, S, S - ty); x.fillStyle = '#6b4128'; x.fillRect(0, ty, S, 2);
+      const ar = 12 + r() * 8, ax = 24 + r() * 48, ay = ty - ar * 0.8;
+      x.fillStyle = 'rgba(0,0,0,.28)'; x.beginPath(); x.ellipse(ax + 4, ty + 3, ar * 1.05, ar * 0.25, 0, 0, 7); x.fill();
+      const g = x.createRadialGradient(ax - ar * 0.35, ay - ar * 0.4, 1, ax, ay, ar * 1.1); g.addColorStop(0, '#ff8a76'); g.addColorStop(.45, '#d01f2c'); g.addColorStop(1, '#6e0c18');
+      x.fillStyle = g; x.beginPath(); x.arc(ax - ar * 0.32, ay, ar * 0.8, 0, 7); x.arc(ax + ar * 0.32, ay, ar * 0.8, 0, 7); x.fill();
+      x.strokeStyle = '#4a2c14'; x.lineWidth = 2; x.beginPath(); x.moveTo(ax, ay - ar * 0.6); x.lineTo(ax + 2, ay - ar * 1.05); x.stroke();
+      x.fillStyle = '#3f9a3a'; x.beginPath(); x.ellipse(ax + 6, ay - ar * 0.95, 5, 2.4, -0.5, 0, 7); x.fill();
+      if (r() < 0.5) { const bx = ax > 48 ? 14 + r() * 10 : 70 + r() * 10; x.fillStyle = '#f4f4f0'; x.fillRect(bx, ty - 16, 12, 16); x.fillStyle = '#c9c9c4'; x.fillRect(bx, ty - 16, 12, 2); }
+    },
+    house(x, r) {
+      const sky = [['#7fb2e8', '#d9ecff'], ['#2a3566', '#e9a07a'], ['#141a38', '#4c5a8c']][Math.floor(r() * 3)];
+      let g = x.createLinearGradient(0, 0, 0, 70); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); x.fillStyle = g; x.fillRect(0, 0, S, S);
+      const gy = 60 + r() * 10;
+      x.fillStyle = '#9fb0c8'; x.beginPath(); x.moveTo(0, gy); x.lineTo(20 + r() * 30, gy - 22 - r() * 12); x.lineTo(60 + r() * 36, gy); x.closePath(); x.fill();
+      g = x.createLinearGradient(0, gy, 0, S); g.addColorStop(0, '#eef3fa'); g.addColorStop(1, '#c8d4e6'); x.fillStyle = g; x.fillRect(0, gy, S, S - gy);
+      const w = 26 + r() * 10, h = 15 + r() * 6, hx = 10 + r() * (S - w - 20), hy = gy - h + 4;
+      x.fillStyle = '#7a4a2e'; x.fillRect(hx, hy, w, h);
+      x.fillStyle = ['#a8322c', '#2e4f8a', '#3c6b3a'][Math.floor(r() * 3)]; x.beginPath(); x.moveTo(hx - 4, hy); x.lineTo(hx + w / 2, hy - h * 0.8); x.lineTo(hx + w + 4, hy); x.closePath(); x.fill();
+      x.fillStyle = '#f4f8ff'; x.beginPath(); x.moveTo(hx - 4, hy); x.lineTo(hx + w / 2, hy - h * 0.8); x.lineTo(hx + w + 4, hy); x.lineTo(hx + w / 2, hy - h * 0.55); x.closePath(); x.fill();
+      x.fillStyle = '#ffd36b'; x.fillRect(hx + w * 0.18, hy + h * 0.3, w * 0.22, h * 0.32); x.fillStyle = '#3a2416'; x.fillRect(hx + w * 0.6, hy + h * 0.35, w * 0.2, h * 0.65);
+      const nt = 1 + Math.floor(r() * 3);
+      for (let i = 0; i < nt; i++) {
+        let tx = r() * S; if (tx > hx - 8 && tx < hx + w + 8) tx = (tx + w + 20) % S;
+        const th = 14 + r() * 12, ty = gy + 4 + r() * 8;
+        x.fillStyle = '#24452f'; x.beginPath(); x.moveTo(tx, ty - th); x.lineTo(tx - th * 0.38, ty); x.lineTo(tx + th * 0.38, ty); x.closePath(); x.fill();
+        x.fillStyle = '#f4f8ff'; x.beginPath(); x.moveTo(tx, ty - th); x.lineTo(tx - th * 0.13, ty - th * 0.66); x.lineTo(tx + th * 0.13, ty - th * 0.66); x.closePath(); x.fill();
+      }
+    },
+  };
+  const baseCache = new Map(), tCache = new Map();
+  const sceneCanvas = (p, seed) => {
+    const k = p + '|' + seed; if (baseCache.has(k)) return baseCache.get(k);
+    if (baseCache.size > 40) baseCache.clear();
+    const c = mk(S, S); SCENES[p](c.getContext('2d'), rng(seed * 2654435761 + p.length * 97)); baseCache.set(k, c); return c;
+  };
+  /* res = 模型此刻能“看清”的细节程度：噪声越大，只能预测出越模糊的大轮廓 */
+  const target = (p, seed, res) => {
+    const k = p + '|' + seed + '|' + res; if (tCache.has(k)) return tCache.get(k);
+    if (tCache.size > 300) tCache.clear();
+    let c = sceneCanvas(p, seed);
+    if (res < S) { const sm = shrink(c, res, res), up = mk(S, S), ux = up.getContext('2d'); ux.imageSmoothingEnabled = true; ux.imageSmoothingQuality = 'high'; ux.drawImage(sm, 0, 0, S, S); c = up; }
+    const d = c.getContext('2d').getImageData(0, 0, S, S).data, a = new Float32Array(NP * 3);
+    for (let i = 0; i < NP; i++) for (let j = 0; j < 3; j++) a[i * 3 + j] = d[i * 4 + j] / 127.5 - 1;
+    tCache.set(k, a); return a;
+  };
+  const UNC = (() => { const a = new Float32Array(NP * 3); for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const t = y / S, i = (y * S + x) * 3; a[i] = 0.12 - 0.3 * t; a[i + 1] = 0.14 - 0.36 * t; a[i + 2] = 0.22 - 0.48 * t; } return a; })();
+  const noise = seed => { const r = rng(seed * 7919 + 13), a = new Float32Array(NP * 3); for (let i = 0; i < a.length; i += 2) { const u = Math.max(1e-9, r()), v = r(), m = Math.sqrt(-2 * Math.log(u)); a[i] = m * Math.cos(6.2832 * v); if (i + 1 < a.length) a[i + 1] = m * Math.sin(6.2832 * v); } return a; };
+  const abar = t => { const c = Math.cos((t + 0.008) / 1.008 * Math.PI / 2); return Math.max(1e-6, c * c); };
+  const paint = (cv, arr) => {
+    const ctx = cv.getContext('2d'), img = ctx.createImageData(S, S), d = img.data;
+    for (let i = 0; i < NP; i++) { d[i * 4] = clamp((arr[i * 3] + 1) * 127.5, 0, 255); d[i * 4 + 1] = clamp((arr[i * 3 + 1] + 1) * 127.5, 0, 255); d[i * 4 + 2] = clamp((arr[i * 3 + 2] + 1) * 127.5, 0, 255); d[i * 4 + 3] = 255; }
+    ctx.putImageData(img, 0, 0);
+  };
+  /* 逐步去噪（DDIM 式更新）：每一步先“预测干净的图”，再按引导强度向提示词方向外推 */
+  const generate = (p, seed, steps, cfg, onStep) => {
+    const x = noise(seed), kk = cfg / 7, x0s = new Float32Array(x.length);
+    for (let i = 0; i < steps; i++) {
+      const t = 1 - i / steps, tn = 1 - (i + 1) / steps, a = abar(t), an = tn <= 0 ? 0.9999 : abar(tn);
+      const res = clamp(Math.round(3 * Math.pow(32, Math.pow(Math.sqrt(a), 4))), 3, S);
+      const cond = target(p, seed, res), sa = Math.sqrt(a), sb = Math.sqrt(1 - a), san = Math.sqrt(an), sbn = Math.sqrt(1 - an);
+      for (let j = 0; j < x.length; j++) { const x0 = UNC[j] + kk * (cond[j] - UNC[j]); x0s[j] = x0; const eps = (x[j] - sa * x0) / sb; x[j] = san * x0 + sbn * eps; }
+      if (onStep) onStep(i + 1, x, x0s);
+    }
+    return x;
+  };
+  const filmBox = (el, labels) => { el.innerHTML = labels.map(l => `<figure><canvas width="${S}" height="${S}"></canvas><figcaption>${l}</figcaption></figure>`).join(''); return [...el.querySelectorAll('canvas')]; };
+
+  /* 前向加噪 */
+  const FW_SEED = 7, fwN = noise(FW_SEED + 1000);
+  const fwAt = t => { const x0 = target('sunset', FW_SEED, S), a = abar(t), sa = Math.sqrt(a), sb = Math.sqrt(1 - a), o = new Float32Array(x0.length); for (let j = 0; j < o.length; j++) o[j] = t === 0 ? x0[j] : sa * x0[j] + sb * fwN[j]; return o; };
+  const fwDraw = () => { const v = +$('#fwT').value; $('#fwTv').textContent = v + '%'; paint($('#fwCv'), fwAt(v / 100)); };
+  $('#fwT').oninput = fwDraw; fwDraw();
+  filmBox($('#fwFilm'), ['0%', '25%', '50%', '75%', '100%']).forEach((c, i) => paint(c, fwAt(i / 4)));
+
+  /* 去噪播放 */
+  const DF_MARK = [1, 5, 10, 20, 30];
+  const dfFilm = filmBox($('#dfFilm'), DF_MARK.map(n => `第 ${n} 步`));
+  let dfTimer = null, dfSeed = 42, dfFrames = [], dfN = 0;
+  const dfPick = f => f[$('#dfView').value];
+  const dfPaintAll = () => {
+    if (dfN === 0) paint($('#dfCv'), noise(dfSeed)); else paint($('#dfCv'), dfPick(dfFrames[dfN - 1]));
+    DF_MARK.forEach((n, i) => paint(dfFilm[i], n <= dfN ? dfPick(dfFrames[n - 1]) : new Float32Array(NP * 3).fill(-0.85)));
+  };
+  const dfReset = () => { clearInterval(dfTimer); dfTimer = null; dfFrames = []; dfN = 0; $('#dfStep').textContent = 0; dfPaintAll(); };
+  $('#dfPlay').onclick = () => {
+    dfReset();
+    generate($('#dfP').value, dfSeed, 30, 7, (n, x, x0) => dfFrames.push({ x: x.slice(), x0: x0.slice() }));
+    dfTimer = setInterval(() => {
+      dfN++; $('#dfStep').textContent = dfN;
+      paint($('#dfCv'), dfPick(dfFrames[dfN - 1]));
+      const m = DF_MARK.indexOf(dfN); if (m >= 0) paint(dfFilm[m], dfPick(dfFrames[dfN - 1]));
+      if (dfN >= dfFrames.length) { clearInterval(dfTimer); dfTimer = null; }
+    }, reduceMotion ? 0 : 110);
+  };
+  $('#dfView').onchange = dfPaintAll;
+  $('#dfP').onchange = dfReset; dfReset();
+
+  /* 三个参数 */
+  const gpUpd = () => { $('#gpStepsV').textContent = $('#gpSteps').value; $('#gpCfgV').textContent = (+$('#gpCfg').value).toString(); };
+  const PNAME = { sunset: '日落', apple: '苹果', house: '小屋' };
+  const gpGo = () => {
+    const p = $('#gpP').value, seed = clamp(parseInt($('#gpSeed').value, 10) || 0, 0, 99999), st = +$('#gpSteps').value, cfg = +$('#gpCfg').value;
+    $('#gpSeed').value = seed;
+    const x = generate(p, seed, st, cfg); paint($('#gpCv'), x);
+    const hist = $('#gpHist');
+    hist.insertAdjacentHTML('afterbegin', `<figure><canvas width="${S}" height="${S}"></canvas><figcaption>${PNAME[p]} · 种子 ${seed}<br>${st} 步 · 引导 ${cfg}</figcaption></figure>`);
+    paint(hist.querySelector('canvas'), x);
+    while (hist.children.length > 3) hist.lastElementChild.remove();
+  };
+  $('#gpSteps').oninput = gpUpd; $('#gpCfg').oninput = gpUpd;
+  $('#gpGo').onclick = gpGo;
+  $('#gpDice').onclick = () => { $('#gpSeed').value = Math.floor(Math.random() * 100000); gpGo(); };
+  $('#gpClear').onclick = () => { $('#gpHist').innerHTML = ''; };
+  gpUpd(); paint($('#gpCv'), generate('sunset', 42, 30, 7));
+
+  /* ---------- 任务 1：RGB / 像素实验页 ---------- */
+  const t1Cv = $('#t1Cv'), t1Ctx = t1Cv.getContext('2d');
+  let picked = null;
+  const t1Show = img => {
+    const W = t1Cv.width, H = t1Cv.height, k = Math.min(W / img.width, H / img.height), w = img.width * k, h = img.height * k;
+    t1Ctx.fillStyle = '#05060a'; t1Ctx.fillRect(0, 0, W, H); t1Ctx.imageSmoothingEnabled = true; t1Ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+  };
+  t1Show(SRC);
+  $('#t1Load').onclick = () => $('#t1File').click();
+  $('#t1File').addEventListener('change', () => {
+    const f = $('#t1File').files[0]; if (!f) return;
+    const url = URL.createObjectURL(f), im = new Image();
+    im.onload = () => { t1Show(im); URL.revokeObjectURL(url); }; im.onerror = () => window.deckToast('这个文件打不开，换一张 JPG 或 PNG'); im.src = url;
+    $('#t1File').value = '';
+  });
+  t1Cv.addEventListener('click', e => {
+    const r = t1Cv.getBoundingClientRect();
+    const x = clamp(Math.floor((e.clientX - r.left) / r.width * t1Cv.width), 1, t1Cv.width - 2), y = clamp(Math.floor((e.clientY - r.top) / r.height * t1Cv.height), 1, t1Cv.height - 2);
+    const d = t1Ctx.getImageData(x - 1, y - 1, 3, 3).data; let s = [0, 0, 0];
+    for (let i = 0; i < 9; i++) for (let k = 0; k < 3; k++) s[k] += d[i * 4 + k];
+    picked = s.map(v => Math.round(v / 9));
+    $('#t1Pk').style.background = `rgb(${picked})`; $('#t1PkHex').textContent = `${toHex(...picked)}（${picked.join(', ')}）`;
+  });
+  const t1Upd = () => {
+    const c = ['#t1R', '#t1G', '#t1B'].map(s => +$(s).value);
+    $('#t1Rv').textContent = c[0]; $('#t1Gv').textContent = c[1]; $('#t1Bv').textContent = c[2];
+    $('#t1Sw').style.background = `rgb(${c})`; $('#t1Hex').textContent = toHex(...c);
+    return c;
+  };
+  ['#t1R', '#t1G', '#t1B'].forEach(s => { $(s).oninput = t1Upd; });
+  t1Upd();
+  document.querySelectorAll('[data-rec]').forEach(b => b.addEventListener('click', () => {
+    const c = t1Upd(), name = b.dataset.rec, tb = $('#t1Tab');
+    const old = [...tb.children].find(tr => tr.dataset.k === name); if (old) old.remove();
+    const pk = picked ? `<i style="background:rgb(${picked})"></i>${toHex(...picked)}` : '<span class="small">点照片读取</span>';
+    tb.insertAdjacentHTML('beforeend', `<tr data-k="${name}"><td>${name}</td><td class="mono"><i style="background:rgb(${c})"></i>${c.join(', ')} · ${toHex(...c)}</td><td class="mono">${pk}</td></tr>`);
+  }));
+})();
+</script>
+</body>

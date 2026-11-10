@@ -1,0 +1,574 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 12 课 · 结课影展与项目复盘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：影展流程、评审权重、影展计时器、基线对比、复盘四步、作品集版式、颁奖 */
+.flow3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .flow3 { grid-template-columns: 1.5fr 5fr 3fr; } }
+.flow3 > div { padding: 12px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); min-width: 0; }
+.flow3 .k { font-family: var(--mono); font-size: 12px; color: var(--c); letter-spacing: .1em; }
+.flow3 b { display: block; font-family: var(--display); font-size: clamp(17px, 1.6vw, 21px); margin: 2px 0 4px; }
+.flow3 p, .flow3 li { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+.flow3 ol { margin: 0; padding-left: 1.3em; }
+.roles3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .roles3 { grid-template-columns: repeat(3, 1fr); } }
+
+.weights { display: flex; flex-direction: column; gap: 6px; }
+.weights .grp { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--c); margin-top: 4px; }
+.wrow { display: grid; grid-template-columns: 8.5em 1fr 3em; gap: 10px; align-items: center; font-size: 14px; }
+.wrow .n { font-weight: 700; }
+.wrow .t { height: 16px; border-radius: 5px; background: var(--panel2); overflow: hidden; }
+.wrow .t i { display: block; height: 100%; background: var(--c); border-radius: 5px; opacity: .85; }
+.wrow .p { font-family: var(--mono); font-size: 13px; color: var(--fg); text-align: right; }
+.wrow small { grid-column: 2 / 4; font-size: 12px; color: var(--muted); margin-top: -4px; }
+.levels { display: flex; flex-direction: column; gap: 6px; }
+.levels div { display: grid; grid-template-columns: 4.2em 1fr; gap: 10px; padding: 7px 10px; border-radius: 9px; background: var(--panel2); font-size: 13px; color: var(--muted); line-height: 1.5; border-left: 3px solid var(--c); }
+.levels div b { color: var(--c); font-family: var(--display); font-size: 15px; }
+
+.fb-formula { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+@media (min-width: 900px) { .fb-formula { grid-template-columns: repeat(4, 1fr); } }
+.fb-formula span { padding: 8px 10px; border-radius: 9px; background: #05060a; border: 1px solid var(--line); border-top: 3px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.45; }
+.fb-formula span b { display: block; color: var(--fg); font-size: 15px; }
+.fb-ex { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.fb-ex span { padding: 7px 10px; border-radius: 8px; background: var(--panel2); color: var(--muted); }
+.fb-ex span.ok { color: var(--fg); background: rgba(63,224,160,.09); border-left: 3px solid var(--g); }
+.fb-ex span.x { color: var(--r); background: rgba(255,84,104,.08); border-left: 3px solid var(--r); }
+
+/* 影展计时器 */
+.fest .grpbar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.fest .grpbar button { min-width: 3.4em; padding: 5px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel2); font-family: var(--mono); font-weight: 700; font-size: 13px; cursor: pointer; }
+.fest .grpbar button.done { color: var(--muted); text-decoration: line-through; }
+.fest .grpbar button.now { background: var(--warm); color: #1a1408; border-color: var(--warm); }
+.fest select { border-radius: 8px; border: 1px solid var(--line); background: #05060a; padding: 4px 8px; font-size: 13px; }
+.phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+@media (min-width: 900px) { .phases { grid-template-columns: 1.5fr 5fr 3fr; } }
+.phases div { padding: 7px 10px; border-radius: 9px; background: var(--panel2); font-size: 13px; color: var(--muted); border: 1px solid transparent; min-width: 0; }
+.phases div b { display: block; color: var(--fg); font-size: 15px; font-family: var(--display); }
+.phases div.on { border-color: var(--warm); background: rgba(255,196,107,.12); }
+.phases div.on b { color: var(--warm); }
+.phases div.past { opacity: .5; }
+.bigclock { font-family: var(--mono); font-weight: 600; font-size: clamp(56px, 8vw, 120px); line-height: 1; text-align: center; letter-spacing: .02em; font-variant-numeric: tabular-nums; padding: 8px 0 2px; }
+.bigclock.over { color: var(--r); }
+.bigclock.paused { opacity: .55; }
+.fxbar { height: 10px; border-radius: 5px; background: var(--panel2); overflow: hidden; }
+.fxbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--g), var(--warm)); transition: width .9s linear; }
+.fxbar.over i { background: var(--r); }
+.fest .info { font-size: 14px; color: var(--muted); text-align: center; min-height: 1.5em; }
+.fest .info b { color: var(--fg); }
+
+/* 基线 vs 结课：并排 / 叠放 */
+.cmp-stage { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .cmp-stage { grid-template-columns: 1fr 1fr; } }
+.cmp-stage > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cmp-tag { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--muted); }
+.cmp-b .cmp-tag { color: var(--warm); }
+.cmp-stage.wipe { display: block; position: relative; height: min(56vh, 56vw); border-radius: 14px; overflow: hidden; }
+.cmp-stage.wipe > div { position: absolute; inset: 0; }
+.cmp-stage.wipe .slot { height: 100%; aspect-ratio: auto; border-radius: 0; }
+.cmp-stage.wipe .cmp-b { clip-path: inset(0 0 0 var(--pos, 50%)); }
+.cmp-stage.wipe .cmp-tag { position: absolute; bottom: 10px; z-index: 3; padding: 3px 8px; border-radius: 6px; background: rgba(0,0,0,.65); color: #fff; }
+.cmp-stage.wipe .cmp-a .cmp-tag { left: 10px; }
+.cmp-stage.wipe .cmp-b .cmp-tag { right: 10px; color: var(--warm); }
+.cmp-stage .divider { display: none; }
+.cmp-stage.wipe .divider { display: block; position: absolute; top: 0; bottom: 0; left: var(--pos, 50%); width: 3px; margin-left: -1.5px; background: var(--warm); z-index: 4; pointer-events: none; box-shadow: 0 0 10px rgba(0,0,0,.6); }
+#cmpPos { flex: 1; min-width: 0; accent-color: var(--warm); }
+.cmp-ctrl { flex: 1; display: flex; gap: 10px; align-items: center; min-width: 200px; }
+.cmp-ctrl[hidden] { display: none; }
+
+/* 复盘四步 */
+.aar4 { display: flex; flex-direction: column; gap: 8px; }
+.aar4 > div { display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 9px 12px; border-radius: 11px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--c); }
+.aar4 .no { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--c); color: #0b0d14; font-family: var(--mono); font-weight: 700; font-size: 14px; }
+.aar4 b { font-family: var(--display); font-size: 16.5px; }
+.aar4 p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.aar4 p em { font-style: normal; color: var(--fg); }
+.cause4 { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.cause4 span { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--panel2); color: var(--muted); }
+.cause4 span b { color: var(--warm); font-size: 12px; font-family: var(--body); }
+
+/* 人与 AI 四问 */
+.who4 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .who4 { grid-template-columns: 1fr 1fr; } }
+.who4 div { padding: 10px 12px; border-radius: 11px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); }
+.who4 b { display: block; font-family: var(--display); font-size: 16px; color: var(--c); }
+.who4 p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+
+/* 作品集一页示意 */
+.pf { border-radius: 14px; background: #f3f1ea; color: #1c1d22; padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; line-height: 1.45; }
+.pf > div { border-radius: 8px; background: #fff; border: 1px solid #ddd8cc; padding: 8px 10px; min-width: 0; }
+.pf .hd { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; background: transparent; border: 0; padding: 0 2px 4px; border-bottom: 2px solid #1c1d22; border-radius: 0; }
+.pf .hd b { font-family: var(--display); font-size: 18px; }
+.pf .hd span { font-family: var(--mono); font-size: 11px; color: #6b6a63; }
+.pf .k { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: #b2541f; margin-bottom: 3px; }
+.pf .full { grid-column: 1 / -1; }
+.pf .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pf .pair i { display: block; aspect-ratio: 16 / 9; border-radius: 5px; background: repeating-linear-gradient(135deg, #e4e0d4 0 8px, #ece8de 8px 16px); font-style: normal; font-size: 11px; color: #6b6a63; display: grid; place-items: center; }
+.pf .lines i { display: block; height: 6px; border-radius: 3px; background: #e2ded2; margin-top: 5px; }
+.pf .lines i:nth-child(odd) { width: 86%; }
+
+/* 300 字骨架 */
+.tpl { display: flex; flex-direction: column; gap: 6px; }
+.tpl div { padding: 7px 10px; border-radius: 9px; background: #05060a; border: 1px solid var(--line); border-left: 3px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.tpl div b { color: var(--c); font-size: 13px; margin-right: 4px; }
+.tpl div i { font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--muted); float: right; }
+
+/* 颁奖 */
+.awards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .awards { grid-template-columns: repeat(3, 1fr); } }
+.award { padding: 16px 18px; border-radius: 14px; background: linear-gradient(160deg, rgba(255,196,107,.12), var(--panel) 55%); border: 1px solid rgba(255,196,107,.35); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.award .k { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--warm); }
+.award b { font-family: var(--display); font-size: clamp(18px, 1.7vw, 22px); }
+.award input { width: 100%; border-radius: 10px; border: 1px dashed rgba(255,196,107,.5); background: #05060a; padding: 8px 10px; font-family: var(--display); font-weight: 800; font-size: clamp(18px, 1.8vw, 24px); color: var(--warm); }
+.award p { font-size: 13px; color: var(--muted); }
+.checks { display: flex; flex-wrap: wrap; gap: 6px; }
+.checks span { padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(63,224,160,.35); background: rgba(63,224,160,.08); font-size: 13px; }
+.checks span::before { content: "✓ "; color: var(--g); font-weight: 700; }
+
+/* 投影仪常见的 1280×720：压缩 */
+@media (max-height: 800px) {
+  .bigclock { font-size: clamp(48px, 6.5vw, 92px); padding: 2px 0; }
+  .card { padding: 12px 14px; gap: 6px; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.55; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .aar4 > div { padding: 6px 10px; }
+  .aar4 p { font-size: 12.5px; }
+  .flow3 > div { padding: 9px 12px; }
+  .pf { padding: 10px; gap: 6px; }
+  .pf .pair i { aspect-ratio: 16 / 7; }
+  .cmp-stage .slot { aspect-ratio: 16 / 8; }
+  .cmp-stage.wipe { height: min(50vh, 56vw); }
+  .levels div { padding: 5px 9px; }
+  .who4 div { padding: 7px 10px; }
+  .tpl div { padding: 5px 9px; }
+  .inner { gap: 16px; }
+}
+</style>
+
+<body data-lesson="L12">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="这是最后一课，开场要有仪式感，但别讲长。灯光调暗，开口：“十二周前，第 1 课，你们每个人凭直觉写下第一句提示词：放学后的教室。那时候我们还在问 AI：它到底学到了什么？今天灯暗下来，放你们自己的片子。”然后把三个问题念一遍：今天每个人既是作者，也是观众，还是自己的复盘者。告诉大家流程：前 60 分钟是影展，后 25 分钟复盘和整理作品集，最后 5 分钟颁奖。马上进入下一页讲规则。">
+  <div class="lesson-no" aria-hidden="true">12</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第三幕 · 完成与展示</span><span>LESSON 12 / 12</span><span>90 MIN</span><span>关卡 4</span></div>
+    <h1 class="h-xl">结课影展<br><span class="rgbword">与项目复盘</span></h1>
+    <p class="lead">十二周前，你写下的第一句提示词是“放学后的教室”。今天灯暗下来，<b>放你们自己的片子</b>；放完之后，把这一路<b>做过的判断</b>整理清楚。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>怎样给别人的作品一条“有用”的反馈？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>复盘四步是什么？差距从哪里来？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>这个项目里，哪些是我的判断，哪些靠了 AI？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–45</b>影展 · 放映与路演</span>
+      <span><b>45–60</b>Skill 体验位与衍生作品展</span>
+      <span><b>60–70</b>复盘的方法</span>
+      <span><b>70–85</b>实操 · 个人复盘与作品集</span>
+      <span><b>85–90</b>颁奖与结课</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 影展怎么进行 ============ -->
+<section class="slide" data-min="1" data-note="1 分钟讲清规则。放映顺序课前抽签，写在下一页计时器上。每组 9 分半：先放定剪版，约 1 分半；然后 5 分钟路演，就是第 11 课练过的六段结构：logline、放映已经放过了就直接讲关键判断的前后对比、一次失败与修改、人机分工、观众反馈带来的改变，每位组员都要开口；最后 3 分钟问答。提醒展示组：回答追问时先复述问题再答，不知道就承认，并说下一步怎么做，这是第 11 课的方法。再讲三种身份：评审是老师、带班老师和受邀嘉宾，用评审表打分；观众是其他组同学，每看完一组写一张反馈便签，并且全场至少有一个人问“哪里是人的判断”；下一组在上一组问答时就去拷贝文件、试音量。如果班级是 5 到 6 组，计时器上可以切换组数，路演和问答会相应缩短，保证 45 分钟内放完。">
+  <div class="inner">
+    <div class="tc"><span class="ch">影展 · 45 MIN</span><span>规则</span></div>
+    <h2 class="h-l">每组 9 分半：放映、路演、问答</h2>
+    <div class="flow3">
+      <div style="--c:var(--b)"><span class="k">① 放映 · 约 1.5 分钟</span><b>定剪版，全屏</b><p>文件 <span class="code">G组号_定剪</span>，1080p，放映前试好音量。</p></div>
+      <div style="--c:var(--warm)"><span class="k">② 路演 · 5 分钟（第 11 课的结构）</span><b>每位组员都要讲</b>
+        <ol><li>一句话故事 · 一个关键判断的前后对比</li><li>一次失败与修改 · 人机分工</li><li>观众反馈带来的改变</li></ol></div>
+      <div style="--c:var(--g)"><span class="k">③ 问答 · 3 分钟</span><b>先复述问题，再回答</b><p>不知道就承认，并说明下一步会怎样做。</p></div>
+    </div>
+    <div class="roles3">
+      <div class="card idea"><span class="tag">评审</span><p>教师、带班老师、受邀嘉宾，<b>用评审表逐组记录</b>。</p></div>
+      <div class="card idea"><span class="tag">观众</span><p>每看完一组，写<b>一张反馈便签</b>（格式见后页）；全场至少有人问一次：<b>哪里是人的判断？</b></p></div>
+      <div class="card idea"><span class="tag">候场组</span><p>上一组问答时，<b>拷贝文件、试音量</b>，保证无缝衔接。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 评审看什么 ============ -->
+<section class="slide" data-min="1.5" data-note="把评价方案公开给学生，让他们知道今天被看什么，也知道自己的分数从哪里来。左边是总评结构：小组 60%，其中短片的叙事与视听表达 30%，过程档案 15%，展示与协作 15%；个人 40%，其中实际贡献 15%，个人 Skill 15%，个人反思 10%。指给学生看：今天的放映对应 30%，路演和问答对应展示与协作，后面的 Skill 体验位对应个人 Skill，最后写的 300 字反思就是那 10%。右边念一遍“叙事与视听表达”的四级描述，重点讲“优秀”的第一条：观众能准确复述故事。这和第 11 课的复述测试是同一个标准：不是作者说清楚了，而是观众看懂了。其余维度的四级描述在课程包的评分量表里，评审手上有完整版。时间紧，1 分半讲完。">
+  <div class="inner">
+    <div class="tc"><span class="ch">影展 · 评审</span><span>评价方案</span></div>
+    <h2 class="h-l">评审看什么：小组 60% + 个人 40%</h2>
+    <div class="g2">
+      <div class="card"><span class="tag" style="color:var(--b)">总评结构 · 主要证据</span>
+        <div class="weights">
+          <span class="grp" style="--c:var(--warm)">小组 60%</span>
+          <div class="wrow" style="--c:var(--warm)"><span class="n">叙事与视听表达</span><span class="t"><i style="width:100%"></i></span><span class="p">30%</span><small>定剪版：今天的放映</small></div>
+          <div class="wrow" style="--c:var(--warm)"><span class="n">过程档案</span><span class="t"><i style="width:50%"></i></span><span class="p">15%</span><small>创作圣经、生产日志、关卡记录</small></div>
+          <div class="wrow" style="--c:var(--warm)"><span class="n">展示与协作</span><span class="t"><i style="width:50%"></i></span><span class="p">15%</span><small>今天的路演、问答，以及互评</small></div>
+          <span class="grp" style="--c:var(--g)">个人 40%</span>
+          <div class="wrow" style="--c:var(--g)"><span class="n">实际贡献</span><span class="t"><i style="width:50%"></i></span><span class="p">15%</span><small>贡献说明、日志署名，能当面解释</small></div>
+          <div class="wrow" style="--c:var(--g)"><span class="n">个人 Skill</span><span class="t"><i style="width:50%"></i></span><span class="p">15%</span><small>Skill、测试表、一周使用记录</small></div>
+          <div class="wrow" style="--c:var(--g)"><span class="n">个人反思</span><span class="t"><i style="width:33.3%"></i></span><span class="p">10%</span><small>今天写的 300 字反思</small></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card"><span class="tag" style="color:var(--warm)">四级描述 · 以“叙事与视听表达”为例</span>
+          <div class="levels">
+            <div style="--c:var(--g)"><b>优秀</b><span>观众能<b style="color:var(--fg)">准确复述故事</b>；至少一处镜头或声音带来明确情绪效果；风格与角色全片稳定</span></div>
+            <div style="--c:var(--b)"><b>良好</b><span>故事基本清楚；镜头与声音整体服务叙事，个别镜头游离</span></div>
+            <div style="--c:var(--warm)"><b>合格</b><span>主线可理解但需要作者解释；视听元素多为堆叠</span></div>
+            <div style="--c:var(--r)"><b>待提高</b><span>观众无法复述主线；画面与声音缺乏组织</span></div>
+          </div>
+        </div>
+        <p class="small">其余维度的四级描述见课程包评分量表，评审手上有完整版。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 怎样给反馈：皮克斯智囊团 ============ -->
+<section class="slide" data-min="2" data-note="开放映前 2 分钟，教全班怎么当一个好观众。按 → 分两步。第一步讲皮克斯的“智囊团”（Braintrust）：皮克斯联合创始人艾德·卡特姆在 2014 年的书《创新公司》里写过，皮克斯有一群资深导演和编剧，每隔几个月一起看还没做完的片子，坦率地说哪里不行。卡特姆说过一句很出名的话：皮克斯的每一部电影，一开始都很烂。智囊团有两条规矩：第一，意见没有决定权，改不改、怎么改，由导演自己决定；第二，对片子不对人。所以大家敢说真话，导演也听得进去。第二步讲我们的反馈格式：时间点、看到或听到了什么、我的感受或哪里没看懂、一个问题。读一遍好例子和坏例子。回扣第 11 课：“我在第 20 秒没看懂”是事实，“换首歌”是意见，事实对作者更有用。打比方：好医生不会只说“你身体不好”，而是指出哪里疼、什么时候疼。落点：今天每张便签都要有时间点。课前核实：《创新公司》中文版书名与书中对智囊团规则的表述，可引用中文版原句。">
+  <div class="inner">
+    <div class="tc"><span class="ch">影展 · 当一个好观众</span><span>反馈的方法</span></div>
+    <h2 class="h-l">好反馈，要指得出“哪一秒”</h2>
+    <div class="g2 wide-r">
+      <div class="step">
+        <div class="card story"><span class="tag">故事 · 皮克斯“智囊团”</span>
+          <b>“每一部电影，一开始都很烂”</b>
+          <p>皮克斯的资深导演和编剧定期一起看<b>还没做完的片子</b>，坦率指出问题。两条规矩：</p>
+          <ul><li><b>意见没有决定权</b>：改不改、怎么改，导演自己定</li><li><b>对片子，不对人</b></li></ul>
+          <p class="src">来源：艾德·卡特姆《创新公司》（Creativity, Inc.），2014</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="fb-formula">
+          <span style="--c:var(--b)"><b>① 时间点</b>第几秒、哪个镜头</span>
+          <span style="--c:var(--warm)"><b>② 看到 / 听到</b>具体的画面或声音</span>
+          <span style="--c:var(--g)"><b>③ 感受</b>被打动了，或没看懂</span>
+          <span style="--c:var(--r)"><b>④ 一个问题</b>问作者，而不是替他改</span>
+        </div>
+        <div class="fb-ex">
+          <span class="ok">✓ “第 20 秒她回头那一下，我没看懂她为什么哭，是因为那封信吗？”</span>
+          <span class="x">✗ “挺好的。”（没有信息）</span>
+          <span class="x">✗ “音乐不好听，换一首。”（是意见，不是事实）</span>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span><p>好医生不会只说“你身体不好”，而是指出<b>哪里疼、什么时候疼</b>。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 放映与路演：计时器 ============ -->
+<section class="slide practice" id="s-fest" data-min="40" data-note="影展主体，40 分钟，4 组每组 9 分半，留 2 分钟换场余量。老师操作计时器：先在组数里选实际组数，组名按抽签顺序；点“开始”进入放映，放完点“下一环节”进入路演，再进入问答，问答结束点“下一组”。超时后数字变红并继续计时，不会自动跳转，老师用手势提醒展示组收尾。每组结束后带头鼓掌，给评审 30 秒写完评审表，观众写完反馈便签再开始下一组。主持要点：1. 问答时如果没人提问，老师先问一个：哪一个镜头是你们争论最久的？最后为什么这样定？2. 至少有一次追问“哪里是人的判断、哪里是 AI 生成的”。3. 如果有学生的反馈只有“挺好的”，当场请他补一个时间点。降级方案：投影或音响故障时，用教师电脑加便携音箱；某组文件打不开，先换下一组，最后补放；网络断了不影响，定剪版提前拷到本地。5 到 6 组时，计时器自动把路演和问答缩短。">
+  <div class="inner">
+    <div class="tc"><span class="ch">影展 · 放映与路演</span><span class="timechip">40 分钟</span><span>工具：投影 + 音响 + 定剪版（本地） + 评审表 + 反馈便签</span></div>
+    <h2 class="h-m">放映与路演：每组 9 分半，计时器替你看表</h2>
+    <div class="g2 wide-l">
+      <div class="lab fest">
+        <span class="label">影展计时器 · 按抽签顺序</span>
+        <div class="grpbar"><span class="small">组数</span>
+          <select id="fxN" aria-label="组数"><option value="4" selected>4 组</option><option value="5">5 组</option><option value="6">6 组</option></select>
+          <span id="fxGroups" class="grpbar"></span>
+        </div>
+        <div class="phases" id="fxPh"></div>
+        <div class="bigclock paused" id="fxClock" aria-live="off">01:30</div>
+        <div class="fxbar" id="fxBar"><i></i></div>
+        <div class="info" id="fxInfo"></div>
+        <div class="row" style="justify-content:center">
+          <button class="btn primary" id="fxGo" type="button">开始</button>
+          <button class="btn" id="fxNext" type="button">下一环节 →</button>
+          <button class="btn" id="fxRe" type="button">本环节重来</button>
+          <button class="btn" id="fxGrp" type="button">下一组 ⇥</button>
+        </div>
+      </div>
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>放映</b><span>：定剪版全屏播放，灯光调暗。</span></div></li>
+          <li><div><b>路演</b><span>：按第 11 课六段结构，每位组员都开口，用生产日志和版本对比作证据。</span></div></li>
+          <li><div><b>问答</b><span>：先复述问题再回答；至少回答一次“哪里是人的判断”。</span></div></li>
+          <li><div><b>记录</b><span>：评审填评审表；观众每组写一张带时间点的便签，交给该组。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>每组都完成<b>放映 + 路演 + 问答</b>；每组收到评审表和<b>全部观众便签</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 Skill 体验位与衍生作品展 ============ -->
+<section class="slide practice" data-min="15" data-note="Skill 体验位与衍生作品展，15 分钟。先用 1 分钟讲规则和一个小知识。可用性研究专家雅各布·尼尔森在 2000 年写过一篇很出名的文章《为什么只需要 5 个用户来测试》：他的数据显示，大约 5 个真实用户就能发现一个产品大部分的使用问题，最好的办法是找少数人、多测几轮。所以今天你的 Skill 只要被几个同学用真实输入试一试，就能暴露出你自己想不到的毛病。然后分两轮：前 7 分钟单号组摆摊、双号组体验，后 7 分钟交换，最后 1 分钟投票。摆摊的人要请观众给一个真实输入，比如他们组的一段剧本、一张分镜表，当场运行；如果 Skill 失效，不要辩解，记下来，这正是一周使用记录里最有价值的一条。衍生作品展台放片尾曲试听、3D 角色、小游戏，以及失败镜头从 v1 到最终版的迭代对比。观众每体验一个，在体验卡上写一行。投票用纸质票或飞书问卷，三个奖项见颁奖页。提醒：个人 Skill 占总评 15%，今天的体验也是证据。降级：某个 Skill 的平台账号登不上，就展示测试记录表和录屏。课前核实：尼尔森文章的发表日期与“5 人约发现 85% 问题”的表述。">
+  <div class="inner">
+    <div class="tc"><span class="ch">影展 · 体验位</span><span class="timechip">15 分钟</span><span>两轮 7 分钟 + 投票 1 分钟</span></div>
+    <h2 class="h-m">Skill 体验位与衍生作品展：让别人用真实输入试一试</h2>
+    <div class="g3">
+      <div class="col">
+        <span class="label">摆摊的人（每人一个展位）</span>
+        <ol class="steps">
+          <li><div><b>打开自己的 Skill</b><span>，旁边放一页说明：解决什么重复问题、输入、输出、它不做什么。</span></div></li>
+          <li><div><b>请观众给一个真实输入</b><span>（一段剧本、一张分镜表），当场运行。</span></div></li>
+          <li><div><b>失效了就记下来</b><span>，补进一周使用记录，不辩解。</span></div></li>
+        </ol>
+      </div>
+      <div class="col">
+        <span class="label">体验的人</span>
+        <ol class="steps">
+          <li><div><b>至少试用 2 个 Skill</b><span>，再看 1 个衍生作品展台。</span></div></li>
+          <li><div><b>每次在体验卡写一行</b><span>：我输入了什么 → 结果能用吗 → 一个建议。</span></div></li>
+          <li><div><b>最后 1 分钟投票</b><span>：纸质票或飞书问卷。</span></div></li>
+        </ol>
+        <p class="small">衍生作品展台：片尾曲试听、3D 角色、小游戏、失败镜头 v1 → 终版对比。</p>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">小知识 · 尼尔森 2000</span>
+          <p>可用性专家雅各布·尼尔森发现：<b>约 5 个真实用户</b>就能找出一个产品大部分的使用问题。少数人、多测几轮，比闭门自测有效得多。</p>
+          <p class="src">Jakob Nielsen, Why You Only Need to Test with 5 Users, 2000</p>
+        </div>
+        <div class="toolrow">
+          <span class="tool"><img src="../media/logos/xiaoyunque.png" alt="">小云雀</span>
+          <span class="tool">WorkBuddy</span>
+          <span class="tool"><img src="../media/logos/hunyuan.png" alt="">混元 3D</span>
+          <span class="tool">体验卡 <i>纸质</i></span>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>每个 Skill 至少被 <b>2 位观众</b>用真实输入试过；体验卡收齐；投票完成。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 基线 vs 结课 ============ -->
+<section class="slide" id="s-cmp" data-min="2" data-note="进入复盘，先回到起点。课前把示范项目的第 1 课基线图和结课短片的一帧放进两个位子（或者请一位学生志愿者提供自己的）。先并排展示，再点“叠放对比”，拖动滑杆，让两张图在同一个画框里切换。开口：“十二周前，你们写下的是：放学后的教室。那时候你们还写了一句：我想让这张图哪里变得更好。”请两三位同学念出当时写的那句话，再问：现在你能用什么专业的词，说出这两张图的差别？引导出：景别、焦段、光线方向、色彩、构图、叙事、声音……这些词都是这十二周学来的。落点：两张图之间的差距，不是 AI 变强了，而是你会提要求了、会判断了、会取舍了。这正是今天复盘要说清楚的东西。过渡到复盘四步。">
+  <div class="inner">
+    <div class="tc"><span class="ch">复盘的方法 · 10 MIN</span><span>回到起点</span></div>
+    <h2 class="h-l">十二周前的“放学后的教室”，和今天的你</h2>
+    <div class="cmp-stage" id="cmpStage">
+      <div class="cmp-a"><span class="cmp-tag">第 1 课 · 基线图</span><div class="slot" data-slot="baseline"></div></div>
+      <div class="cmp-b"><span class="cmp-tag">第 12 课 · 结课短片最满意的一帧</span><div class="slot" data-slot="finalframe"></div></div>
+      <span class="divider"></span>
+    </div>
+    <div class="row" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn primary" id="cmpMode" type="button">叠放对比</button>
+      <label class="cmp-ctrl small" id="cmpCtrl" hidden>基线 ← 拖动 → 结课<input type="range" id="cmpPos" min="0" max="100" value="50" aria-label="对比分界线位置"></label>
+      <span class="small">问自己：当时写的“我想让它哪里更好”，做到了吗？现在你能用哪些专业的词说出差别？</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 复盘四步 ============ -->
+<section class="slide" data-min="3" data-note="讲复盘四步，3 分钟。按 → 分两步。第一步先讲左边四步，每一步都对应一份已经有的材料：回顾目标，看第 4 课的 logline 和创作圣经；评估结果，看定剪版和今天观众的复述、便签；分析原因，把差距归到四类：判断、执行、工具、协作，各举一个例子，比如选题太大 60 秒讲不完，是判断；关键帧没按分镜生成，是执行；视频模型手总是变形，是工具；配乐和剪辑节奏没对齐，是协作；总结经验，写下次保留什么、改变什么。强调：分析原因不是找谁背锅，而是找下一次能改的地方。第二步讲两个来源。复盘这个词来自围棋：下完一盘棋，棋手把棋子按原来的顺序重新摆一遍，看哪一步下得好、哪一步是败着。另一个是美军的“行动后复盘”（After Action Review），从上世纪 70 年代起在训练中使用，每次演练后全员回答四个问题：原本计划发生什么？实际发生了什么？为什么有差别？下次怎么做？而且讨论时不论军衔高低，只谈发生了什么。落点：复盘四步，就是对着证据回答这四个问题。课前核实：美军 AAR 的起始年代与四个问题的标准表述。">
+  <div class="inner">
+    <div class="tc"><span class="ch">复盘的方法</span><span>① 复盘四步</span></div>
+    <h2 class="h-l">复盘四步：对着证据回答四个问题</h2>
+    <div class="g2 wide-l">
+      <div class="step">
+        <div class="aar4">
+          <div style="--c:var(--b)"><span class="no">1</span><div><b>回顾目标</b><p>开始时想做成什么样？<em>证据：第 4 课的 logline、创作圣经</em></p></div></div>
+          <div style="--c:var(--warm)"><span class="no">2</span><div><b>评估结果</b><p>实际做成了什么，差距在哪？<em>证据：定剪版、观众复述、今天的便签</em></p></div></div>
+          <div style="--c:var(--r)"><span class="no">3</span><div><b>分析原因</b><p>差距来自哪一类？找能改的地方，不找人背锅。</p>
+            <div class="cause4"><span><b>判断</b> 选题太大，60 秒讲不完</span><span><b>执行</b> 关键帧没按分镜生成</span><span><b>工具</b> 手部总是变形</span><span><b>协作</b> 配乐与剪辑节奏没对齐</span></div></div></div>
+          <div style="--c:var(--g)"><span class="no">4</span><div><b>总结经验</b><p>下一次<em>保留什么、改变什么</em>？写成能照做的一句话。</p></div></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card analogy"><span class="tag">打个比方 · 围棋</span>
+          <p>“复盘”本来是围棋术语：下完一盘，把棋子<b>按原来的顺序重摆一遍</b>，看哪一步是好棋、哪一步是败着。</p>
+        </div>
+        <div class="card story"><span class="tag">真实做法 · 美军 AAR</span>
+          <p>美军从 20 世纪 70 年代起在训练后做“行动后复盘”：原本计划什么？实际发生什么？<b>为什么有差别？</b>下次怎么做？讨论时<b>不论军衔，只谈事实</b>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 人与 AI 的贡献 ============ -->
+<section class="slide" data-min="2.5" data-note="讲区分人与 AI 的贡献，2 分半。按 → 分两步。第一步，左边四个问题，每个问题都能在生产日志里找到证据：哪些决定是我做的，看日志里的“采用/弃用”和修改原因；AI 在哪里帮了忙，看生成次数和关键提示；AI 在哪里误导了你，比如它生成的镜头看起来很美但不服务故事，或者对话工具给的信息是错的；你是怎样发现的，是看回放、对照分镜，还是观众没看懂。第二步讲一个国际象棋的故事。1997 年卡斯帕罗夫输给了深蓝之后，提出了“人加电脑”一起下棋的比赛形式。2005 年一场允许任意组合参赛的网络自由式比赛里，冠军不是特级大师，也不是超级计算机，而是两位美国业余棋手，用三台普通电脑。卡斯帕罗夫后来写道：弱一点的人加机器，加上更好的流程，胜过强大的计算机，也胜过强者加机器加差的流程。落点：说清分工，不是为了撇清 AI，而是证明流程和判断在你手里。回扣第 10 课：人的独创性投入要靠过程证据来证明。打比方：导航 App 给路线，但走哪条、什么时候不听它的，是司机的判断。课前核实：2005 年 PAL/CSS 自由式锦标赛冠军为 Steven Cramton 与 Zackary Stephen（ZackS），卡斯帕罗夫原文见 2010 年《纽约书评》The Chess Master and the Computer。">
+  <div class="inner">
+    <div class="tc"><span class="ch">复盘的方法</span><span>② 区分人与 AI 的贡献</span></div>
+    <h2 class="h-l">哪里是我的判断，哪里靠了 AI？</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="who4">
+          <div style="--c:var(--b)"><b>哪些决定是我做的？</b><p>证据：日志里的“采用 / 弃用”和修改原因</p></div>
+          <div style="--c:var(--g)"><b>AI 在哪里帮了忙？</b><p>证据：关键提示、生成次数、版本对比</p></div>
+          <div style="--c:var(--r)"><b>AI 在哪里误导了我？</b><p>例：镜头很美但不服务故事；给的信息是错的</p></div>
+          <div style="--c:var(--warm)"><b>我是怎样发现的？</b><p>例：对照分镜、看回放、观众没看懂</p></div>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span><p>导航 App 给路线，但<b>走哪条、什么时候不听它的</b>，是司机的判断。</p></div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">故事 · 自由式国际象棋 2005</span>
+          <b>赢的不是大师，也不是超级电脑</b>
+          <p>一场允许“人 + 电脑”任意组队的网络比赛里，冠军是<b>两位美国业余棋手，用三台普通电脑</b>，胜过了带着电脑的特级大师。</p>
+          <p>卡斯帕罗夫的总结：较弱的人 + 机器 + <b>更好的流程</b>，胜过强者 + 机器 + 较差的流程。</p>
+          <p class="src">来源：Garry Kasparov, The Chess Master and the Computer,《纽约书评》2010</p>
+        </div>
+        <div class="punch">说清分工，不是撇清 AI，而是证明流程和判断在你手里。<small>第 10 课讲过：人的独创性投入，要靠过程证据来证明。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 作品集的写法 ============ -->
+<section class="slide" data-min="2.5" data-note="讲作品集的写法，2 分半，讲完直接进入实操。左边是一页作品集的样子：顶部是姓名、组名、岗位；第一块是作品，短片链接和海报；第二块是基线图和最满意一帧并排；第三块是我负责的部分；第四块是过程证据，挑一组版本对比和一段日志截图，不要全部堆上去；第五块是 Skill 简介和一周使用记录摘要；最后是 300 字反思。打比方：数学解答题只写答案拿不到满分，要写过程。作品集也一样，只放成片，别人看不出哪些是你的判断；放了过程证据，才看得出你会做。讲“一页能看懂”的标准：一个陌生人 30 秒扫一遍，能说出你做了什么、你负责哪部分、你学到了什么。这和第 11 课海报的缩略图测试是一个道理：信息有层级。以后申请营地、比赛、大学的综合评价材料，都可以从这一页开始扩展。">
+  <div class="inner">
+    <div class="tc"><span class="ch">复盘的方法</span><span>③ 作品集</span></div>
+    <h2 class="h-l">作品集：一页能看懂</h2>
+    <div class="g2 wide-l">
+      <div class="pf" aria-label="一页作品集的版式示意">
+        <div class="hd"><b>姓名 · 作品集</b><span>G2 组 · 视觉总监 · 2026 秋</span></div>
+        <div><span class="k">作品</span>短片链接 + 海报<div class="lines"><i></i><i></i></div></div>
+        <div><span class="k">我负责的部分</span>岗位、具体做了哪些镜头 / 资产<div class="lines"><i></i><i></i></div></div>
+        <div class="full"><span class="k">起点 → 终点</span><div class="pair"><i>第 1 课基线图</i><i>短片最满意的一帧</i></div></div>
+        <div><span class="k">过程证据</span>1 组版本对比 + 1 段日志截图</div>
+        <div><span class="k">我的 Skill</span>简介 + 一周使用记录摘要</div>
+        <div class="full"><span class="k">300 字反思</span>按复盘四步写<div class="lines"><i></i><i></i></div></div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">四个要素</span>
+          <p><b>作品 + 角色 + 过程证据 + 反思</b>。过程证据只挑最能说明判断的一组，不要全部堆上去。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>数学解答题只写答案，拿不到满分。<b>过程证据</b>让别人看出：哪些是你的判断，你确实会做。</p>
+        </div>
+        <div class="punch">30 秒测试<small>陌生人扫一遍，能说出：你做了什么、负责哪部分、学到了什么。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 实操：个人复盘与作品集 ============ -->
+<section class="slide practice" data-min="15" data-note="实操 15 分钟，每个人独立完成。先确认每人都能打开作品集页面模板和 300 字反思模板，第 1 课的基线图在个人文件夹里，文件名是 姓名_L01_基线。步骤：1. 把基线图和本组短片中最满意的一帧并排放进作品集页面，各配一句说明；2. 按右边的四步骨架写 300 字反思，字数是参考，三个必答问题一个都不能少：哪里是我的判断，哪里借助了 AI，下一轮会改什么；3. 补齐短片链接、海报、我负责的部分、Skill 简介和一周使用记录摘要；4. 提交前自己做 30 秒测试。巡视重点：反思里有没有具体的镜头、版本、日志证据，而不是“我学到了很多”；有没有把今天收到的观众便签用进“评估结果”。提醒：这份反思占总评 10%，评分看的是能否区分自己的判断与 AI 协助，并提出下一轮改进。未完成的部分 3 天内补交。降级方案：网络或账号出问题，用纸质模板手写，基线图和截图打印出来贴上，拍照上传。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 个人复盘与作品集</span><span class="timechip">15 分钟</span><span>每人独立完成</span></div>
+    <h2 class="h-m">个人复盘与作品集：把十二周整理成一页</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>并排放入两张图</b><span>：第 1 课基线图 <span class="code">姓名_L01_基线</span> + 本组短片最满意的一帧，各配一句说明。</span></div></li>
+          <li><div><b>按复盘四步写 300 字反思</b><span>，三问必答：哪里是我的判断？哪里借助了 AI？下一轮会改什么？</span></div></li>
+          <li><div><b>补齐作品集</b><span>：短片链接、海报、我负责的部分、Skill 简介 + 一周使用记录摘要。</span></div></li>
+          <li><div><b>30 秒自测后提交</b><span>：缩到一屏，陌生人能看懂吗？</span></div></li>
+        </ol>
+        <div class="toolrow">
+          <span class="label">工具</span>
+          <span class="tool">飞书文档 <i>或学校批准的在线文档</i></span>
+          <span class="tool">作品集页面模板</span>
+          <span class="tool">300 字反思模板</span>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>作品集页面<b>六块齐全</b>；300 字反思<b>三问都有具体证据</b>（镜头、版本或日志）。未完成部分 3 天内补交。</div>
+      </div>
+      <div class="card"><span class="tag" style="color:var(--warm)">300 字骨架 · 句子开头可以直接用</span>
+        <div class="tpl">
+          <div style="--c:var(--b)"><i>约 50 字</i><b>回顾目标</b>我们一开始想拍……，想让观众感受到……</div>
+          <div style="--c:var(--warm)"><i>约 70 字</i><b>评估结果</b>实际做成了……；观众复述时……，差距在……</div>
+          <div style="--c:var(--r)"><i>约 100 字</i><b>分析原因</b>差距主要来自（判断 / 执行 / 工具 / 协作）……。<b style="color:var(--fg)">我的判断</b>是……；<b style="color:var(--fg)">AI</b> 在……帮了我，在……误导了我，我是通过……发现的。</div>
+          <div style="--c:var(--g)"><i>约 80 字</i><b>总结经验</b>下一轮我会保留……，<b style="color:var(--fg)">改变</b>……</div>
+        </div>
+        <p class="small">占总评 10%：看你能否区分自己的判断与 AI 协助，并提出下一轮改进。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 颁奖 ============ -->
+<section class="slide" data-min="3" data-note="公布观众投票结果，颁发证书，3 分钟。助教或班长在复盘实操期间统计好票数，老师把获奖组名直接填进三个框里。三个奖项是建议设置，可以按实际情况改名：观众最喜爱短片、最想天天用的 Skill、最佳衍生作品。每个奖请获奖者用一句话说：你们最想感谢的一个决定，或者一次失败。然后给每位同学发结课证书，证书不分名次，人人都有，因为每个人都完成了关卡 4。颁奖要快，留 2 分钟给最后一页。">
+  <div class="inner">
+    <div class="tc"><span class="ch">结束</span><span>观众投票 · 证书</span></div>
+    <h2 class="h-l">观众投票结果</h2>
+    <div class="awards">
+      <div class="award"><span class="k">观众最喜爱短片</span><b>本届影展</b><input type="text" aria-label="观众最喜爱短片获奖组" placeholder="填写获奖组名"><p>请获奖组用一句话说：最值得的一个决定。</p></div>
+      <div class="award"><span class="k">最想天天用的 Skill</span><b>Skill 体验位</b><input type="text" aria-label="最想天天用的 Skill 获奖者" placeholder="填写获奖者"><p>它解决了哪个真实的重复问题？</p></div>
+      <div class="award"><span class="k">最佳衍生作品</span><b>片尾曲 · 3D 角色 · 小游戏</b><input type="text" aria-label="最佳衍生作品获奖者" placeholder="填写获奖者"><p>它让角色多了哪一面？</p></div>
+    </div>
+    <div class="punch">每位同学都会拿到结课证书。<small>证书不分名次：完成关卡 4，就是完成了一个导演的全部流程。</small></div>
+  </div>
+</section>
+
+<!-- ============ 13 总结 ============ -->
+<section class="slide" data-min="2" data-note="最后 2 分钟。第一步，快速回收三个问题，各请一位同学用一句话回答。参考答案：好反馈有时间点、看到的事实、自己的感受和一个问题；复盘四步是回顾目标、评估结果、分析原因、总结经验，差距来自判断、执行、工具或协作；人和 AI 的贡献要用生产日志里的证据说清楚。第二步，确认关卡 4 的当堂产出都已完成。第三步，讲结课后的两件事：作品集和反思未完成的，3 天内补交；有意投稿的小组，要在学校和监护人再次核验规则、年龄要求和授权以后才能提交。强调：今天是课堂内的展示，公开发布到网上是另一件事，必须严格分开，先经过学校和家长同意。最后一句收尾：第 1 课我们问 AI，它到底学到了什么。今天，把这个问题留给你们自己。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>关卡 4 完成</span></div>
+    <h2 class="h-l">三个问题，最后一次请你来回答</h2>
+    <div class="g3">
+      <div class="q" style="--c:var(--b)"><span class="n">反馈</span><b>一条有用的反馈，要有哪四样？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">复盘</span><b>复盘四步是什么？差距来自哪四类？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">人与 AI</span><b>你的判断在哪里？用什么证据说明？</b></div>
+    </div>
+    <div class="step">
+      <span class="label">关卡 4 · 当堂产出</span>
+      <div class="checks"><span>公开放映与路演</span><span>Skill 演示</span><span>作品集页面</span><span>300 字反思</span></div>
+      <p class="small" style="margin-top:8px">有意投稿的小组：在学校与监护人<b style="color:var(--fg)">再次核验规则、年龄要求和授权</b>后再提交。课堂展示与公开发布严格分开。</p>
+    </div>
+    <div class="step">
+      <div class="punch">第 1 课我们问 AI：“它到底学到了什么？”今天，把这个问题留给你自己。<small>课后任务：未完成的作品集与反思，3 天内补交。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：基线图与结课一帧由老师课前放入（示范项目或学生志愿者），或存成 lessons/media/<id>.jpg */
+window.SLOTS = {
+  baseline: { type: 'media', label: '第 1 课基线图 · 放学后的教室', hint: '示范项目或一位学生志愿者的 姓名_L01_基线 图片', find: 'https://search.bilibili.com/all?keyword=%E6%94%BE%E5%AD%A6%E5%90%8E%E7%9A%84%E6%95%99%E5%AE%A4%20AI%E7%94%9F%E5%9B%BE', cred: '第 1 课 · 基线' },
+  finalframe: { type: 'media', label: '结课短片 · 最满意的一帧', hint: '同一人或同一示范项目的定剪版截图，最好也有教室、傍晚或光线可比的画面', find: 'https://search.bilibili.com/all?keyword=AI%E7%9F%AD%E7%89%87%20%E6%A0%A1%E5%9B%AD%2060%E7%A7%92', cred: '第 12 课 · 定剪版' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+
+  /* ---------- 影展计时器 ---------- */
+  const PH = ['放映', '路演', '问答'];
+  const PRESET = { 4: [90, 300, 180], 5: [90, 270, 150], 6: [90, 240, 90] };
+  let nG = 4, g = 0, ph = 0, dur = PRESET[4], left = dur[0], running = false, tmr = null, warned = false;
+  const fmt = s => { const a = Math.abs(s); return (s < 0 ? '+' : '') + String(Math.floor(a / 60)).padStart(2, '0') + ':' + String(a % 60).padStart(2, '0'); };
+  const name = i => 'G' + (i + 1);
+  const render = () => {
+    $('#fxGroups').innerHTML = Array.from({ length: nG }, (_, i) => `<button type="button" data-g="${i}" class="${i < g ? 'done' : i === g ? 'now' : ''}">${name(i)}</button>`).join('');
+    $('#fxPh').innerHTML = PH.map((p, i) => `<div class="${i === ph ? 'on' : i < ph ? 'past' : ''}"><b>${p}</b>${fmt(dur[i])}</div>`).join('');
+    const c = $('#fxClock'); c.textContent = fmt(left);
+    c.classList.toggle('over', left < 0); c.classList.toggle('paused', !running);
+    $('#fxBar').classList.toggle('over', left < 0);
+    $('#fxBar').firstElementChild.style.width = Math.min(100, (dur[ph] - left) / dur[ph] * 100).toFixed(1) + '%';
+    const nxt = g < nG - 1 ? `下一组 <b>${name(g + 1)}</b> 请候场：拷贝文件、试音量` : '这是最后一组';
+    $('#fxInfo').innerHTML = `<b>${name(g)}</b> · ${PH[ph]}${running ? '中' : '（暂停）'}${left < 0 ? ' · <b style="color:var(--r)">已超时，请收尾</b>' : ''} · ${nxt}`;
+    $('#fxGo').textContent = running ? '暂停' : '开始';
+  };
+  const stop = () => { running = false; clearInterval(tmr); tmr = null; };
+  const tick = () => {
+    left--;
+    if (left === 0 && !warned) { warned = true; window.deckToast(`${name(g)} · ${PH[ph]}时间到`); }
+    render();
+  };
+  const setPhase = (gi, pi) => { g = gi; ph = pi; left = dur[ph]; warned = false; render(); };
+  $('#fxGo').onclick = () => { if (running) stop(); else { running = true; tmr = setInterval(tick, 1000); } render(); };
+  $('#fxNext').onclick = () => { if (ph < 2) setPhase(g, ph + 1); else if (g < nG - 1) { stop(); setPhase(g + 1, 0); } else { stop(); render(); window.deckToast('全部放映完成'); } };
+  $('#fxRe').onclick = () => setPhase(g, ph);
+  $('#fxGrp').onclick = () => { stop(); if (g < nG - 1) setPhase(g + 1, 0); else { render(); window.deckToast('已经是最后一组'); } };
+  $('#fxGroups').addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (b) { stop(); setPhase(+b.dataset.g, 0); } });
+  $('#fxN').onchange = () => { nG = +$('#fxN').value; dur = PRESET[nG]; stop(); setPhase(Math.min(g, nG - 1), 0); };
+  render();
+
+  /* ---------- 基线 vs 结课：并排 / 叠放 ---------- */
+  const st = $('#cmpStage'), pos = $('#cmpPos'), ctrl = $('#cmpCtrl');
+  $('#cmpMode').onclick = () => {
+    const on = st.classList.toggle('wipe');
+    ctrl.hidden = !on;
+    $('#cmpMode').textContent = on ? '并排显示' : '叠放对比';
+  };
+  pos.oninput = () => st.style.setProperty('--pos', pos.value + '%');
+  st.style.setProperty('--pos', '50%');
+})();
+</script>
+</body>

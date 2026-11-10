@@ -1,0 +1,831 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 11 课 · 发布与路演</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：缩略图测试、安全区示意、海报排版开关、事实/意见判断、路演计时器 */
+.req4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.req4 div { padding: 9px 11px; border-radius: 10px; background: var(--panel2); border-left: 3px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.req4 div b { display: block; color: var(--fg); font-size: 15px; }
+
+/* 缩略图测试 */
+.thumbs { display: flex; gap: 14px; align-items: flex-end; justify-content: center; min-height: 190px; padding: 12px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); }
+.thumbs figure { margin: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.thumbs svg { display: block; width: var(--tw, 300px); height: auto; border-radius: 6px; transition: width .25s ease; }
+.thumbs figcaption { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.thumbs text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+
+/* 横竖版安全区 */
+.frames { display: flex; gap: 18px; align-items: flex-end; justify-content: center; flex-wrap: wrap; }
+.fr { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: radial-gradient(circle at 50% 45%, rgba(255,196,107,.35), transparent 40%), linear-gradient(160deg, #1b2340, #0b0e18); flex: none; }
+.fr.h { width: 400px; max-width: calc(100vw - 72px); aspect-ratio: 16 / 9; }
+.fr.v { width: 170px; aspect-ratio: 9 / 16; }
+.fr .safe { position: absolute; border: 2px dashed var(--g); border-radius: 8px; display: grid; place-items: center; text-align: center; font-size: 12px; color: var(--g); font-weight: 700; padding: 4px; }
+.fr .ov { position: absolute; background: repeating-linear-gradient(135deg, rgba(255,84,104,.28) 0 6px, rgba(255,84,104,.12) 6px 12px); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3; padding: 2px; }
+.fr .dur { position: absolute; right: 6px; bottom: 6px; font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 4px; background: rgba(0,0,0,.75); color: #fff; }
+.fr-cap { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; font-family: var(--mono); }
+
+/* 标题对比 */
+.tpair { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.tpair div { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: baseline; padding: 7px 10px; border-radius: 8px; background: var(--panel2); font-size: 14px; color: var(--muted); }
+.tpair div b { color: var(--fg); font-family: var(--display); }
+.tpair .x::before { content: "✗"; color: var(--r); font-weight: 700; }
+.tpair .ok::before { content: "✓"; color: var(--g); font-weight: 700; }
+.tri3 { display: flex; flex-wrap: wrap; gap: 8px; }
+.tri3 span { flex: 1 1 8em; padding: 8px 10px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); text-align: center; font-family: var(--display); font-weight: 800; font-size: 17px; }
+.tri3 span small { display: block; font-family: var(--mono); font-weight: 400; font-size: 11px; color: var(--muted); }
+
+/* 视觉层级 */
+.layers { display: flex; flex-direction: column; gap: 6px; }
+.layers div { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; background: var(--panel2); border-left: 4px solid var(--c); font-size: 13.5px; color: var(--muted); }
+.layers div b { font-family: var(--display); color: var(--c); font-size: var(--fs); line-height: 1.1; white-space: nowrap; }
+.layers div > b { min-width: 3.4em; }
+
+/* 海报排版开关 */
+.pm-sw { display: flex; flex-direction: column; gap: 6px; }
+.pm-sw button { text-align: left; display: grid; grid-template-columns: 2.6em 1fr; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; }
+.pm-sw button .k { font-family: var(--mono); font-size: 11px; padding: 2px 0; border-radius: 6px; text-align: center; background: rgba(255,84,104,.18); color: var(--r); }
+.pm-sw button[aria-pressed="true"] { border-color: rgba(63,224,160,.5); background: rgba(63,224,160,.08); }
+.pm-sw button[aria-pressed="true"] .k { background: rgba(63,224,160,.2); color: var(--g); }
+.pm-sw button b { display: block; font-size: 15px; }
+.pm-sw button span.d { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.pmock { container-type: inline-size; position: relative; width: min(270px, 70vw); aspect-ratio: 2 / 3; border-radius: 6px; overflow: hidden; background: #120c18; justify-self: center; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.pm-art { position: absolute; inset: 0; background: radial-gradient(circle at 68% 30%, #ffd89a 0 7%, rgba(255,196,107,.35) 8%, transparent 26%), linear-gradient(180deg, #0e1430, #2b1d3a 52%, #120c18 80%); }
+.pm-fig { position: absolute; left: 30%; top: 30%; width: 24%; height: 34%; background: #04050a; border-radius: 42% 42% 8% 8% / 30% 30% 8% 8%; }
+.pm-fig::before { content: ""; position: absolute; left: 26%; top: -32%; width: 48%; aspect-ratio: 1; border-radius: 50%; background: #04050a; }
+.pmock > span { position: absolute; transition: all .35s ease; line-height: 1.2; }
+/* 默认（全部关闭）：乱 */
+.pm-title { left: 14%; right: 18%; text-align: center; font-family: "STKaiti", "KaiTi", "Songti SC", serif; font-style: italic; }
+.pm-tag { left: 30%; right: 4%; text-align: right; font-family: "Comic Sans MS", "Chalkboard SE", "Hannotate SC", cursive; }
+.pm-credit { left: 3%; right: 34%; text-align: center; font-family: "Courier New", monospace; }
+.pm-ai { left: 52%; right: 3%; text-align: left; font-family: Georgia, serif; }
+.pm-title, .pm-tag, .pm-credit, .pm-ai { font-size: 6.2cqw; color: #b9aea2; font-weight: 400; }
+.pm-title { top: 50%; } .pm-tag { top: 60%; } .pm-credit { top: 69%; } .pm-ai { top: 80%; }
+.pm-st { font-size: 7cqw; font-weight: 900; color: #ff5468; background: #ffe36b; padding: 1px 5px; border-radius: 4px; transform: rotate(-8deg); }
+.pm-st.a { left: 6%; top: 8%; } .pm-st.b { right: 6%; top: 18%; transform: rotate(10deg); background: #7af; color: #fff; } .pm-st.c { left: 8%; top: 88%; background: #3fe0a0; color: #062; transform: none; font-size: 5cqw; }
+/* 对齐 */
+.pmock.al .pm-title, .pmock.al .pm-tag, .pmock.al .pm-credit, .pmock.al .pm-ai { left: 9%; right: 9%; text-align: left; }
+/* 字体 */
+.pmock.fo .pm-title { font-family: var(--display); font-style: normal; }
+.pmock.fo .pm-tag, .pmock.fo .pm-credit, .pmock.fo .pm-ai { font-family: var(--body); font-style: normal; }
+/* 留白 */
+.pmock.sp .pm-st { opacity: 0; transform: scale(.6); }
+.pmock.sp .pm-tag { top: 7%; } .pmock.sp .pm-title { top: 70%; } .pmock.sp .pm-credit { top: 86%; } .pmock.sp .pm-ai { top: 93.5%; }
+/* 对比 */
+.pmock.co .pm-title { font-size: 15cqw; font-weight: 900; color: #fff; letter-spacing: .02em; }
+.pmock.co .pm-tag { font-size: 5cqw; color: #ffc46b; font-weight: 500; }
+.pmock.co .pm-credit { font-size: 3.4cqw; color: #8d93a6; }
+.pmock.co .pm-ai { font-size: 3.2cqw; color: #8d93a6; }
+
+/* 事实 / 意见 */
+.fo-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .fo-list { grid-template-columns: 1fr 1fr; } }
+.fo-list button { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; display: flex; flex-direction: column; gap: 4px; min-height: 64px; }
+.fo-list button q { font-size: 15px; color: var(--fg); font-weight: 700; quotes: "“" "”"; }
+.fo-list button .ans { font-size: 12.5px; color: var(--muted); line-height: 1.45; display: none; }
+.fo-list button.open .ans { display: block; }
+.fo-list button.open.fact { border-color: rgba(63,224,160,.5); background: rgba(63,224,160,.07); }
+.fo-list button.open.op { border-color: rgba(255,196,107,.5); background: rgba(255,196,107,.07); }
+.fo-list .ans b { color: var(--fg); }
+.fo-list .fact .ans b { color: var(--g); } .fo-list .op .ans b { color: var(--warm); }
+
+/* 路演六段 */
+.pbar { display: flex; height: 34px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.pbar span { flex: var(--w); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #0b0d14; background: var(--c); border-right: 1px solid rgba(0,0,0,.35); white-space: nowrap; overflow: hidden; transition: filter .3s, opacity .3s; }
+.pbar span:last-child { border-right: 0; }
+.pbar-t { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+.p6 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .p6 { grid-template-columns: repeat(3, 1fr); } }
+.p6 div { padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.p6 div b { display: block; color: var(--fg); font-family: var(--display); font-size: 17px; }
+.p6 div i { font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--c); }
+
+/* 追问 */
+.qa { display: flex; flex-direction: column; gap: 6px; }
+.qa div { padding: 8px 12px; border-radius: 10px; background: var(--panel2); font-size: 14px; color: var(--muted); line-height: 1.55; }
+.qa div b { color: var(--fg); }
+.qa .qq { border-left: 3px solid var(--r); }
+.qa .a1 { border-left: 3px solid var(--b); } .qa .a2 { border-left: 3px solid var(--g); } .qa .a3 { border-left: 3px solid var(--warm); }
+.srt { font-family: var(--mono); font-size: 12.5px; line-height: 1.5; background: #05060a; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; color: var(--warm); white-space: pre; overflow-x: auto; margin: 0; }
+.srt i { font-style: normal; color: var(--muted); }
+
+/* 观众测试卡 */
+.tcard { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.tcard th, .tcard td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; vertical-align: top; }
+.tcard th { color: var(--fg); background: var(--panel2); font-weight: 700; }
+.tcard td { color: var(--muted); }
+.sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+.sizes span { padding: 6px 10px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.sizes span b { color: var(--warm); font-family: var(--mono); margin-right: 6px; }
+
+/* 路演计时器 */
+.timer .now { font-family: var(--display); font-weight: 800; font-size: clamp(22px, 2.4vw, 32px); line-height: 1.2; }
+.timer .clk { font-family: var(--mono); font-size: clamp(30px, 3.4vw, 46px); font-weight: 600; color: var(--warm); font-variant-numeric: tabular-nums; }
+.timer .pbar span.past { opacity: .35; }
+.timer .pbar span.cur { filter: brightness(1.15); box-shadow: inset 0 -4px 0 #fff; }
+.timer .pbar span.fut { opacity: .7; }
+.qbank { display: flex; flex-direction: column; gap: 6px; }
+.qbank span { padding: 7px 10px; border-radius: 8px; background: var(--panel2); font-size: 13.5px; color: var(--muted); border-left: 3px solid var(--r); }
+
+@media (max-height: 800px) {
+  .thumbs { min-height: 150px; padding: 8px; }
+  .fr.h { width: 340px; } .fr.v { width: 140px; }
+  .pmock { width: min(215px, 70vw); }
+  .p6 div { padding: 7px 10px; font-size: 12.5px; }
+  .p6 div b { font-size: 15.5px; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.55; }
+  .fo-list button { min-height: 0; padding: 7px 10px; }
+  .fo-list button q { font-size: 14px; }
+  .layers div { padding: 6px 10px; }
+  .qa div { padding: 6px 10px; font-size: 13px; }
+  .slot.sq { aspect-ratio: 16 / 10; }
+  #s-layers .slot.sq { aspect-ratio: 16 / 8; }
+}
+</style>
+
+<body data-lesson="L11">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开口：“上节课大家完成了精剪、AI 标识和合规检查，片子基本做完了。但一部片子做完不等于被看见。今天解决最后一公里：陌生人在信息流里刷到它，会不会点开？看完能不能看懂？你站在台上 5 分钟，能不能讲清楚哪些是你的判断？”把三个问题念一遍：今天下课前，每个小组要交出定剪版、海报、封面和一份路演稿，最后 10 分钟两组互相彩排。">
+  <div class="lesson-no" aria-hidden="true">11</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第三幕 · 完成与展示</span><span>LESSON 11 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">发布与路演<br><span class="rgbword">让观众看懂你的作品</span></h1>
+    <p class="lead">片子做完了，还差最后一步：让陌生人<b>一眼想点开、看完能复述、听完路演知道你做了哪些判断</b>。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--warm)"><span class="n">问题 1</span><b>一张封面或海报，怎样在 1 秒内被看懂？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>怎样知道观众真的看懂了你的片子？</b></div>
+      <div class="q" style="--c:var(--b)"><span class="n">问题 3</span><b>5 分钟路演讲什么？被问“哪里是人的判断”怎么答？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–30</b>知识讲解 · 封面海报 / 观众测试 / 路演</span>
+      <span><b>30–80</b>实操 · 观众测试定剪 / 海报封面 / 路演稿</span>
+      <span><b>80–90</b>路演彩排 · 两组互评</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 1.8 秒 ============ -->
+<section class="slide" data-min="2.5" data-note="模块 1 封面、标题与海报，一共 15 分钟。先讲一个数字。按 → 分两步。第一步：2016 年，Netflix 公布了一项用户研究：用户在浏览时，每部片子平均只考虑大约 1.8 秒；浏览时 82% 以上的注意力落在封面图上，封面是影响“看不看”的最大因素。先问学生：你们刷 B 站、抖音的时候，看一个封面要多久？大部分人会说不到一秒。第二步：Netflix 后来干脆给不同的人看不同的封面。2017 年他们的技术博客举过例子：同一部《心灵捕手》，经常看爱情片的用户看到的是男女主角的画面，经常看喜剧的用户看到的是喜剧演员罗宾·威廉姆斯。这说明封面不是装饰，而是一份承诺：它告诉观众点进来会得到什么情绪。如果承诺和片子不一致，观众点进来就会失望划走。打比方：商店橱窗，路人只扫一眼，橱窗里只摆最能代表这家店的一件东西。课前核实：1.8 秒和 82% 两个数字出自 Netflix 2016 年文章 The Power of a Picture（作者 Nick Nelson），《心灵捕手》的例子出自 Netflix Tech Blog 2017 年 12 月 Artwork Personalization at Netflix。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>15 MIN</span></div>
+    <h2 class="h-l">1.8 秒，决定点不点开</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="step">
+          <div class="card story"><span class="tag">故事 · Netflix 2016</span>
+            <b>封面图吸走了 82% 的注意力</b>
+            <p>Netflix 的用户研究发现：浏览时，用户对每部片子平均只考虑约 <b>1.8 秒</b>；浏览时 <b>82% 以上</b>的注意力落在封面图上，封面是影响“看不看”的最大因素。</p>
+            <p class="src">来源：Netflix, “The Power of a Picture”, 2016</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="card story"><span class="tag">故事 · Netflix 2017</span>
+            <p>同一部《心灵捕手》：爱看爱情片的人，看到<b>男女主角</b>的画面；爱看喜剧的人，看到<b>喜剧演员罗宾·威廉姆斯</b>。封面在向不同的人许下不同的承诺。</p>
+            <p class="src">来源：Netflix Tech Blog, “Artwork Personalization at Netflix”, 2017</p>
+          </div>
+          <div class="punch">封面是一份承诺<small>它在 1 秒内回答：这是什么片？会给我什么情绪？</small></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="netflix"></div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>封面像<b>商店橱窗</b>：路人走过只扫一眼。橱窗里不会堆满全部商品，只摆<b>最能代表这家店的一件</b>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 缩略图测试 ============ -->
+<section class="slide" id="s-thumb" data-min="3" data-note="这一页讲封面的四个要求，并用右边的互动现场验证。先讲四个要求：主体清晰，一个主体、占画面大块；情绪明确，表情、动作、色调一看就知道是紧张还是温暖；色彩对比强，主体和背景在明暗或冷暖上拉开；元素少，字最多一行，装饰能删就删。然后演示：先把滑杆拉到最大，问学生哪个封面信息更多？A 更多。再慢慢往左拉，拉到最小，问：现在哪个还看得懂？A 的小人和小字全糊成一片，B 的人影和片名依然清楚。落点：信息流里的缩略图只有指甲盖大小，信息多不等于信息清楚。打比方：高速公路的路牌，字大、信息少、对比强，因为司机只有一两秒。最后一句回扣第 10 课：前 3 秒决定观众看不看完，封面决定他点不点开，比前 3 秒还早一步。实操任务 2 的第 4 步就是这个缩小测试。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>① 封面</span></div>
+    <h2 class="h-l">缩到指甲盖大小，还看得懂吗？</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">原理 · 封面四要求</span>
+          <div class="req4">
+            <div style="--c:var(--b)"><b>主体清晰</b>一个主体，占画面大块</div>
+            <div style="--c:var(--warm)"><b>情绪明确</b>表情、动作、色调说明情绪</div>
+            <div style="--c:var(--r)"><b>对比强</b>主体与背景拉开明暗或冷暖</div>
+            <div style="--c:var(--g)"><b>元素少</b>字最多一行，装饰能删就删</div>
+          </div>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>高速公路的路牌：<b>字大、信息少、对比强</b>，因为司机只有一两秒。</p>
+        </div>
+        <p class="small">回扣第 10 课：前 3 秒决定看不看完；封面决定点不点开，还要早一步。</p>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 缩小测试：拉动滑杆，看谁先“糊”掉</span>
+        <div class="thumbs" id="thumbBox">
+          <figure>
+            <svg viewBox="0 0 320 180" role="img" aria-label="封面 A：元素多、字小、对比弱">
+              <rect width="320" height="180" fill="#566079"/>
+              <rect y="110" width="320" height="70" fill="#4d566d"/>
+              <g fill="#6f7891"><rect x="24" y="40" width="40" height="30" rx="3"/><rect x="250" y="30" width="50" height="36" rx="3"/><rect x="130" y="18" width="60" height="22" rx="3"/></g>
+              <g fill="#3c4458">
+                <circle cx="60" cy="98" r="7"/><rect x="53" y="105" width="14" height="22" rx="5"/>
+                <circle cx="105" cy="92" r="7"/><rect x="98" y="99" width="14" height="24" rx="5"/>
+                <circle cx="160" cy="100" r="7"/><rect x="153" y="107" width="14" height="22" rx="5"/>
+                <circle cx="215" cy="95" r="7"/><rect x="208" y="102" width="14" height="22" rx="5"/>
+                <circle cx="262" cy="101" r="7"/><rect x="255" y="108" width="14" height="22" rx="5"/>
+              </g>
+              <text x="14" y="150" font-size="13" fill="#8b93a9">关于那天下午我们在教室里发生的一些事情</text>
+              <text x="14" y="168" font-size="10" fill="#7f87a0">第一集｜超感人｜一定要看到最后｜原创</text>
+              <text x="250" y="20" font-size="10" fill="#8b93a9">必看!!</text>
+            </svg>
+            <figcaption>A · 元素多</figcaption>
+          </figure>
+          <figure>
+            <svg viewBox="0 0 320 180" role="img" aria-label="封面 B：一个人影、大字片名、强对比">
+              <defs><radialGradient id="thG" cx="68%" cy="42%" r="45%"><stop offset="0" stop-color="#ffcf86"/><stop offset=".35" stop-color="#c46a3a"/><stop offset="1" stop-color="#0b0d16"/></radialGradient></defs>
+              <rect width="320" height="180" fill="url(#thG)"/>
+              <circle cx="222" cy="62" r="20" fill="#05060a"/><path d="M188 180 C188 118 200 88 222 88 C244 88 256 118 256 180 Z" fill="#05060a"/>
+              <text x="18" y="76" font-size="40" font-weight="900" fill="#ffffff">黑板上</text>
+              <text x="18" y="124" font-size="40" font-weight="900" fill="#ffffff">的字</text>
+            </svg>
+            <figcaption>B · 一个主体</figcaption>
+          </figure>
+        </div>
+        <label class="row small">显示宽度<input type="range" id="thumbW" min="44" max="300" step="2" value="300" style="flex:1"><b id="thumbWV" class="warm">300px</b></label>
+        <div class="row"><button class="btn" id="thumbBig" type="button">原大</button><button class="btn primary" id="thumbSmall" type="button">缩到信息流大小</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 横竖版与安全区 ============ -->
+<section class="slide" data-min="1.5" data-note="这一页很短，讲两件实用的事。第一，横版和竖版要分别设计，不能直接裁：16:9 横版用在 B 站、电脑端和横屏播放；9:16 竖版用在抖音、快手、视频号这类竖屏信息流。横版直接裁成竖版，往往只剩画面中间一条，主体和片名可能被切掉。第二，平台界面会盖住一部分画面：竖屏视频的右侧有点赞、评论、分享按钮，底部有账号名和文案，顶部有标签栏；横版缩略图的右下角常有时长角标。主体和片名要放在中间的安全区里。打比方：拍集体照，站在最边上的人最容易被裁掉。具体遮挡位置各平台不同，也会改版，发布前用手机实际预览一次。今天任务 2 要做的是 2:3 竖版海报和 16:9 横版封面，有时间的小组可以加做一张 9:16。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>② 横版、竖版与安全区</span></div>
+    <h2 class="h-l">横竖两版分别设计，别把主体放进遮挡区</h2>
+    <div class="g2 wide-l">
+      <div class="lab"><span class="label">示意 · 平台界面遮挡（位置以各平台当期界面为准）</span>
+        <div class="frames">
+          <div>
+            <div class="fr h">
+              <div class="safe" style="left:8%;right:8%;top:10%;bottom:22%">安全区<br>主体 + 片名</div>
+              <div class="ov" style="left:0;right:0;bottom:0;height:16%;justify-content:flex-start;padding-left:8px">播放量等角标</div>
+              <span class="dur">03:12</span>
+            </div>
+            <div class="fr-cap">16:9 横版 · B 站 / 电脑端</div>
+          </div>
+          <div>
+            <div class="fr v">
+              <div class="ov" style="left:0;right:0;top:0;height:9%">顶部标签栏</div>
+              <div class="ov" style="right:0;top:40%;width:20%;height:38%">点赞<br>评论<br>分享</div>
+              <div class="ov" style="left:0;right:0;bottom:0;height:20%">账号名 · 文案 · 音乐</div>
+              <div class="safe" style="left:8%;right:24%;top:13%;bottom:24%">安全区</div>
+            </div>
+            <div class="fr-cap">9:16 竖版 · 竖屏信息流</div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">原理</span>
+          <ul>
+            <li><b>不能直接裁</b>：横版裁成竖版，只剩中间一条，主体和片名可能被切掉</li>
+            <li><b>避开遮挡</b>：按钮、文案、时长角标会盖住边缘，重要内容放中间</li>
+            <li><b>发布前</b>：用手机实际预览一次</li>
+          </ul>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>拍集体照，<b>站在最边上的人最容易被裁掉</b>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 标题 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲标题。按 → 分两步。第一步，讲一部很多同学看过的电影：1994 年的《The Shawshank Redemption》，大陆译名《肖申克的救赎》，香港叫《月黑高飞》，台湾叫《刺激1995》。问学生：如果你没看过这部片，只看这三个名字，你分别会以为它是什么样的片子？《刺激1995》像动作惊悚片，《月黑高飞》强调越狱，《肖申克的救赎》讲的是地点和希望。哪个最贴近片子的内容和气质？没有标准答案，但能看出：标题本身就在许下承诺。第二步，讲好标题的三条：具体，说出人物、地点或物件；有画面感或悬念，让人想知道后面发生什么；与内容一致，不夸大。对比屏幕上两组例子（为教学自编）：《青春》太空泛，《最后一班 23 路》具体有画面；《震惊！他在教室里看到了不可思议的一幕》是标题党，《黑板上多出来的一行字》同样有悬念，但说的是真事。打比方：标题党就像外卖图片和实物差太多，点进来一看不一样，观众立刻划走，还会记住你骗过他。请每组在心里过一遍自己的片名。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>③ 标题</span></div>
+    <h2 class="h-l">标题是承诺，标题党是违约</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="card story"><span class="tag">故事 · 同一部电影，三个片名</span>
+          <p>1994 年的 <b>The Shawshank Redemption</b> 在不同地区上映时用了不同的片名：</p>
+          <div class="tri3"><span>肖申克的救赎<small>大陆</small></span><span>月黑高飞<small>香港</small></span><span>刺激1995<small>台湾</small></span></div>
+          <p>只看名字，你会以为它们是三种什么片子？<b>哪个最贴近内容和气质？</b></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card idea"><span class="tag">原理 · 好标题三条</span>
+          <p><b>具体</b>（人物、地点、物件）· <b>有画面感或悬念</b> · <b>与内容一致</b></p>
+          <div class="tpair">
+            <div class="x"><span>《青春》：太空泛，什么片都能叫这个名字</span></div>
+            <div class="ok"><span><b>《最后一班 23 路》</b>：具体，有画面</span></div>
+            <div class="x"><span>《震惊！他在教室里看到了不可思议的一幕》：标题党</span></div>
+            <div class="ok"><span><b>《黑板上多出来的一行字》</b>：有悬念，也说的是真事</span></div>
+          </div>
+          <p class="src">例子为教学自编。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>标题党像<b>外卖图片和实物差太多</b>：点进来一看不一样，观众立刻划走，还会记住你骗过他。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 视觉层级 ============ -->
+<section class="slide" id="s-layers" data-min="2.5" data-note="这一页讲海报的视觉层级。先问学生：看一张海报，你的眼睛先落在哪里？答案是最大、最亮、对比最强的地方。海报要主动安排这个顺序：第一层主视觉，最大，最先被看到；第二层片名；第三层信息，标语、导演、日期、署名，最小。然后讲故事（放右边的海报图）：1975 年斯皮尔伯格的《大白鲨》海报，画面只讲一件事：一条巨大的鲨鱼从深海冲向水面上游泳的女孩。片名 JAWS 粗大地压在上方，演职员信息挤在底部的小字块里。海报上没有一张明星的脸，却成了电影史上最被模仿的海报之一。用这张图指出三层：鲨鱼是第一层，JAWS 是第二层，底部小字块是第三层。顺带讲电影海报的惯例：片名、主视觉、一句标语、底部署名信息块，这个底部小字块行业里叫 billing block。落点：海报和预告片一样，是一份承诺，告诉观众会得到什么情绪。《大白鲨》承诺的就是“水下有你看不见的危险”。课前核实：海报画家为 Roger Kastel，画面最早用于小说平装本封面。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>④ 海报的视觉层级</span></div>
+    <h2 class="h-l">一张海报，眼睛先看哪里？</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card idea"><span class="tag">原理 · 三层</span>
+          <div class="layers">
+            <div style="--c:var(--warm);--fs:26px"><b>第一层</b><span><b style="display:inline;font-size:15px;color:var(--fg)">主视觉</b>：最大，最先被看到</span></div>
+            <div style="--c:var(--g);--fs:21px"><b>第二层</b><span><b style="display:inline;font-size:15px;color:var(--fg)">片名</b>：第二眼就能读出来</span></div>
+            <div style="--c:var(--b);--fs:16px"><b>第三层</b><span><b style="display:inline;font-size:15px;color:var(--fg)">信息</b>：标语、导演、日期、署名</span></div>
+          </div>
+          <p>电影海报惯例：<b>片名 + 主视觉 + 一句标语 + 底部署名信息块</b>（行业里叫 billing block）。</p>
+        </div>
+        <div class="punch">海报和预告片一样，是一份承诺<small>告诉观众：走进来，你会得到什么情绪。</small></div>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">参考 · 《大白鲨》海报 1975</span>
+          <p>画面只讲一件事：<b>巨大的鲨鱼从深海冲向水面上游泳的女孩</b>。片名 JAWS 粗大地压在上方，演职员信息挤在底部小字块里。没有一张明星的脸，却成了最常被模仿的电影海报之一。</p>
+          <p class="src">海报画家：Roger Kastel；电影：斯皮尔伯格《大白鲨》，1975</p>
+        </div>
+        <div class="slot sq" data-slot="jaws"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 排版四原则 ============ -->
+<section class="slide" id="s-poster" data-min="2" data-note="这一页用互动讲排版四原则。先让学生看右边这张乱海报，问：哪里不舒服？学生会说乱、看不清、太花。然后按顺序打开四个开关，每开一个停一下，请学生说出变化。对齐：所有文字沿同一条看不见的线排列，眼睛不用到处找。字体：片名最多 1 到 2 种字体，风格和片子气质一致，一张海报用四五种字体就像一个人穿了四五种风格的衣服。留白：删掉“超燃”“必看”这些贴纸，标语移到顶部、片名移到下方，人影周围空出来，主体反而更突出。打比方：博物馆展柜里只放一件文物，杂货铺里什么都堆着，哪个让你觉得珍贵？对比：用大小、粗细、颜色区分重要程度，片名最大最白，标语中等用暖色，署名最小最灰。四个都打开后，再点一次“全部关闭”，前后对比一次。落点：排版不是装饰，是替观众安排阅读顺序。注意海报底部的“含 AI 生成内容”标注不能删，回扣第 10 课的标识要求。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>⑤ 排版四原则</span></div>
+    <h2 class="h-l">四个开关，救回一张乱海报</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="pm-sw" id="pmSw">
+          <button type="button" data-k="al" aria-pressed="false"><span class="k">关</span><span><b>对齐</b><span class="d">所有元素沿一条看不见的线排列</span></span></button>
+          <button type="button" data-k="fo" aria-pressed="false"><span class="k">关</span><span><b>字体</b><span class="d">片名最多 1–2 种字体，风格和片子气质一致</span></span></button>
+          <button type="button" data-k="sp" aria-pressed="false"><span class="k">关</span><span><b>留白</b><span class="d">删掉多余元素，空出来的地方让主体更突出</span></span></button>
+          <button type="button" data-k="co" aria-pressed="false"><span class="k">关</span><span><b>对比</b><span class="d">用大小、粗细、颜色区分重要程度</span></span></button>
+        </div>
+        <div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="pmAll" type="button">全部打开</button><button class="btn" id="pmNone" type="button">全部关闭</button></div>
+        <div class="card analogy"><span class="tag">打个比方 · 留白</span>
+          <p>博物馆展柜里<b>只放一件文物</b>，杂货铺里什么都堆着。哪个让你觉得珍贵？</p>
+        </div>
+      </div>
+      <div class="lab" style="align-items:center">
+        <span class="label" style="align-self:flex-start">互动 · 一张 2:3 海报</span>
+        <div class="pmock" id="pm" role="img" aria-label="可切换排版原则的示意海报">
+          <div class="pm-art"></div><div class="pm-fig"></div>
+          <span class="pm-st a">超燃!!</span><span class="pm-st b">必看</span><span class="pm-st c">扫码关注</span>
+          <span class="pm-tag">那一行字，是谁写的？</span>
+          <span class="pm-title">黑板上的字</span>
+          <span class="pm-credit">导演 陈同学 · 视觉 李同学 · 剪辑 王同学 · 2026</span>
+          <span class="pm-ai">含 AI 生成内容</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 AI 与文字 ============ -->
+<section class="slide" data-min="1" data-note="一分钟的提醒，回扣第 6 课：AI 生图时文字仍然不稳定，经常出现错字、乱码、笔画缺失。所以海报的分工是：AI 画图，人来写字。生图时就在提示词里写清楚“画面中不要出现任何文字”，并且给片名留出位置，比如“画面上方三分之一是干净的夜空”。如果生成的图里还是出现了乱码字，用局部重绘去掉，或者在排版时裁掉、用色块盖住。片名、标语、署名和“含 AI 生成内容”的标注，全部在稿定设计或可画里添加。这样字是准的，也方便以后改。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 封面、标题与海报</span><span>⑥ AI 与文字</span></div>
+    <h2 class="h-l">AI 画图，人来写字</h2>
+    <div class="g4">
+      <div class="card" style="border-top:3px solid var(--b)"><span class="tag" style="color:var(--b)">① 生图</span><p>提示词写明 <span class="code">画面中不要出现任何文字</span>，并<b>给片名留位置</b>：<span class="code">上方三分之一是干净的夜空</span></p></div>
+      <div class="card" style="border-top:3px solid var(--warm)"><span class="tag" style="color:var(--warm)">② 清理</span><p>还是冒出乱码字？用<b>局部重绘</b>去掉，或排版时裁掉、用色块盖住。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="tag" style="color:var(--g)">③ 加字</span><p>在排版工具里加<b>片名、标语、署名、“含 AI 生成内容”</b>。字是准的，也方便改。</p></div>
+      <div class="card ask"><span class="tag">回扣第 6 课</span><p>AI 生成文字仍不稳定：错字、乱码、笔画缺失。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 复述测试 ============ -->
+<section class="slide" data-min="2.5" data-note="进入模块 2，观众测试，5 分钟。先讲一个皮克斯的故事。1993 年，《玩具总动员》做到一半，团队给迪士尼的高层放了一版用故事板和临时配音做成的样片。为了让伍迪更有个性，他被一次次改得越来越刻薄、自私，结果看完的人都不喜欢他，这部片差点被叫停，皮克斯内部把这一天叫做“黑色星期五”。团队回头重写了故事，伍迪才变成后来我们认识的样子。落点：作者自己看了一百遍，最难发现的就是“观众看不懂、不喜欢”，必须拿给别人看。然后讲方法：复述测试。观众看完后，请他用 30 秒把故事讲一遍。你不提示、不解释，只记录：他讲对了什么，漏了什么，讲错了什么。复述和你的意图之间的差距，就是要改的地方。打比方：给朋友指完路，请他复述一遍，他复述错的地方，就是你没说清楚的地方。课前核实：黑色星期五的时间为 1993 年 11 月，细节可参考艾德·卡特姆《创新公司》（Creativity, Inc.）。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 观众测试</span><span>5 MIN</span><span>① 复述测试</span></div>
+    <h2 class="h-l">请观众用 30 秒，把你的故事讲一遍</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 皮克斯 1993</span>
+          <b>《玩具总动员》的“黑色星期五”</b>
+          <p>做到一半，团队给迪士尼高层放了一版样片。伍迪被改得<b>刻薄又自私</b>，看完的人都不喜欢他，制作差点被叫停。团队回头重写，才有了后来的伍迪。</p>
+          <p class="src">参考：Ed Catmull,《创新公司》（Creativity, Inc.），2014</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>给朋友指完路，请他复述一遍。<b>他复述错的地方，就是你没说清楚的地方。</b></p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">方法 · 复述测试</span>
+          <ul>
+            <li>观众看完，<b>立刻用 30 秒复述故事</b></li>
+            <li>作者<b>不提示、不解释</b>，只记录</li>
+            <li>记三件事：讲对了什么、<b>漏了什么</b>、<b>讲错了什么</b></li>
+          </ul>
+        </div>
+        <div class="punch">复述 vs 你的意图 = 修改清单<small>作者看了一百遍，最难发现的就是“观众看不懂”。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 事实与意见 ============ -->
+<section class="slide" id="s-fact" data-min="2.5" data-note="这一页讲怎样听反馈。先读尼尔·盖曼的话，他是《鬼妈妈》的作者，2010 年在英国《卫报》写给写作者的建议里说：当别人告诉你某处不对劲，他们几乎总是对的；当他们告诉你具体该怎么改，他们几乎总是错的。翻成我们的话：观众给的“事实”很宝贵，观众给的“方案”只作参考。然后做右边的小练习：逐条念出来，请学生举手判断是事实还是意见，再点开看解释。重点讲第 4 条：“开头太慢了，应该删掉”里，“太慢”是感受，“删掉”是方案，有用的做法是追问一句：你在第几秒开始想划走？这样就把意见变成了事实。最后强调：今天是最后一轮修改，只处理影响理解的问题，比如观众搞错了人物关系、没看懂关键动作；“换首歌”“加个反转”这种大改，记下来留给下一部作品。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 观众测试</span><span>② 事实与意见</span></div>
+    <h2 class="h-l">哪句是事实，哪句是意见？</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">名言 · 尼尔·盖曼 2010</span>
+          <p>当别人说某处不对劲，<b>他们几乎总是对的</b>；当他们告诉你具体该怎么改，<b>几乎总是错的</b>。</p>
+          <p class="src">Neil Gaiman，写作建议，《卫报》2010（中文为意译）</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>看病时，“我右下腹疼了两天”是<b>症状</b>，医生最需要；“我觉得是阑尾炎，给我开点药”是<b>自己的诊断</b>，只能参考。</p>
+        </div>
+        <div class="punch">最后一轮：只改影响理解的问题<small>“换首歌”“加个反转”记下来，留给下一部作品。</small></div>
+      </div>
+      <div class="lab"><span class="label">练习 · 先举手判断，再点开</span>
+        <div class="fo-list" id="foList">
+          <button type="button" class="fact"><q>我在第 20 秒没看懂他为什么哭。</q><span class="ans"><b>事实</b>：指出了具体时间和具体问题，直接进修改清单。</span></button>
+          <button type="button" class="op"><q>我觉得应该换首歌。</q><span class="ans"><b>意见</b>：是方案不是问题。追问：哪一段音乐让你出戏？</span></button>
+          <button type="button" class="fact"><q>我以为结尾那个人是他妹妹。</q><span class="ans"><b>事实</b>：复述出错，说明人物关系没交代清楚。</span></button>
+          <button type="button" class="op"><q>开头太慢了，应该删掉。</q><span class="ans"><b>意见</b>：“太慢”是感受，“删掉”是方案。追问：第几秒开始想划走？</span></button>
+          <button type="button" class="fact"><q>看到第 40 秒，我拿起手机看了一眼。</q><span class="ans"><b>事实</b>：注意力在这里断了，回去检查这一段。</span></button>
+          <button type="button" class="op"><q>要是加个反转就好了。</q><span class="ans"><b>意见</b>：属于大改，今天不做，记下来。</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 乔布斯 ============ -->
+<section class="slide" data-min="3" data-note="进入模块 3，路演与表达，10 分钟。先讲一个经典的发布会开场。2007 年 1 月 9 日，旧金山 Macworld 大会，乔布斯说：今天我们要发布三款革命性的产品：一个宽屏触控的 iPod，一部革命性的手机，一个突破性的互联网通讯设备。然后把这三样东西重复念了几遍，台下开始欢呼，接着他说：这不是三台设备，这是一台设备，我们叫它 iPhone。可以放这一段约 1 分钟的视频。讲完问学生：这段开场有什么值得学的？引导出两点：第一，他先让所有人记住一句话，后面一个多小时的演示和细节，都是在证明这句话；第二，他没有先讲参数，而是先讲观众能得到什么。打比方：电梯演讲，假设你在电梯里碰到一位评委，只有 30 秒，你会说哪一句？对我们来说，这一句就是第 4 课写过的 logline：当某个角色想要什么时，遇到什么阻碍，他必须做出什么选择。路演的第一句话，就是你的 logline。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 路演与表达</span><span>10 MIN</span><span>① 一句话开场</span></div>
+    <h2 class="h-l">先让人记住一句话</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 2007 年 1 月 · 旧金山</span>
+          <b>“三台设备”，其实是一台</b>
+          <p>乔布斯说要发布三款产品：<b>宽屏触控 iPod、革命性的手机、突破性的互联网通讯设备</b>。重复几遍后他说：这不是三台设备，<b>这是一台，我们叫它 iPhone</b>。</p>
+          <p>后面一个多小时的演示，都在证明这一句话。</p>
+          <p class="src">Macworld 2007 主题演讲，Apple</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 电梯演讲</span>
+          <p>在电梯里碰到一位评委，你只有 <b>30 秒</b>。你会说哪一句？</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="iphone2007"></div>
+        <div class="punch">路演第一句 = 你的 logline<small>回扣第 4 课：当【角色】想要【目标】时，遇到【阻碍】，他必须【行动 / 选择】。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 六部分结构 ============ -->
+<section class="slide" data-min="3" data-note="这一页是路演的骨架，六个部分，加起来 5 分钟。上面的时间条是建议分配，各组可以微调，但总长不超过 5 分钟。逐个讲：第一，一句话故事，就是 logline，20 秒以内。第二，放映，60 秒的片子加上切换，留 70 秒。第三，一个关键创作判断，用前后对比展示，比如“为什么这个镜头选择仰拍”“为什么换了音乐”，只讲一个，讲透。第四，一次失败与修改，从第 7 课的失败复盘记录里挑，说清楚失败是什么、原因是什么、怎么改的。第五，人机分工：哪些是人的判断，哪些是 AI 的生成，这是评委最常追问的部分。第六，观众反馈带来的改变，就用今天观众测试的结果。强调：每位组员都要讲，按岗位分配最自然，比如导演讲 1 和 3，视觉讲 4 和 5，剪辑讲 6。这个结构也是第 12 课影展的路演结构。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 路演与表达</span><span>② 六部分结构</span></div>
+    <h2 class="h-l">5 分钟路演：六个部分</h2>
+    <div>
+      <div class="pbar" aria-label="六部分时间分配示意">
+        <span style="--w:20;--c:var(--warm)">①</span><span style="--w:70;--c:#c58bff">② 放映</span><span style="--w:60;--c:var(--b)">③ 关键判断</span><span style="--w:45;--c:var(--r)">④ 失败</span><span style="--w:60;--c:var(--g)">⑤ 人机分工</span><span style="--w:45;--c:#7fd3ff">⑥ 反馈</span>
+      </div>
+      <div class="pbar-t"><span>0:00</span><span>1:30</span><span>3:15</span><span>5:00</span></div>
+    </div>
+    <div class="p6">
+      <div style="--c:var(--warm)"><i>① 约 20 秒</i><b>一句话故事</b>你的 logline，让人记住这部片讲什么。</div>
+      <div style="--c:#c58bff"><i>② 约 70 秒</i><b>放映</b>完整播放 60 秒短片。</div>
+      <div style="--c:var(--b)"><i>③ 约 60 秒</i><b>一个关键创作判断</b>用前后对比展示，例如：为什么改成仰拍？为什么换了音乐？</div>
+      <div style="--c:var(--r)"><i>④ 约 45 秒</i><b>一次失败与修改</b>来自失败复盘记录：失败是什么、为什么、怎么改。</div>
+      <div style="--c:var(--g)"><i>⑤ 约 60 秒</i><b>人机分工</b>哪些是人的判断，哪些是 AI 的生成。</div>
+      <div style="--c:#7fd3ff"><i>⑥ 约 45 秒</i><b>观众反馈带来的改变</b>今天的复述测试发现了什么，你改了什么。</div>
+    </div>
+    <p class="small">时间为建议分配，总长不超过 5 分钟；<b class="warm">每位组员都要讲</b>。</p>
+  </div>
+</section>
+
+<!-- ============ 13 证据与追问 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲两个表达技巧。按 → 分两步。第一步，用证据说话。对比左边两种说法：“我们很努力，改了很多次”，评委听完什么都记不住；“这个镜头生成了 9 次，日志第 12 行记录了原因，我们采用第 7 次，因为只有它的视线方向和上一个镜头接得上”，再放 v1 和 v3 的截图，评委立刻相信。打比方：数学题只写答案没有过程，老师不给分；写了过程，就算有小错，也能看出你会。生产日志就是你的“解题过程”，第 10 课讲过，它也是证明人的创作投入的证据。第二步，回答追问三步：先复述问题，确认你听懂了，也给自己几秒思考；再直接回答，第一句就给结论，不绕弯；不知道就承认，并说明下一步会怎样做。念一遍右边的示范问答。提醒：最常见的追问就是“这部分到底是你做的还是 AI 做的”，用生产日志回答最有力。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 路演与表达</span><span>③ 证据与追问</span></div>
+    <h2 class="h-l">用证据说话，被追问时不慌</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="card idea"><span class="tag">用证据说话</span>
+          <div class="tpair">
+            <div class="x"><span>“我们很努力，改了很多次。”</span></div>
+            <div class="ok"><span>“这个镜头生成了 <b>9 次</b>，采用第 7 次，因为只有它的视线方向能和上一镜接上。（放 <b>v1 / v3 对比图</b> + <b>日志第 12 行</b>）”</span></div>
+          </div>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>数学题<b>只写答案不写过程</b>，老师不给分。生产日志就是你的“解题过程”，也是证明人的创作投入的证据（第 10 课）。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card idea"><span class="tag">回答追问 · 三步</span>
+          <div class="qa">
+            <div class="qq"><b>评委</b>：片尾那个转场，是你们设计的还是 AI 自己生成的？</div>
+            <div class="a1"><b>① 复述</b>：您问的是第 52 秒，从雨水到眼泪的转场，对吗？</div>
+            <div class="a2"><b>② 直接答</b>：两个画面是 AI 生成的，把它们剪在一起是我们的决定，日志里有 v1 和 v2 对比。</div>
+            <div class="a3"><b>③ 不知道就承认</b>：这个参数我们没有记录，下次会写进日志。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 投稿材料 ============ -->
+<section class="slide" data-min="1.5" data-note="最后 1.5 分钟，讲投稿材料，这部分是自愿的。想投稿的小组需要准备四样东西。第一，英文字幕，用 SRT 格式：每条字幕有一个序号、一行时间码、一到两行文字，条与条之间空一行。注意时间码里毫秒前面是逗号。第二，中英文简介：logline 加 100 字左右的创作说明。第三，AI 使用说明：用了哪些工具，分别做了什么，哪些是人的判断，可以直接从片尾分工表整理。第四，授权清单：音乐、音效、字体、参考图的来源和授权方式，从生产日志整理。翻译可以用对话工具辅助，但必须人工逐句校对：人名、专有名词、语气，AI 都可能翻错。任务 3 会给具体步骤。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 路演与表达</span><span>④ 投稿材料（自愿）</span></div>
+    <h2 class="h-l">想投稿？再准备四样东西</h2>
+    <div class="g4">
+      <div class="card idea"><span class="tag">① 英文字幕 · SRT</span>
+<pre class="srt"><i>1</i>
+00:00:01,200 --&gt; 00:00:03,800
+Who wrote this on the board?
+
+<i>2</i>
+00:00:04,000 --&gt; 00:00:06,500
+...</pre>
+        <p>序号 · 时间码 · 文字，条与条之间<b>空一行</b>。</p>
+      </div>
+      <div class="card idea"><span class="tag">② 中英文简介</span><p><b>logline</b> + <b>约 100 字</b>创作说明，中英文各一份。</p></div>
+      <div class="card idea"><span class="tag">③ AI 使用说明</span><p>用了哪些工具、各做了什么、<b>哪些是人的判断</b>。从片尾分工表整理。</p></div>
+      <div class="card idea"><span class="tag">④ 授权清单</span><p>音乐、音效、字体、参考图的<b>来源与授权</b>。从生产日志整理。</p></div>
+    </div>
+    <div class="punch">翻译可以让 AI 帮忙，但必须人工逐句校对<small>人名、专有名词、语气，都可能翻错。</small></div>
+  </div>
+</section>
+
+<!-- ============ 15 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，50 分钟，三个任务。先说清楚节奏：任务 1 观众测试要请其他组的同学当观众，所以两组互相配合，你看我的、我看你的，带班老师也可以当观众；任务 2 和任务 3 可以在组内分工并行，例如视觉总监做海报封面，导演写路演稿，剪辑与制片导出定剪和字幕。发下观众测试卡和路演模板。提醒：路演彩排在最后 10 分钟，到时间必须停手。">
+  <div class="inner">
+    <span class="num">实操 · 50 MIN</span>
+    <h2 class="h-xl">定剪、海报、路演稿，<br>今天全部交齐</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 15 分钟</span><b>观众测试与最后修改</b><p>复述测试 → 只修影响理解的问题 → 选定开场 → 导出定剪版。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 20 分钟</span><b>海报与封面</b><p>AI 生成无字主视觉 → 排版工具加字 → 缩小测试 → 导出 PNG。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 15 分钟</span><b>路演稿与投稿材料</b><p>六部分路演稿、前后对比图、失败案例；自愿：英文字幕与简介。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool"><img src="../media/logos/jianying.png" alt="">剪映专业版</span>
+      <span class="tool"><img src="../media/logos/jimeng.png" alt="">即梦</span>
+      <span class="tool"><img src="../media/logos/libtv.png" alt="">LibTV</span>
+      <span class="tool">稿定设计 / Canva 可画 <i>学校批准任一</i></span>
+      <span class="tool"><img src="../media/logos/kimi.png" alt="">Kimi</span>
+      <span class="tool"><img src="../media/logos/doubao.png" alt="">豆包</span>
+      <span class="tool">观众测试卡 · 路演模板 <i>课程包</i></span>
+    </div>
+    <p class="small">生图工具、对话工具各选学校批准的一个即可。分工建议：视觉总监负责任务 2，导演负责任务 3，剪辑与制片负责定剪导出和字幕。</p>
+  </div>
+</section>
+
+<!-- ============ 16 任务 1 ============ -->
+<section class="slide practice" data-min="15" data-note="任务 1，15 分钟。两组配对，互相当观众，带班老师也可以当观众。步骤：1. 请 2 到 3 位非本组观众观看本组精剪版，只放一遍，不做任何解释。2. 每位观众看完立刻用 30 秒复述故事，组员在观众测试卡上照原话记录，不打断、不纠正。3. 对照作者意图，用三种颜色标出：讲对的、漏掉的、讲错的；只修改影响理解的问题，比如人物关系不清、关键动作没看到、某个镜头太短看不清。4. 用第 10 课导出的两个 10 秒开场版本请观众选择，按多数票确定最终开场。5. 导出定剪版 1080p，命名 G组号_定剪。巡视时重点看两件事：组员有没有在观众复述时插话解释；有没有趁机大改。降级方案：如果找不到非本组观众，组内交叉也可以，但请没参与这一段剪辑的组员当观众；如果剪映导出慢，先导出 720p 用于路演，课后再补 1080p。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">15 分钟</span><span>工具：剪映专业版 · 观众测试卡</span></div>
+    <h2 class="h-m">观众测试与最后修改：只修影响理解的问题</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>请 2–3 位非本组观众观看精剪版</b><span>（其他组同学或带班老师），只放一遍，不做解释。</span></div></li>
+          <li><div><b>每位观众用 30 秒复述故事</b><span>，组员照原话记在观众测试卡上，不打断、不纠正。</span></div></li>
+          <li><div><b>对照作者意图，标出偏差</b><span>：讲对 / 漏掉 / 讲错。只修改影响理解的问题。</span></div></li>
+          <li><div><b>用第 10 课的两个开场版本请观众选择</b><span>，确定最终开场。</span></div></li>
+          <li><div><b>导出定剪版 1080p</b><span>，命名 </span><span class="code">G组号_定剪</span></div></li>
+        </ol>
+        <p class="small">降级：找不到组外观众时，请没剪过这一段的组员当观众；导出太慢先出 720p 用于路演，课后补 1080p。</p>
+      </div>
+      <div class="col">
+        <div class="card"><span class="tag" style="color:var(--g)">观众测试卡</span>
+          <table class="tcard">
+            <tr><th>观众</th><th>30 秒复述（原话）</th><th>对 / 漏 / 错</th></tr>
+            <tr><td>1</td><td>一个女生放学后发现黑板上……</td><td>漏：留字的人是谁</td></tr>
+            <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><th colspan="2">开场选择：A 版 __ 票 / B 版 __ 票</th><th>最终：</th></tr>
+          </table>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>测试卡上有 <b>2–3 条复述记录</b>和标出的偏差；影响理解的问题已修改；<b>开场已选定</b>；<span class="code">G组号_定剪</span> 1080p 已导出。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 任务 2 ============ -->
+<section class="slide practice" data-min="20" data-note="任务 2，20 分钟，建议由视觉总监主做，一位组员协助检查。步骤：1. 用生图工具生成不含文字的主视觉，竖版 2:3 用于海报，横版 16:9 用于封面，上传角色设定图作为参考，保证和片子里的角色一致；提示词里写明不要文字，并给片名留位置。每个比例最多生成 4 次，从中挑选。2. 在稿定设计或可画中新建对应尺寸的画布，建议海报 1080×1620，封面 1920×1080，导入主视觉。3. 添加片名，最多 1 到 2 种字体；一句标语；底部署名信息块；以及“含 AI 生成内容”标注。4. 检查视觉层级：把画布缩小到手机缩略图大小，或者导出后在手机相册里看，片名是否仍然可读，主体是否清楚，这一步请另一位组员来判断。5. 导出 PNG，存入资产库，命名 G组号_海报、G组号_封面。生成次数记入生产日志。降级方案：生图不理想时，直接用定剪版里最好的一帧画面截图作为主视觉；排版工具无法登录时，用剪映新建对应比例的草稿、加文字后导出单帧，或用 PPT 设置页面尺寸排版后导出图片。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">20 分钟</span><span>工具：即梦 / LibTV + 稿定设计 / Canva 可画</span></div>
+    <h2 class="h-m">海报与封面：AI 生成无字主视觉，排版工具加字</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>生成不含文字的主视觉</b><span>：2:3 竖版（海报）+ 16:9 横版（封面），附角色设定图作参考；每个比例最多生成 4 次。</span></div></li>
+          <li><div><b>在稿定设计或可画中新建对应尺寸画布</b><span>，导入主视觉。</span></div></li>
+          <li><div><b>添加文字</b><span>：片名（1–2 种字体）、一句标语、署名信息块、“含 AI 生成内容”。</span></div></li>
+          <li><div><b>缩小测试</b><span>：缩到手机缩略图大小，请另一位组员判断片名是否可读、主体是否清楚。</span></div></li>
+          <li><div><b>导出 PNG，存入资产库</b><span>，命名 </span><span class="code">G组号_海报</span> <span class="code">G组号_封面</span></div></li>
+        </ol>
+      </div>
+      <div class="col">
+        <div class="sizes"><span><b>2:3</b>海报 1080×1620</span><span><b>16:9</b>封面 1920×1080</span><span><b>9:16</b>竖版封面（选做）1080×1920</span></div>
+        <div class="card"><b>提示词骨架</b><p class="srt" style="white-space:normal">[角色设定图] + 场景 + 情绪 + 光线 + 竖版 2:3，画面中不要出现任何文字，上方三分之一留出干净的背景</p></div>
+        <div class="done-box"><span class="label">完成标准</span>海报、封面各 1 张 PNG；含<b>片名、标语、署名、AI 标注</b>；缩小后片名可读、主体清楚；已存资产库，生成次数已记入日志。</div>
+        <p class="small">降级：生图不理想就用定剪版里最好的一帧作主视觉；排版工具无法登录时，用剪映新建对应比例草稿加字后导出单帧，或用 PPT 排版导出图片。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 任务 3 ============ -->
+<section class="slide practice" data-min="14" data-note="任务 3，约 15 分钟（本页计 14 分钟，最后 1 分钟用于收尾换场）。步骤：1. 按六部分结构写路演稿，在路演模板里写清楚每一部分由谁讲、讲多久，每人都要讲。稿子写关键词和要点，不要写成逐字稿去念。2. 从生产日志中挑出 1 组关键判断的前后对比图、1 个失败与修改案例，放进路演页面，每页只放一张对比图和一句说明。3. 有意投稿的小组：在剪映中导出 SRT 字幕，导出界面里勾选字幕导出、格式选 SRT（按钮名称以当期版本为准）；把 SRT 内容粘贴给对话工具，要求“只翻译文字行，保留序号和时间码不变”；然后人工逐句校对，重点查人名、专有名词和语气；校对后导入剪映生成英文字幕版；再完成中英文简介和 AI 使用说明。降级方案：没时间做投稿材料的小组，课后完成即可，不影响今天的关卡；如果对话工具改动了时间码，就只让它翻译纯文本，再手动贴回 SRT。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">15 分钟</span><span>工具：路演模板 · 生产日志 · 剪映 · Kimi / 豆包</span></div>
+    <h2 class="h-m">路演稿与投稿材料：每人都要讲，用证据说话</h2>
+    <div class="g2">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>按六部分结构写路演稿</b><span>，在路演模板里写清每部分由谁讲、讲多久，每人都要讲。写要点，不写逐字稿。</span></div></li>
+          <li><div><b>从生产日志挑证据放进路演页面</b><span>：1 组关键判断的前后对比图 + 1 个失败与修改案例。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>路演稿六部分齐全、<b>每人有讲述部分</b>；路演页面含 <b>1 组前后对比</b>和 <b>1 个失败与修改案例</b>。</div>
+      </div>
+      <div class="col">
+        <div class="card"><span class="tag" style="color:var(--b)">③ 自愿 · 投稿材料</span>
+          <ol>
+            <li>剪映导出 <b>SRT 字幕</b>（导出时勾选字幕，格式选 SRT）</li>
+            <li>交给对话工具：<span class="code">只翻译文字行，保留序号和时间码不变</span></li>
+            <li><b>人工逐句校对</b>：人名、专有名词、语气</li>
+            <li>导入剪映，生成<b>英文字幕版</b></li>
+            <li>写<b>中英文简介</b>（logline + 100 字）和 <b>AI 使用说明</b></li>
+          </ol>
+        </div>
+        <p class="small">降级：投稿材料可课后完成，不影响今天的关卡；对话工具改乱了时间码，就只翻纯文本，再手动贴回。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 路演彩排 ============ -->
+<section class="slide" id="s-rehearse" data-min="8" data-note="路演彩排，8 分钟。两组一对，A 组先完整讲一次，B 组扮演评委，然后交换。时间很紧，每组路演控制在 3 分钟以内的压缩版：放映可以只放开头 15 秒，其余五个部分都要讲到，正式路演留到第 12 课。用右边的计时器：点“开始”，它会按六部分提示当前该讲哪一段；正式版是 5 分钟，彩排时可以点“压缩版 3 分钟”。评委组的任务：至少提一个关于“哪里是人的判断”的问题，可以从下面的问题库里选；同时记下对方路演里一处最有说服力的证据、一处听不懂的地方，彩排结束交给对方。讲的一组按今天学的三步回答追问：先复述，再直接答，不知道就承认。老师巡视，记下表现好的回答，最后总结时点名表扬。">
+  <div class="inner">
+    <div class="tc"><span class="ch">路演彩排</span><span>8 MIN</span><span>两组一对 · 互当评委</span></div>
+    <h2 class="h-l">彩排一次：听众扮演评委</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">规则</span>
+          <ul>
+            <li>A 组讲，B 组当评委；然后交换</li>
+            <li>彩排用<b>压缩版</b>：放映只放开头 15 秒，其他部分都要讲到</li>
+            <li>评委<b>至少问一个</b>“哪里是人的判断”的问题，并记下：最有说服力的一处证据、一处没听懂的地方</li>
+          </ul>
+        </div>
+        <div class="qbank" aria-label="追问问题库">
+          <span>这个镜头，哪些是你们决定的，哪些是 AI 生成的？</span>
+          <span>你们放弃过哪个 AI 生成的版本？为什么？</span>
+          <span>如果不用 AI，这部片最难完成的是哪一部分？</span>
+        </div>
+      </div>
+      <div class="lab timer">
+        <span class="label">路演计时器 · 按六部分提示</span>
+        <div class="row" style="justify-content:space-between"><span class="now" id="ptNow">准备开始</span><span class="clk" id="ptClk">5:00</span></div>
+        <div class="pbar" id="ptBar"></div>
+        <div class="row">
+          <button class="btn primary" id="ptGo" type="button">开始</button>
+          <button class="btn" id="ptNext" type="button">下一段</button>
+          <button class="btn" id="ptReset" type="button">重置</button>
+          <button class="btn" id="ptMode" type="button">切换：压缩版 3 分钟</button>
+        </div>
+        <p class="small" id="ptHint">正式版 5 分钟，用于第 12 课影展。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 总结 ============ -->
+<section class="slide" data-min="2" data-note="最后 2 分钟。三个问题各请一位同学一句话回答：封面怎样在 1 秒内被看懂？主体清晰、情绪明确、对比强、元素少，并且缩小测试过。怎样知道观众看懂了？请他用 30 秒复述，复述和意图的差距就是修改清单，只把事实当问题，意见作参考。路演讲什么？logline、放映、一个关键判断、一次失败与修改、人机分工、观众反馈带来的改变，用证据说话，追问时先复述再直接回答。然后核对当堂产出：定剪版、海报、封面、路演稿与路演页面，自愿的投稿材料包。最后布置课后任务：完成 Skill 一周使用记录，准备第 12 课 Skill 体验位的演示材料。下节课就是结课影展。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>2 MIN</span></div>
+    <h2 class="h-l">三个问题，请你来回答</h2>
+    <div class="g3">
+      <div class="q" style="--c:var(--warm)"><span class="n">封面海报</span><b>怎样在 1 秒内被看懂？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">观众测试</span><b>怎样知道观众真的看懂了？</b></div>
+      <div class="q" style="--c:var(--b)"><span class="n">路演</span><b>5 分钟讲哪六件事？被追问怎么答？</b></div>
+    </div>
+    <div class="step">
+      <span class="label">当堂产出 · 关卡 4 准备</span>
+      <div class="sizes"><span><b>✓</b>定剪版 1080p</span><span><b>✓</b>海报 2:3</span><span><b>✓</b>封面 16:9</span><span><b>✓</b>路演稿与路演页面</span><span><b>○</b>投稿材料包（自愿）</span></div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务：完成 Skill 一周使用记录；准备第 12 课 Skill 体验位的演示材料。<small>下节课就是结课影展：放映、路演、Skill 展示。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  netflix: { type: 'media', label: 'Netflix · 同一部片的不同封面', hint: '一张对比图：同一部片给不同观众显示的不同封面；或 1 分钟讲解视频', find: 'https://search.bilibili.com/all?keyword=Netflix%20%E5%B0%81%E9%9D%A2%20%E4%B8%AA%E6%80%A7%E5%8C%96', cred: 'Netflix Tech Blog · 2017' },
+  jaws: { type: 'media', label: '《大白鲨》1975 · 原版海报', hint: '一张原版海报图片，讲课时用它指出三层视觉层级', find: 'https://search.bilibili.com/all?keyword=%E5%A4%A7%E7%99%BD%E9%B2%A8%201975%20%E6%B5%B7%E6%8A%A5', cred: 'Jaws · 1975 · poster art by Roger Kastel' },
+  iphone2007: { type: 'media', label: '2007 iPhone 发布会 · 开场片段', hint: '约 1 分钟：“三款产品……其实是一台”的段落，选带中文字幕的版本', find: 'https://search.bilibili.com/all?keyword=%E4%B9%94%E5%B8%83%E6%96%AF%202007%20iPhone%20%E5%8F%91%E5%B8%83%E4%BC%9A%20%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95', cred: 'Macworld 2007 · Apple' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+
+  /* ---------- 缩小测试 ---------- */
+  const tw = $('#thumbW'), box = $('#thumbBox');
+  const setW = v => { tw.value = v; box.style.setProperty('--tw', v + 'px'); $('#thumbWV').textContent = v + 'px'; };
+  tw.oninput = () => setW(+tw.value);
+  const fitMax = () => Math.max(44, Math.min(300, Math.floor((box.clientWidth - 50) / 2)));
+  $('#thumbBig').onclick = () => setW(fitMax());
+  $('#thumbSmall').onclick = () => setW(72);
+  window.onSlideEnter.set('s-thumb', () => { if (+tw.value > fitMax()) setW(fitMax()); });
+  setW(Math.min(300, fitMax() || 300));
+  addEventListener('resize', () => { if (+tw.value > fitMax()) setW(fitMax()); });
+
+  /* ---------- 排版四原则 ---------- */
+  const pm = $('#pm'), sw = [...document.querySelectorAll('#pmSw button')];
+  const setK = (b, on) => { b.setAttribute('aria-pressed', on); b.querySelector('.k').textContent = on ? '开' : '关'; pm.classList.toggle(b.dataset.k, on); };
+  sw.forEach(b => b.onclick = () => setK(b, b.getAttribute('aria-pressed') !== 'true'));
+  $('#pmAll').onclick = () => sw.forEach(b => setK(b, true));
+  $('#pmNone').onclick = () => sw.forEach(b => setK(b, false));
+
+  /* ---------- 事实 / 意见 ---------- */
+  document.querySelectorAll('#foList button').forEach(b => b.onclick = () => b.classList.toggle('open'));
+
+  /* ---------- 路演计时器 ---------- */
+  const PARTS = [['一句话故事', 20, 'var(--warm)'], ['放映', 70, '#c58bff'], ['关键判断', 60, 'var(--b)'], ['失败与修改', 45, 'var(--r)'], ['人机分工', 60, 'var(--g)'], ['观众反馈', 45, '#7fd3ff']];
+  const SHORT = [15, 15, 40, 35, 45, 30];
+  let short = false, running = false, elapsed = 0, t0 = 0, timer = null;
+  const durs = () => short ? SHORT : PARTS.map(p => p[1]);
+  const total = () => durs().reduce((a, b) => a + b, 0);
+  const bar = $('#ptBar');
+  const build = () => { const d = durs(); bar.innerHTML = PARTS.map((p, i) => `<span style="--w:${d[i]};--c:${p[2]}">${i + 1}</span>`).join(''); };
+  const fmt = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const now = () => elapsed + (running ? (Date.now() - t0) / 1000 : 0);
+  const render = () => {
+    const e = now(), d = durs(); let acc = 0, idx = d.length;
+    for (let i = 0; i < d.length; i++) { if (e < acc + d[i]) { idx = i; break; } acc += d[i]; }
+    [...bar.children].forEach((s, i) => { s.className = i < idx ? 'past' : i === idx ? 'cur' : 'fut'; });
+    $('#ptClk').textContent = fmt(total() - e);
+    $('#ptClk').style.color = total() - e < 30 ? 'var(--r)' : '';
+    if (idx >= d.length) { $('#ptNow').textContent = '时间到'; stop(); }
+    else $('#ptNow').textContent = (e === 0 && !running) ? '准备开始' : `${idx + 1} · ${PARTS[idx][0]}（本段剩 ${fmt(acc + d[idx] - e)}）`;
+  };
+  const stop = () => { if (running) { elapsed = now(); running = false; } clearInterval(timer); timer = null; $('#ptGo').textContent = '继续'; };
+  $('#ptGo').onclick = () => {
+    if (running) { stop(); render(); return; }
+    if (now() >= total()) elapsed = 0;
+    running = true; t0 = Date.now(); $('#ptGo').textContent = '暂停';
+    clearInterval(timer); timer = setInterval(render, 250); render();
+  };
+  $('#ptNext').onclick = () => {
+    const e = now(), d = durs(); let acc = 0;
+    for (let i = 0; i < d.length; i++) { acc += d[i]; if (e < acc) { elapsed = acc; if (running) t0 = Date.now(); break; } }
+    render();
+  };
+  $('#ptReset').onclick = () => { stop(); elapsed = 0; $('#ptGo').textContent = '开始'; render(); };
+  $('#ptMode').onclick = () => {
+    short = !short; $('#ptReset').click(); build(); render();
+    $('#ptMode').textContent = short ? '切换：正式版 5 分钟' : '切换：压缩版 3 分钟';
+    $('#ptHint').textContent = short ? '压缩版 3 分钟：放映只放开头 15 秒，用于今天彩排。' : '正式版 5 分钟，用于第 12 课影展。';
+  };
+  build(); render();
+})();
+</script>
+</body>
+</html>

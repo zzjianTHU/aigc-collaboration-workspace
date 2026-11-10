@@ -1,0 +1,689 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 10 课 · 精修与责任创作</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：开场四式、调色台、情境判断、片尾分工表、合规检查单 */
+.open4 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 600px) { .open4 { grid-template-columns: 1fr 1fr; } }
+.open4 div { padding: 9px 12px; border-radius: 10px; background: var(--panel2); border-left: 3px solid var(--c); font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.open4 div b { display: block; color: var(--fg); font-family: var(--display); font-size: 16px; }
+.six { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.six span { padding: 6px 4px; border-radius: 8px; background: var(--panel2); text-align: center; font-size: 12.5px; color: var(--muted); line-height: 1.3; }
+.six span b { display: block; font-family: var(--mono); font-size: 15px; color: var(--warm); }
+.six span.top { background: rgba(255,196,107,.14); }
+.fix3 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .fix3 { grid-template-columns: repeat(3, 1fr); } }
+.fix3 div { padding: 10px 12px; border-radius: 10px; background: var(--panel2); border-top: 3px solid var(--c); font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.fix3 div b { display: block; color: var(--fg); font-family: var(--display); font-size: 16px; }
+
+/* 调色台 */
+.strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 900px) { .strip { grid-template-columns: repeat(4, 1fr); } }
+.shot { position: relative; border-radius: 10px; overflow: hidden; border: 2px solid transparent; cursor: pointer; background: #000; padding: 0; display: block; width: 100%; }
+.shot.sel { border-color: var(--warm); }
+.shot .pic { position: relative; display: block; aspect-ratio: 16 / 9; }
+.shot svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.shot .tint, .shot .lut { position: absolute; inset: 0; mix-blend-mode: overlay; pointer-events: none; }
+.shot .cap { position: absolute; left: 6px; top: 5px; font-family: var(--mono); font-size: 11px; color: #fff; text-shadow: 0 1px 3px #000; }
+.shot .gap { position: absolute; right: 6px; bottom: 5px; font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 6px; background: rgba(0,0,0,.65); color: var(--r); }
+.shot .gap.ok { color: var(--g); }
+.grade .row label { display: grid; grid-template-columns: 4.2em 1fr 3em; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); width: 100%; }
+.grade .row label b { font-family: var(--mono); font-size: 12px; color: var(--warm); text-align: right; }
+.grade .sliders { display: grid; grid-template-columns: 1fr; gap: 4px 16px; }
+@media (min-width: 900px) { .grade .sliders { grid-template-columns: 1fr 1fr; } }
+.btn.on { background: var(--warm); color: #1a1408; border-color: var(--warm); }
+
+/* 情境判断 */
+.scn-list { display: flex; flex-direction: column; gap: 6px; }
+.scn-list button { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-weight: 700; font-size: 15px; }
+.scn-list button .n { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.scn-list button.sel { border-color: var(--warm); background: rgba(255,196,107,.08); }
+.scn-list button .v { font-size: 12px; font-weight: 700; }
+.verdict { display: inline-flex; padding: 4px 12px; border-radius: 999px; font-weight: 800; font-family: var(--display); font-size: 18px; align-self: flex-start; }
+.v-no { color: var(--r); } .v-cond { color: var(--warm); } .v-ok { color: var(--g); }
+.verdict.v-no { background: rgba(255,84,104,.14); } .verdict.v-cond { background: rgba(255,196,107,.14); } .verdict.v-ok { background: rgba(63,224,160,.14); }
+.vote { display: flex; gap: 6px; flex-wrap: wrap; }
+.vote span { padding: 4px 10px; border-radius: 8px; border: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
+#scnAns[hidden] { display: none; }
+
+/* 片尾分工表 */
+.credits { width: 100%; border-collapse: collapse; font-size: 13px; }
+.credits th, .credits td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.45; }
+.credits th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.credits td:first-child { color: var(--warm); font-weight: 700; white-space: nowrap; }
+.credits td { color: var(--muted); }
+.title-card { border-radius: 10px; background: #000; border: 1px solid var(--line); aspect-ratio: 16 / 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.title-card b { font-family: var(--display); font-size: clamp(16px, 1.6vw, 22px); }
+.title-card span { font-size: 12px; color: var(--muted); }
+
+/* 合规检查单 */
+.chk { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .chk { grid-template-columns: repeat(3, 1fr); } }
+.chk div { padding: 10px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.chk div b { display: block; color: var(--fg); font-size: 15px; }
+.chk div b::before { content: "☐ "; color: var(--g); }
+.outs { display: flex; flex-wrap: wrap; gap: 8px; }
+.outs span { padding: 6px 12px; border-radius: 999px; background: rgba(63,224,160,.1); border: 1px solid rgba(63,224,160,.35); color: var(--fg); font-size: 13px; font-weight: 700; }
+
+/* 投影仪常见的 1280×720 */
+@media (max-height: 800px) {
+  .slot.short { aspect-ratio: 16 / 6; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.55; }
+  .card { padding: 12px 14px; gap: 6px; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .open4 div, .fix3 div { padding: 7px 10px; font-size: 12.5px; }
+  .scn-list button { padding: 6px 10px; font-size: 14px; }
+  .chk div { padding: 7px 10px; font-size: 12.5px; }
+  .credits th, .credits td { padding: 3px 8px; font-size: 12.5px; }
+  .inner { gap: 16px; }
+}
+</style>
+
+<body data-lesson="L10">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开口：“粗剪已经做完了，今天是关卡 3：把片子从‘能看’做到‘好看’，再从‘好看’做到‘能放心发出去’。前半节讲两件事：精修的方法，和 AI 创作必须遵守的规则；后半节你们动手精修、调色、加标识，最后两组互相做合规检查。”把三个问题念一遍，告诉学生下课前每人都要能回答，第 3 个问题要能结合自己的片子回答。">
+  <div class="lesson-no" aria-hidden="true">10</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第三幕 · 完成与展示</span><span>LESSON 10 / 12</span><span>90 MIN</span><span>关卡 3</span></div>
+    <h1 class="h-xl">精修与责任创作<br><span class="rgbword">好看，也要站得住</span></h1>
+    <p class="lead">粗剪只是“能看”。今天把它做到<b>抓人、统一、干净</b>，再给它加上<b>标识和分工说明</b>，让它可以放心地发出去。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>前 3 秒怎么留住观众？全片色调怎么统一？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 2</span><b>用 AI 创作，哪些做法会侵犯别人的权利？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 3</span><b>我的片子要加哪些标识和说明才算合规？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–15</b>模块 1 · 精修方法</span>
+      <span><b>15–35</b>模块 2 · 责任创作的规则</span>
+      <span><b>35–80</b>实操 · 精修 / 调色混音 / 标识说明</span>
+      <span><b>80–90</b>交叉合规检查</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 前 3 秒 ============ -->
+<section class="slide" data-min="3" data-note="模块 1 精修方法，15 分钟。先讲开场。按 → 分两步。开口先问：你们刷短视频时，决定划走还是留下，用了几秒？让学生说，多数会说一两秒。打比方：开场就像书店里翻开一本书的第一页，第一页没意思，书就放回去了。观众是否继续看，往往在前几秒就决定了。第一步讲故事：1977 年的《星球大战》，片头字幕滚完，镜头下摇，一艘小小的飞船从画面上方飞过，后面紧跟着一艘巨大的帝国战舰，从观众头顶压过来，好像永远开不完。这是一个反常的画面，但它不只是炫：小飞船被巨舰追，就是整部电影的冲突，弱小的反抗者对抗庞大的帝国。如果有视频位素材，放这 30 秒。第二步讲四种常见开场：反常画面、悬念问题、冲突瞬间、声音反差，屏幕上的例子都是校园短片能用的。落点：开场画面必须和主题直接相关，不能只是为了炫，炫完和故事没关系，观众会觉得被骗。今天任务 1 要做 A、B 两个开场版本。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 精修方法</span><span>15 MIN</span><span>① 前 3 秒</span></div>
+    <h2 class="h-l">观众留不留下，前几秒就决定了</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">参考片 · 《星球大战》1977</span>
+          <p>片头字幕滚完，一艘小飞船掠过，紧接着一艘<b>巨大的帝国战舰从观众头顶压过来</b>，好像永远开不完。</p>
+          <p>它不只是“炫”：小飞船被巨舰追，<b>就是整部电影的冲突</b>。</p>
+        </div>
+        <div class="slot short" data-slot="starwars" style="aspect-ratio:16/7"></div>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>开场像书店里翻开的<b>第一页</b>：第一页没意思，书就被放回书架了。</p>
+        </div>
+        <div class="step">
+          <div class="open4">
+            <div style="--c:var(--r)"><b>反常画面</b>教室里所有椅子都倒挂在天花板上</div>
+            <div style="--c:var(--warm)"><b>悬念问题</b>画外音：“如果明天醒来，所有人都忘了你？”</div>
+            <div style="--c:var(--b)"><b>冲突瞬间</b>从两人争吵的最高点切入，再倒叙</div>
+            <div style="--c:var(--g)"><b>声音反差</b>2 秒黑屏只有心跳声，再切到喧闹的操场</div>
+          </div>
+          <div class="punch">开场必须和主题直接相关。<small>只为了“炫”、和故事无关的开场，观众会觉得被骗。</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 节奏微调 ============ -->
+<section class="slide" data-min="2.5" data-note="讲节奏微调。按 → 分两步。第一步，左边三个动作。先打比方：讲笑话，铺垫太长，包袱就不响了。片子也一样，观众在“等”的每一帧都在流失注意力。三个动作：删掉等待的帧；同类镜头连续出现时删去重复；对照第 8 课的修改清单逐条处理。重点提醒 AI 镜头的两个特点：生成的视频开头常有 0.5 到 1 秒人物还没开始动的“起势”，结尾动作做完以后常常开始变形、崩坏，这两段几乎都要剪掉。第二步讲故事：剪辑师沃尔特·默奇，剪过《现代启示录》《英国病人》，他在《眨眼之间》这本书里提出了“六条法则”，判断一个剪辑点好不好，按重要程度排：情感占 51%，故事 23%，节奏 10%，后面是视线、二维平面、三维空间。他说，如果不得不牺牲，宁可牺牲后面的，也要保住情感。问学生：你片子里哪个镜头“好看但没有情感作用”？落点：每剪掉一帧之前问一句，它在帮观众感受什么。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 精修方法</span><span>② 节奏微调</span></div>
+    <h2 class="h-l">删掉观众在“等”的每一帧</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>讲笑话时<b>铺垫太长，包袱就不响</b>。观众在“等”的每一帧，注意力都在流失。</p>
+        </div>
+        <div class="card idea"><span class="tag">三个动作</span>
+          <ul>
+            <li><b>删等待帧</b>：逐镜检查，人物还没动、动作已结束的部分剪掉</li>
+            <li><b>删重复</b>：同类镜头连续出现，只留最好的一个</li>
+            <li><b>对照清单</b>：第 8 课的修改清单，处理一条勾一条</li>
+          </ul>
+          <p>AI 镜头尤其注意：<b>开头 0.5–1 秒常是“起势”，结尾常开始变形</b>，大多要剪掉。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">剪辑师 · 沃尔特·默奇</span>
+          <b>剪辑的“六条法则”</b>
+          <p>剪过《现代启示录》《英国病人》的默奇，在《眨眼之间》里给剪辑点排了优先级：</p>
+          <div class="six">
+            <span class="top"><b>51%</b>情感</span><span><b>23%</b>故事</span><span><b>10%</b>节奏</span>
+            <span><b>7%</b>视线</span><span><b>5%</b>二维平面</span><span><b>4%</b>三维空间</span>
+          </div>
+          <p>不得不取舍时，<b>宁可牺牲后面的，也要保住情感</b>。</p>
+          <p class="src">来源：Walter Murch, In the Blink of an Eye（《眨眼之间》）</p>
+        </div>
+        <div class="punch">剪掉一帧之前问一句：它在帮观众感受什么？</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 调色两步法 ============ -->
+<section class="slide" data-min="2.5" data-note="讲调色两步法。按 → 分两步。先讲故事：2000 年科恩兄弟的电影《逃狱三王》，故事发生在大萧条时期干燥炎热的美国南方，可他们拍摄时正赶上当地的夏天，满眼都是绿，导演形容比爱尔兰还绿。摄影师罗杰·狄金斯想要一种像旧时手工上色老照片的、尘土飞扬的金黄色调。他们把整部胶片扫描进电脑，把绿色压下去、把黄和橙推上来。这被普遍认为是第一部全片用数字中间片完成调色的好莱坞长片，从这以后，数字调色成了电影的标准流程。有素材就放调色前后对比。第一步讲两步法：先校正，统一每个镜头的曝光、白平衡、对比度，让每个镜头先“正确”；再风格化，用统一的滤镜或 LUT 建立整体色调。LUT 就是一张颜色对照表：输入某个颜色，查表得到另一个颜色，所以同一张表套在所有镜头上，色调就统一了。第二步打比方：乐队演出前先调音，每件乐器音准一致，然后才决定演摇滚还是爵士。顺序反了，滤镜盖不住色差，就像跑调的乐队换什么曲风都难听。AI 镜头的特殊问题：每次生成色调都不一样，所以要选一个标准镜头当参照，下一页现场演示。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 精修方法</span><span>③ 调色</span></div>
+    <h2 class="h-l">调色两步：先“正确”，再“好看”</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">参考片 · 《逃狱三王》2000</span>
+          <p>故事在干燥的大萧条南方，可拍摄地夏天<b>满眼都是绿</b>。摄影师罗杰·狄金斯把胶片扫描进电脑，<b>压掉绿色、推上金黄</b>，做出旧照片般的色调。</p>
+          <p>它被认为是<b>第一部全片数字调色</b>的好莱坞长片。</p>
+        </div>
+        <div class="slot short" data-slot="obrother" style="aspect-ratio:16/7"></div>
+      </div>
+      <div class="col">
+        <div class="step">
+          <div class="card idea"><span class="tag">两步法</span>
+            <ul>
+              <li><b>① 校正</b>：统一曝光、白平衡、对比度，让每个镜头先“正确”</li>
+              <li><b>② 风格化</b>：用统一的滤镜或 <b>LUT</b> 建立整体色调，全片同一强度</li>
+            </ul>
+            <p><b>LUT</b> = 一张颜色对照表：输入一个颜色，查表换成另一个颜色。</p>
+            <p>AI 镜头每次生成色调都不一样：<b>选一个“标准镜头”，其他镜头向它靠拢</b>。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="card analogy"><span class="tag">打个比方</span>
+            <p>乐队上台前<b>先调音</b>，每件乐器音准一致，<b>再决定</b>演摇滚还是爵士。顺序反了，滤镜盖不住色差。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 互动：调色台 ============ -->
+<section class="slide" id="s-grade" data-min="3" data-note="现场演示调色两步法。这四个镜头模拟同一部片子里 AI 生成的四个镜头：A 是标准镜头，B 偏蓝，C 偏暗发灰，D 过饱和偏黄。每个镜头右下角的“差距”是它和标准镜头的色彩差异。演示顺序：1. 先故意跳过校正，直接点“暖金怀旧”并把强度拉满，让学生看：风格统一了吗？没有，B 还是冷的、C 还是灰的，滤镜盖不住色差。把风格调回“无”。2. 点镜头 B，把色温往右拉，差距变小；点镜头 C，提高曝光和对比度；点镜头 D，降饱和度、色温往左拉。可以请两位同学上来操作，看谁先把差距降到绿色。3. 四个镜头都接近后，再套“暖金怀旧”或“冷青夜色”，强度保持一致，这时全片才像一部片子。注意：这里是示意模型，真实调色时参数名称以剪映“调节”面板为准；判断标准是眼睛，不是数字。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 精修方法</span><span>互动 · 调色台</span></div>
+    <h2 class="h-m">四个 AI 镜头色调不一：先校正，再统一风格</h2>
+    <div class="lab grade">
+      <span class="label">互动 · 点一个镜头再拖滑杆；右下角是它和标准镜头 A 的差距</span>
+      <div class="strip" id="gradeStrip"></div>
+      <div class="g2">
+        <div class="col">
+          <span class="label" id="gradeWho">① 校正 · 当前镜头：A</span>
+          <div class="sliders">
+            <div class="row"><label>曝光<input type="range" id="gE" min="-0.8" max="0.8" step="0.05" value="0"><b id="gEv">0</b></label></div>
+            <div class="row"><label>色温<input type="range" id="gT" min="-0.8" max="0.8" step="0.05" value="0"><b id="gTv">0</b></label></div>
+            <div class="row"><label>对比度<input type="range" id="gC" min="-0.8" max="0.8" step="0.05" value="0"><b id="gCv">0</b></label></div>
+            <div class="row"><label>饱和度<input type="range" id="gS" min="-0.8" max="0.8" step="0.05" value="0"><b id="gSv">0</b></label></div>
+          </div>
+        </div>
+        <div class="col">
+          <span class="label">② 风格化 · 全片套同一个 LUT</span>
+          <div class="row">
+            <button class="btn on" type="button" data-lut="none">无</button>
+            <button class="btn" type="button" data-lut="warm">暖金怀旧</button>
+            <button class="btn" type="button" data-lut="cool">冷青夜色</button>
+            <button class="btn" type="button" id="gradeReset">全部还原</button>
+          </div>
+          <div class="row"><label>强度<input type="range" id="gK" min="0" max="1" step="0.05" value="0.7"><b id="gKv">70%</b></label></div>
+          <p class="small">示意模型：真实参数名以剪映“调节”面板为准，最终判断靠眼睛。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 画面修复 + 片头片尾 ============ -->
+<section class="slide" data-min="3.5" data-note="模块 1 最后一页，画面修复和片头片尾。按 → 分两步。第一步，画面修复三级处理，打比方：衣服出了问题，线头剪掉就行；破了个洞，打个补丁；整件不能穿了，就换一件。对应到镜头：边缘有瑕疵，比如角落里变形的手、乱码的招牌文字，先试裁切，稍微放大画面把它裁出去；关键帧有问题，比如脸崩了，用局部重绘修好这一帧，再用它重新生成视频；实在修不好的，替换或者删掉，不要舍不得。问学生：你的片子里有没有一个镜头，你明知道有问题却一直舍不得删？第二步讲片头片尾：片名；AI 标识，片头要有“本片含 AI 生成内容”的提示，下一个模块会讲为什么；片尾写分工与工具说明。片尾字幕建议不超过 30 秒，60 秒左右的短片，片尾太长观众会直接划走。过渡：标识和分工不只是格式要求，背后是一整套规则，进入模块 2。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 精修方法</span><span>④ 修复与片头片尾</span></div>
+    <h2 class="h-l">修不好的镜头，要舍得删</h2>
+    <div class="card analogy"><span class="tag">打个比方</span>
+      <p>衣服有问题：<b>线头剪掉、破洞打补丁、整件坏了就换一件</b>。镜头也分三级处理。</p>
+    </div>
+    <div class="fix3">
+      <div style="--c:var(--g)"><b>① 裁切</b>角落里变形的手、乱码的招牌：稍微放大画面，把瑕疵裁出去</div>
+      <div style="--c:var(--warm)"><b>② 局部重绘 → 重新生成</b>关键帧有问题（脸崩、多手指）：先修好这一帧，再用它重新生成视频</div>
+      <div style="--c:var(--r)"><b>③ 替换或删除</b>修了两次还不行：换一个镜头，或者直接删掉，不要舍不得</div>
+    </div>
+    <div class="step">
+      <div class="card idea"><span class="tag">片头片尾清单</span>
+        <ul>
+          <li><b>片头</b>：片名 + AI 标识（“本片含 AI 生成内容”）</li>
+          <li><b>片尾</b>：分工与工具说明：哪些是人做的，哪些是 AI 生成的，用了哪些工具</li>
+          <li><b>长度</b>：片尾字幕建议<b>不超过 30 秒</b></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 AI 标识办法 ============ -->
+<section class="slide" data-min="4" data-note="进入模块 2，责任创作的规则，20 分钟。先讲标识。按 → 分两步。开口问：你们刷到过带“AI 生成”小标签的视频吗？那个标签从哪来的？第一步讲规定：2025 年 3 月，国家网信办、工信部、公安部、广电总局四个部门联合发布《人工智能生成合成内容标识办法》，配套强制性国家标准 GB 45438-2025，2025 年 9 月 1 日起施行。要求分两种：显式标识，在内容里用文字、声音、图形让人能明显看到或听到，比如视频在起始画面和播放周边加提示；隐式标识，写在文件的元数据里，人看不见，平台读得到，由生成平台和传播平台处理。再强调第十条两句话：用户发布生成合成内容，应当主动声明，使用平台提供的标识功能；不得恶意删除、篡改、伪造、隐匿标识。第二步打比方：食品包装，正面印的“含酒精”“含坚果”是给人看的，就是显式；包装上的条形码、追溯码是给机器读的，就是隐式。问学生：把视频右下角的 AI 水印裁掉再发，算不算问题？答案：算，这就是恶意删除标识。落点：本课程要求片头提示停留至少 2 秒，这是课程标准，比法规写得更具体，目的是让观众一定能看到。课前核实：各平台发布页 AI 声明选项的当期名称和位置。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 责任创作的规则</span><span>20 MIN</span><span>① AI 标识</span></div>
+    <h2 class="h-l">AI 生成的内容，要让人知道</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card idea"><span class="tag">规定 · 2025 年 9 月 1 日起施行</span>
+          <b>《人工智能生成合成内容标识办法》</b>
+          <p>网信办等四部门 2025 年 3 月发布，配套强制性国家标准 <b>GB 45438-2025</b>。</p>
+          <ul>
+            <li><b>显式标识</b>：用文字、声音、图形让人<b>明显感知</b>。视频要在<b>起始画面</b>和播放周边加提示</li>
+            <li><b>隐式标识</b>：写进文件元数据，由生成平台和传播平台处理</li>
+            <li>用户发布时应<b>主动声明</b>；不得<b>恶意删除、篡改、伪造、隐匿</b>标识（第十条）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>食品包装：正面印的“含坚果”是<b>给人看的</b>（显式）；条形码、追溯码是<b>给机器读的</b>（隐式）。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span><p>把视频角落的 AI 水印裁掉再发，算不算问题？</p></div>
+        <div class="punch">本课程标准：片头“本片含 AI 生成内容”停留至少 2 秒<small>发布时再勾选平台的 AI 声明。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 著作权 ============ -->
+<section class="slide" data-min="4" data-note="讲著作权，两个真实案件。按 → 分两步。先抛问题：用 AI 生成的图，算不算你的作品？别人拿去用，你能维权吗？第一步讲北京互联网法院 2023 年的文生图案：原告用 Stable Diffusion 生成了一张人物图，发在小红书上；被告在自己的百家号文章里用了这张图，还截掉了水印。2023 年 11 月法院判决：原告通过设计提示词、调整参数、反复筛选，体现了自己的选择和安排，这张图构成作品，原告享有著作权，被告赔礼道歉并赔偿 500 元。注意关键词是“足够的独创性智力投入”：随便输一句话出图，不一定能得到同样的认定。打比方：同一台相机，按快门的人不同，拍出的照片也不同，照片属于做选择的人。这就是生产日志的价值：它证明了你的创作过程。第二步讲反方向：广州互联网法院 2024 年审结的奥特曼案。一家 AI 网站的用户输入“奥特曼”相关提示，网站就能生成和奥特曼形象高度相似的图片，法院认定这家网站侵犯了奥特曼作品的复制权和改编权，这被称为全球首例生成式 AI 服务侵犯著作权的生效判决。对我们的意思是：生成知名角色、用别人的音乐和图片，都需要授权。落点两句：你的创作过程要留证据；别人的作品不能随便拿。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 责任创作的规则</span><span>② 著作权</span></div>
+    <h2 class="h-l">AI 画的图，算谁的作品？</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">案件 · 北京互联网法院 2023</span>
+          <b>AI 文生图第一案</b>
+          <p>原告用 Stable Diffusion 生成人物图发在网上，被告拿去配文章还截掉水印。法院认为原告<b>设计提示词、调整参数、反复筛选</b>，体现了个性化表达，图片<b>构成作品</b>，判赔 500 元。</p>
+          <p class="src">（2023）京0491民初11279号，2023 年 11 月判决</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>同一台相机，按快门的人不同，照片就不同。<b>作品属于做选择的人</b>，而生产日志就是你做过选择的证据。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">案件 · 广州互联网法院 2024</span>
+          <b>AI 网站生成“奥特曼”被判侵权</b>
+          <p>用户输入相关提示，网站就生成与奥特曼形象高度相似的图片。法院认定网站侵犯了<b>复制权和改编权</b>。</p>
+          <p class="src">（2024）粤0192民初113号</p>
+        </div>
+        <div class="punch">你的过程要留证据；别人的作品不能随便拿。<small>音乐、图片、角色形象都需要授权；“模仿受保护角色”可能构成侵权。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 肖像权与声音权 ============ -->
+<section class="slide" data-min="3" data-note="讲肖像权与声音权。按 → 分两步。第一步讲故事：北京互联网法院 2024 年 4 月宣判的全国首例 AI 声音侵权案。原告殷某是一位配音演员，她曾为一些有声作品录过音。后来她发现，一款文本转语音的 App 里有一个 AI 声音，听起来就是她：有公司拿她的录音训练出了 AI 声音，对外出售。法院认定：只要 AI 生成的声音能让人识别出是她本人，她的声音权益就延及这个 AI 声音；对录音制品的授权，不等于对声音本身的授权。判决被告赔礼道歉并赔偿 25 万元。打比方：声音和脸一样，是一个人的身份证，别人认得出来。第二步讲规则：民法典第 1019 条，任何组织或者个人不得利用信息技术手段伪造等方式侵害他人的肖像权；第 1023 条，对自然人声音的保护，参照肖像权。所以未经同意用别人的照片做主角、克隆别人的声音，都构成侵权，明星也一样。最后抛问题：同学同意了，就可以随便用他的声音吗？引导出：同意要说清范围，用在哪部片子、说什么话、能不能公开发布，最好写成书面同意。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 责任创作的规则</span><span>③ 肖像权与声音权</span></div>
+    <h2 class="h-l">你的脸和声音，只属于你</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card story"><span class="tag">案件 · 北京互联网法院 2024 年 4 月</span>
+          <b>首例 AI 声音侵权案</b>
+          <p>配音演员殷某发现，一款文字转语音 App 在卖一个<b>听起来就是她</b>的 AI 声音：有公司拿她的录音训练出来的。</p>
+          <p>法院认定：AI 声音<b>能被识别为本人</b>，她的声音权益就延及于此；授权录音，不等于授权声音。判赔 <b>25 万元</b>。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>声音和脸一样，是一个人的<b>“身份证”</b>：别人一听、一看就认得出是谁。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card idea"><span class="tag">规则 · 民法典</span>
+          <ul>
+            <li><b>第 1019 条</b>：不得利用信息技术手段伪造等方式侵害他人肖像权</li>
+            <li><b>第 1023 条</b>：自然人声音的保护，参照肖像权</li>
+          </ul>
+          <p>未经同意用别人的照片做主角、克隆别人的声音，<b>都构成侵权</b>，明星也一样。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span><p>同学同意了，就可以随便用他的声音吗？</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 深度伪造 ============ -->
+<section class="slide" data-min="2.5" data-note="讲深度伪造，两个真实事件，讲清“以假乱真”会造成什么实际伤害。第一个：2023 年 5 月，包头警方通报了一起案件，福州一家科技公司的负责人郭先生接到“好友”的微信视频电话，对方说要借他公司账户走 430 万元保证金。视频里的脸和声音都像好友，他就在 10 分钟内转了 430 万元。后来才知道，对方用 AI 换了脸。在银行协助下，大部分钱被拦截了下来。第二个，按 →：2023 年 5 月 22 日，一张“五角大楼附近发生爆炸”的图片在推特上疯传，转发者里还有冒充新闻机构的认证账号，美国股市在几分钟内出现明显下跌，随后当地消防部门辟谣，市场才恢复。这张图被普遍认为是 AI 生成的。国内也有类似的事：2023 年甘肃平凉警方查处一名男子，用 ChatGPT 改写编造“火车撞上修路工人致 9 人死亡”的假新闻牟利，被采取刑事强制措施。落点：伪造真实人物的言行、伪造新闻画面，不管出于玩笑还是流量，都可能违法，并真实地伤害别人。我们的片子是虚构故事，可以有虚构情节，但不能做成让人误以为是真新闻、真人真事的东西。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 责任创作的规则</span><span>④ 深度伪造</span></div>
+    <h2 class="h-l">以假乱真，会伤到真人</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">真实事件 · 包头警方通报 2023</span>
+          <b>10 分钟，被骗 430 万元</b>
+          <p>一位公司负责人接到“好友”的视频电话借账户走账。<b>脸和声音都像好友</b>，他很快转了 430 万元。对方用的是 <b>AI 换脸</b>。</p>
+        </div>
+        <div class="slot short" data-slot="aiscam" style="aspect-ratio:16/6"></div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">真实事件 · 2023 年 5 月 22 日</span>
+          <b>一张假图，让美国股市跳水</b>
+          <p>“五角大楼附近爆炸”的图片疯传，冒充新闻机构的认证账号也在转发，<b>股市几分钟内明显下跌</b>，消防部门辟谣后才恢复。这张图被普遍认为是 AI 生成的。</p>
+        </div>
+        <div class="punch">不伪造真人言行，不伪造新闻画面。<small>虚构故事可以有虚构情节，但不能做成让人误以为是真的“新闻”。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 互动：六个情境 ============ -->
+<section class="slide" id="s-scn" data-min="5" data-note="模块 2 的核心练习，5 分钟，六个情境。做法：点左边一个情境，念一遍右边的描述，请全班先举手判断：合规、有条件可以、还是不行。数一下手，再点“揭晓”，用前面讲过的规则解释，最后念“怎样改”。六个情境的答案：1 用明星照片做主角，不行，肖像权；2 用流行歌曲作 BGM，有条件可以，需要授权，平台曲库的授权通常只在该平台内有效，导出参赛不一定有效，课前核实所用平台的音乐使用条款；3 生成知名动画角色的同人片段并发布，不行，奥特曼案；4 克隆同学的声音，有条件可以，书面同意并说清用途；5 发布时不加 AI 标识，不行，标识办法第十条；6 生成某地发生事故的新闻画面，不行，深度伪造与虚假信息。注意节奏：每个情境不超过 50 秒，学生意见分歧大的，多给一点时间让两边各说一句理由。落点：判断时问三个问题：用了谁的东西？经过同意了吗？观众会不会被误导？">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 责任创作的规则</span><span>互动 · 六个情境</span></div>
+    <h2 class="h-m">先举手判断，再揭晓：这样做行不行？</h2>
+    <div class="g2 wide-r">
+      <div class="scn-list" id="scnList"></div>
+      <div class="lab">
+        <span class="label" id="scnNo">情境 1 / 6</span>
+        <b class="h-m" id="scnTitle"></b>
+        <p id="scnDesc" style="font-size:15px;color:var(--fg)"></p>
+        <div class="vote"><span>✋ 合规</span><span>✋ 有条件可以</span><span>✋ 不行</span></div>
+        <div class="row"><button class="btn primary" type="button" id="scnReveal">揭晓</button><button class="btn" type="button" id="scnNext">下一个 ›</button></div>
+        <div id="scnAns" class="col" hidden>
+          <span class="verdict" id="scnVerdict"></span>
+          <p class="small" id="scnRule"></p>
+          <p id="scnWhy" style="font-size:14px;color:var(--muted)"></p>
+          <p id="scnFix" style="font-size:14px;color:var(--g)"></p>
+        </div>
+      </div>
+    </div>
+    <p class="small">判断三问：用了谁的东西？经过同意了吗？观众会不会被误导？</p>
+  </div>
+</section>
+
+<!-- ============ 12 人机分工 + 平台规则 ============ -->
+<section class="slide" data-min="1.5" data-note="模块 2 收尾，1.5 分钟。讲两件事。第一，平台规则：各视频平台对 AI 内容都有标注要求，2025 年 9 月标识办法施行时，多家主要平台都上线了 AI 内容标识功能，发布页里通常有“内容由 AI 生成”一类的声明选项，名称和位置各平台不同、会更新，发布前必须核对一遍。课前核实：所用平台的当期选项名称。第二，透明的人机分工：片尾写明哪些部分由人完成，比如创意、剧本、分镜、选择、剪辑；哪些部分由 AI 工具生成，比如画面、配乐、配音；以及用了哪些工具。打比方：电影片尾字幕会写清每一个岗位是谁，小组作业也要写清谁做了什么。屏幕上是示例，任务 3 会发模板。过渡：规则讲完，进入实操。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 责任创作的规则</span><span>⑤ 平台规则与人机分工</span></div>
+    <h2 class="h-l">片尾写清楚：人做了什么，AI 做了什么</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>电影片尾字幕会写清<b>每一个岗位是谁</b>。你的片子也一样：哪些是你的判断，哪些是工具的产出。</p>
+        </div>
+        <div class="card idea"><span class="tag">平台规则</span>
+          <p>各视频平台对 AI 内容都有标注要求，发布页通常有<b>“AI 生成”声明选项</b>。名称和位置会变，<b>发布前必须核对</b>。</p>
+        </div>
+      </div>
+      <div class="lab"><span class="label">示例 · 片尾分工表</span>
+        <table class="credits">
+          <tr><th>岗位</th><th>人做了什么</th><th>AI 工具</th></tr>
+          <tr><td>导演</td><td>定主题、选定每个镜头</td><td>—</td></tr>
+          <tr><td>编剧</td><td>logline、剧本、对白</td><td>DeepSeek 辅助改写对白</td></tr>
+          <tr><td>视觉</td><td>分镜、提示词、筛选与修复</td><td>即梦（关键帧）、可灵（镜头）</td></tr>
+          <tr><td>剪辑</td><td>剪辑、调色、开场设计</td><td>剪映（自动字幕）</td></tr>
+          <tr><td>声音</td><td>选曲、混音、录对白</td><td>Suno（配乐）</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，45 分钟，三个任务，这一页 1 分钟，计入任务 1 的 20 分钟。确认每组都打开了第 8 课的粗剪工程、修改清单和生产日志，课程包里的 AI 标识模板、精修检查单、合规检查单已经发到组里。分工建议：一人主剪，一人补镜和记日志，一人负责声音和片尾分工表，十五分钟后可以轮换。提醒：补镜只用剩余额度，用完就用裁切、变速、替换代替。">
+  <div class="inner">
+    <span class="num">实操 · 45 MIN</span>
+    <h2 class="h-xl">从粗剪到精剪，<br>再到可以发布</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 20 分钟</span><b>按修改清单精修</b><p>逐条处理清单、补镜、做 A/B 两个开场。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 15 分钟</span><b>调色与混音</b><p>标准镜头 → 逐镜校正 → 统一 LUT → 音量关系。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 10 分钟</span><b>标识与说明</b><p>片头 AI 提示、片尾分工表、日志补全素材来源。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool"><img src="../media/logos/jianying.png" alt="">剪映专业版</span>
+      <span class="tool"><img src="../media/logos/jimeng.png" alt="">即梦</span>
+      <span class="tool"><img src="../media/logos/kling.png" alt="">可灵</span>
+      <span class="tool">第 8 课粗剪 + 修改清单</span>
+      <span class="tool">AI 标识模板 <i>片头提示 + 片尾分工表</i></span>
+      <span class="tool">精修检查单 · 合规检查单</span>
+      <span class="tool">生产日志</span>
+    </div>
+    <p class="small">补镜工具用本组一直在用的生图 / 视频工具即可，只用剩余额度。</p>
+  </div>
+</section>
+
+<!-- ============ 14 任务 1 ============ -->
+<section class="slide practice" data-min="19" data-note="任务 1，计 20 分钟（含上一页总览 1 分钟）。巡视重点：第一，修改清单是不是真的逐条处理了，不改的条目要写一句理由，不能直接跳过。第二，节奏，抽查两个 AI 镜头，看开头的起势和结尾的变形有没有剪掉。第三，补镜必须进日志：提示词、工具、第几次生成、为什么补。第四，A/B 两个开场：提醒学生复制一条时间线再改，不要在原时间线上来回改；两个版本差别要明显，例如 A 从冲突画面开始，B 从声音反差开始；各导出前 10 秒，按格式命名。下节课开场前，每组请 3 位非本组同学看两个版本选一个，并说一句理由。降级方案：额度用完或生成持续失败，用裁切、变速、替换已有镜头代替补镜；剪映专业版打不开时，用剪映手机版完成，导出规格不变。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">20 分钟</span><span>工具：剪映专业版 + 本组生图 / 视频工具</span></div>
+    <h2 class="h-m">按修改清单精修，并做出两个不同的开场</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>打开第 8 课的粗剪和修改清单，逐条处理，处理一条勾一条。</b><span>先改影响“看懂”的，再改影响“好看”的；不改的写一句理由。</span></div></li>
+        <li><div><b>节奏：逐镜检查。</b><span>剪掉 AI 镜头开头的“起势”和结尾的变形；同类镜头连续出现，只留最好的一个。</span></div></li>
+        <li><div><b>补镜：确需补的，用剩余额度重新生成。</b><span>在生产日志记下提示词、工具、第几次生成、为什么补。</span></div></li>
+        <li><div><b>复制一条时间线，做 A、B 两个开场。</b><span>例如 A 从冲突画面开始，B 从声音反差开始；各导出前 10 秒：</span><span class="code">组名_L10_开场A</span> <span class="code">组名_L10_开场B</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">完成标准</span>修改清单<b>每条都有勾或理由</b>；补的镜头<b>都写进日志</b>；<b>两个 10 秒开场文件</b>已导出。</div>
+        <div class="card ask"><span class="tag">下节课开场前</span><p>请 3 位非本组同学看 A、B 两版，选一个并说一句理由。</p></div>
+        <p class="small">降级：额度用完或生成失败，用裁切、变速、替换已有镜头代替补镜；专业版打不开就用剪映手机版。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 任务 2 ============ -->
+<section class="slide practice" data-min="15" data-note="任务 2，15 分钟。调色先做，大约 9 分钟；混音大约 6 分钟。调色步骤：选一个曝光、色彩最满意的镜头当标准镜头，在剪映“调节”面板里调好它的亮度、色温、对比度、饱和度；然后其余镜头逐一和它并排对比，向它靠拢，方法和刚才的调色台一样；最后选一个滤镜或导入 LUT，应用到全片，强度保持一致。剪映的按钮名称以当期版本为准，课前核实专业版导入 LUT 的入口。混音：人声为主，有对白的地方音乐要明显压低，一般让音乐比人声低 10 到 15 分贝左右作为起点，用耳朵最终判断；段落衔接处加 0.5 到 1 秒淡入淡出；用耳机和手机外放各听一遍，手机外放听不清对白就要再压音乐。检查方法：随机挑三个相邻镜头连着看，看不出跳色就算过。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">15 分钟</span><span>工具：剪映专业版 · 调节 / 滤镜 / 音频</span></div>
+    <h2 class="h-m">调色与混音：先统一，再风格化；人声永远第一</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>选一个“标准镜头”，在“调节”面板调好它</b><span>：亮度（曝光）、色温、对比度、饱和度。</span></div></li>
+        <li><div><b>其余镜头逐一和它并排对比，向它靠拢。</b><span>先管亮度和色温，再管对比度和饱和度。</span></div></li>
+        <li><div><b>选一个统一的滤镜或导入 LUT，应用到全片</b><span>，强度保持一致，不要每个镜头各用各的。</span></div></li>
+        <li><div><b>检查人声、音乐、音效的音量关系。</b><span>有对白处音乐明显压低；段落衔接处加 0.5–1 秒淡入淡出。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="card idea"><span class="tag">自查方法</span>
+          <ul>
+            <li>随机挑 <b>3 个相邻镜头</b>连着看：看不出跳色</li>
+            <li>用<b>耳机</b>和<b>手机外放</b>各听一遍：每个字都听得清</li>
+          </ul>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>全片色调统一；<b>同一个滤镜 / LUT、同一强度</b>；对白清楚，段落衔接没有突兀的声音。</div>
+        <p class="small">按钮名称以当期剪映版本为准。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 任务 3 ============ -->
+<section class="slide practice" data-min="10" data-note="任务 3，10 分钟。第一，片头显式提示：用课程包模板，在片头加入“本片含 AI 生成内容”，停留至少 2 秒，字要够大、对比要够强，手机竖屏缩小后也能看清。第二，片尾分工表：导演、编剧、视觉、剪辑、声音五行，每行写清人的工作和使用的 AI 工具，没用 AI 的写“无”，不要空着。片尾总长不超过 30 秒。第三，在生产日志里补全所有素材来源：音乐、音效、参考图、配音，每一项写清来源、是否需要授权、授权情况。用了同学的照片或声音的，要附同意说明。巡视时抽查：日志里有没有“来源不明”的素材，有就当场处理：换掉或补授权。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">10 分钟</span><span>工具：剪映专业版 + AI 标识模板 + 生产日志</span></div>
+    <h2 class="h-m">标识与说明：让观众和评委都看得清</h2>
+    <div class="g2">
+      <ol class="steps">
+        <li><div><b>片头加显式提示“本片含 AI 生成内容”，停留至少 2 秒。</b><span>手机屏幕上也要看得清。</span></div></li>
+        <li><div><b>用片尾分工表模板</b><span>：导演、编剧、视觉、剪辑、声音，每行写清人的工作和用的 AI 工具；没用写“无”。片尾不超过 30 秒。</span></div></li>
+        <li><div><b>在生产日志里补全所有素材来源</b><span>：音乐、音效、参考图、配音，写清来源和授权情况；用了同学的照片或声音，附同意说明。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="title-card"><b>本片含 AI 生成内容</b><span>片头提示 · 停留 ≥ 2 秒</span></div>
+        <div class="done-box"><span class="label">完成标准</span>片头提示 ≥ 2 秒；分工表<b>五行都写满</b>；日志里<b>没有“来源不明”的素材</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 交叉合规检查 ============ -->
+<section class="slide" data-min="7.5" data-note="交叉合规检查，约 7.5 分钟。两组互换精剪版和生产日志，按合规检查单逐项核对，六项：素材来源、授权、AI 标识、片尾说明、是否涉及真人肖像与声音、是否模仿受保护角色。每项打勾或写问题，问题要写具体：哪一秒、哪个素材、为什么。最后两分钟，每组用一分钟当面把发现的问题告诉对方。原组课后修正，修正结果写进日志，下节课开课时检查。老师巡视时重点看第 5、6 项，这是最容易被忽略的。收齐当堂产出：精剪版、AI 标识、片尾分工、合规检查单、完整生产日志，这是关卡 3。">
+  <div class="inner">
+    <div class="tc"><span class="ch">交叉合规检查</span><span>10 MIN</span></div>
+    <h2 class="h-l">两组互换，按检查单逐项核对</h2>
+    <div class="chk">
+      <div><b>素材来源</b>音乐、音效、参考图、配音，日志里都写了来源</div>
+      <div><b>授权</b>需要授权的素材，已取得授权或已换掉</div>
+      <div><b>AI 标识</b>片头提示清楚可见，停留 ≥ 2 秒</div>
+      <div><b>片尾说明</b>分工表五行写满，人和 AI 各做了什么</div>
+      <div><b>真人肖像与声音</b>出现真人的脸或声音？有没有本人同意</div>
+      <div><b>受保护角色</b>有没有模仿知名角色、品牌形象</div>
+    </div>
+    <div class="g2">
+      <div class="card idea"><span class="tag">流程</span>
+        <p>互换作品与日志 → 逐项打勾，问题写到<b>“哪一秒、哪个素材、为什么”</b> → 每组用 1 分钟当面反馈 → 原组课后修正，写进日志。</p>
+      </div>
+      <div class="col">
+        <span class="label">当堂产出 · 关卡 3</span>
+        <div class="outs"><span>精剪版</span><span>AI 标识</span><span>片尾分工</span><span>合规检查单</span><span>完整生产日志</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 总结 ============ -->
+<section class="slide" data-min="2.5" data-note="最后 2.5 分钟。三个问题各请一位同学回答，最好结合自己组的片子。参考答案：1. 开场用反常画面、悬念问题、冲突瞬间或声音反差，但必须和主题相关；调色先校正、再风格化，以标准镜头为参照。2. 未经同意用别人的肖像、声音，未经授权用别人的音乐、图片、角色，伪造真人言行和新闻画面。3. 片头显式提示，发布时勾选平台 AI 声明，片尾写清人机分工和工具，日志补全素材来源。布置课后任务：继续 Skill 一周使用记录；有意投稿的小组开始准备英文字幕；下节课开场前，请 3 位非本组同学选 A、B 开场。合规检查发现的问题，课后修正并写进日志。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span></div>
+    <h2 class="h-l">三个问题，结合你的片子回答</h2>
+    <div class="g3">
+      <div class="q" style="--c:var(--b)"><span class="n">精修</span><b>你的开场用了哪一种方式？全片以哪个镜头为标准？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">权利</span><b>你的片子里，哪些素材需要别人的同意或授权？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">合规</span><b>你加了哪些标识和说明？发布前还要核对什么？</b></div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务：继续 Skill 一周使用记录；有意投稿的小组准备英文字幕。<small>下节课开场前：请 3 位非本组同学选 A/B 开场。合规检查的问题，课后修正并写进日志。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  starwars: { type: 'media', label: '《星球大战》1977 · 开场战舰镜头', hint: '约 30 秒：片头字幕之后，小飞船掠过、帝国战舰从头顶压过来', find: 'https://search.bilibili.com/all?keyword=%E6%98%9F%E7%90%83%E5%A4%A7%E6%88%98%201977%20%E5%BC%80%E5%9C%BA%20%E6%AD%BC%E6%98%9F%E8%88%B0', cred: 'Star Wars · George Lucas · 1977' },
+  obrother: { type: 'media', label: '《逃狱三王》· 调色前后对比', hint: '同一画面绿色原片与金黄成片的对比，30 秒内', find: 'https://search.bilibili.com/all?keyword=%E9%80%83%E7%8B%B1%E4%B8%89%E7%8E%8B%20%E8%B0%83%E8%89%B2', cred: 'O Brother, Where Art Thou? · Coen Brothers / Roger Deakins · 2000' },
+  aiscam: { type: 'media', label: '新闻报道 · AI 换脸诈骗', hint: '包头警方通报的 AI 换脸诈骗案新闻片段，1 分钟内', find: 'https://search.bilibili.com/all?keyword=%E5%8C%85%E5%A4%B4%20AI%E6%8D%A2%E8%84%B8%20%E8%AF%88%E9%AA%97%20430%E4%B8%87', cred: '包头市公安局 · 2023' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+
+  /* ---------- 调色台 ---------- */
+  const SCENES = [
+    `<defs><linearGradient id="skyA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fa6dd"/><stop offset="1" stop-color="#dfe9ee"/></linearGradient></defs>
+     <rect width="160" height="90" fill="url(#skyA)"/><circle cx="128" cy="20" r="9" fill="#ffe7a3"/>
+     <rect x="18" y="30" width="62" height="34" fill="#cdb79d"/><rect x="18" y="26" width="62" height="5" fill="#a04a3c"/>
+     <g fill="#7fb0d6"><rect x="24" y="36" width="9" height="8"/><rect x="38" y="36" width="9" height="8"/><rect x="52" y="36" width="9" height="8"/><rect x="66" y="36" width="9" height="8"/></g>
+     <rect y="62" width="160" height="28" fill="#5d9450"/><rect x="104" y="48" width="5" height="16" fill="#2f4a7a"/><circle cx="106.5" cy="45" r="3.5" fill="#e3ad87"/>`,
+    `<rect width="160" height="90" fill="#d8c8ae"/><rect x="92" y="10" width="54" height="40" fill="#8fbfe6"/><rect x="92" y="10" width="54" height="40" fill="none" stroke="#f3eee4" stroke-width="3"/>
+     <rect x="0" y="66" width="160" height="24" fill="#9a6a45"/><path d="M38 90 L44 50 Q60 42 76 50 L82 90 Z" fill="#2f4f86"/>
+     <circle cx="60" cy="36" r="13" fill="#e6b08b"/><path d="M47 34 Q48 20 60 20 Q73 20 73 34 Q66 26 60 27 Q53 27 47 34 Z" fill="#2a211e"/>`,
+    `<rect width="160" height="90" fill="#a9927a"/><circle cx="26" cy="22" r="10" fill="#e9c46a" opacity=".5"/><circle cx="140" cy="64" r="14" fill="#7cb7d9" opacity=".45"/>
+     <path d="M48 90 Q52 64 80 62 Q108 64 112 90 Z" fill="#c23b3b"/>
+     <ellipse cx="80" cy="40" rx="22" ry="26" fill="#ebb38e"/><path d="M57 40 Q56 12 80 12 Q104 12 103 40 Q96 24 80 24 Q64 24 57 40 Z" fill="#2a211e"/>
+     <circle cx="72" cy="42" r="2.4" fill="#2a211e"/><circle cx="88" cy="42" r="2.4" fill="#2a211e"/><path d="M74 54 Q80 58 86 54" stroke="#a5523f" stroke-width="2" fill="none"/>`,
+    `<rect width="160" height="90" fill="#7b5233"/><rect x="0" y="0" width="160" height="22" fill="#3e5b4a"/>
+     <rect x="24" y="32" width="64" height="44" fill="#f3efe6" transform="rotate(-6 56 54)"/><g stroke="#9aa6b8" stroke-width="1.2"><line x1="32" y1="44" x2="80" y2="39"/><line x1="33" y1="52" x2="81" y2="47"/><line x1="34" y1="60" x2="70" y2="56"/></g>
+     <circle cx="118" cy="52" r="13" fill="#c8402f"/><path d="M118 39 Q121 33 126 32" stroke="#5a3a1f" stroke-width="2" fill="none"/><ellipse cx="124" cy="36" rx="5" ry="2.5" fill="#4f9a45"/>
+     <rect x="64" y="72" width="70" height="5" rx="2" fill="#f2c230" transform="rotate(-10 99 74)"/>`
+  ];
+  const SHOTS = [
+    { name: 'A 远景 · 标准镜头', off: { e: 0, t: 0, c: 0, s: 0 } },
+    { name: 'B 中景 · 偏蓝', off: { e: -0.05, t: -0.55, c: 0, s: -0.1 } },
+    { name: 'C 特写 · 偏暗发灰', off: { e: -0.3, t: 0.1, c: -0.35, s: -0.25 } },
+    { name: 'D 空镜 · 过饱和偏黄', off: { e: 0.1, t: 0.45, c: 0.15, s: 0.6 } }
+  ];
+  const KEYS = ['e', 't', 'c', 's'];
+  const adj = SHOTS.map(() => ({ e: 0, t: 0, c: 0, s: 0 }));
+  let sel = 0, lut = 'none';
+  const strip = $('#gradeStrip');
+  strip.innerHTML = SHOTS.map((s, i) => `<button type="button" class="shot" data-i="${i}" aria-label="选择镜头 ${s.name}"><span class="pic"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice">${SCENES[i].replace(/skyA/g, 'sky' + i)}</svg><span class="tint"></span><span class="lut"></span></span><span class="cap">${s.name}</span><span class="gap"></span></button>`).join('');
+  const shotEls = $$('#gradeStrip .shot');
+  const eff = i => { const o = {}; KEYS.forEach(k => { o[k] = SHOTS[i].off[k] + adj[i][k]; }); return o; };
+  const LUTS = {
+    none: () => ({ f: '', bg: 'transparent' }),
+    warm: k => ({ f: ` sepia(${(0.55 * k).toFixed(2)}) contrast(${(1 + 0.08 * k).toFixed(2)})`, bg: `rgba(255,170,60,${(0.4 * k).toFixed(2)})` }),
+    cool: k => ({ f: ` saturate(${(1 - 0.25 * k).toFixed(2)}) contrast(${(1 + 0.12 * k).toFixed(2)}) brightness(${(1 - 0.08 * k).toFixed(2)})`, bg: `rgba(0,150,170,${(0.45 * k).toFixed(2)})` })
+  };
+  const fmtV = v => (v > 0 ? '+' : '') + (+v).toFixed(2).replace(/\.?0+$/, '');
+  const render = () => {
+    const k = +$('#gK').value, L = LUTS[lut](k), ref = eff(0);
+    shotEls.forEach((el, i) => {
+      const x = eff(i);
+      el.querySelector('svg').style.filter = `brightness(${(1 + x.e).toFixed(2)}) contrast(${Math.max(0.2, 1 + x.c).toFixed(2)}) saturate(${Math.max(0, 1 + x.s).toFixed(2)})` + L.f;
+      const a = Math.min(0.75, Math.abs(x.t) * 0.85);
+      el.querySelector('.tint').style.background = x.t >= 0 ? `rgba(255,140,30,${a})` : `rgba(40,120,255,${a})`;
+      el.querySelector('.lut').style.background = L.bg;
+      el.classList.toggle('sel', i === sel);
+      const g = el.querySelector('.gap');
+      if (i === 0) { g.textContent = '参照'; g.classList.add('ok'); }
+      else {
+        const d = KEYS.reduce((acc, kk) => acc + Math.abs(x[kk] - ref[kk]), 0);
+        g.textContent = '差距 ' + d.toFixed(2); g.classList.toggle('ok', d < 0.15);
+      }
+    });
+    KEYS.forEach(kk => { const id = 'g' + kk.toUpperCase(); $('#' + id).value = adj[sel][kk]; $('#' + id + 'v').textContent = fmtV(adj[sel][kk]); });
+    $('#gradeWho').textContent = '① 校正 · 当前镜头：' + SHOTS[sel].name;
+    $('#gKv').textContent = Math.round(k * 100) + '%';
+  };
+  shotEls.forEach(el => el.addEventListener('click', () => { sel = +el.dataset.i; render(); }));
+  KEYS.forEach(kk => { $('#g' + kk.toUpperCase()).addEventListener('input', e => { adj[sel][kk] = +e.target.value; render(); }); });
+  $('#gK').addEventListener('input', render);
+  $$('[data-lut]').forEach(b => b.addEventListener('click', () => { lut = b.dataset.lut; $$('[data-lut]').forEach(x => x.classList.toggle('on', x === b)); render(); }));
+  $('#gradeReset').addEventListener('click', () => { adj.forEach(a => KEYS.forEach(kk => { a[kk] = 0; })); lut = 'none'; $$('[data-lut]').forEach(x => x.classList.toggle('on', x.dataset.lut === 'none')); sel = 0; render(); });
+  render();
+
+  /* ---------- 六个情境 ---------- */
+  const V = { no: ['不行', 'v-no'], cond: ['有条件可以', 'v-cond'], ok: ['合规', 'v-ok'] };
+  const SCN = [
+    { t: '用明星照片做主角', d: '把一位当红明星的照片喂给 AI，让他“出演”你的短片主角，发到网上。', v: 'no', r: '规则：肖像权 · 民法典第 1019 条', x: '未经本人同意，不得用信息技术手段伪造他人肖像。明星也是普通的自然人，“只是玩梗”不是理由。', f: '怎样改：用 AI 原创角色；或请同意出镜的同学提供参考照，并写下同意说明。' },
+    { t: '用流行歌曲作 BGM', d: '把一首正在流行的歌直接铺在全片下面，导出后拿去参赛。', v: 'cond', r: '规则：著作权 · 需要授权', x: '歌曲的词曲和录音都受保护。平台曲库的授权通常只覆盖在该平台内使用，导出后拿去参赛不一定有效。', f: '怎样改：用 AI 生成配乐（写明工具）、免版税音乐，或取得授权；在日志里记下来源。' },
+    { t: '生成知名动画角色的同人片段', d: '让 AI 生成一个知名动画角色，演一段你写的新故事，并公开发布。', v: 'no', r: '规则：著作权 · 广州互联网法院 2024 奥特曼案', x: '知名角色形象受著作权保护，复制或改编它可能侵犯复制权、改编权。“模仿受保护角色”是高风险做法。', f: '怎样改：设计你自己的原创角色。可以学习一种画风，不要复制一个具体角色。' },
+    { t: '克隆同学的声音', d: '用同学的录音做一个 AI 声音，给片中角色配音。', v: 'cond', r: '规则：声音权益 · 北京互联网法院 2024 AI 声音案', x: '可识别为本人的 AI 声音，同样受本人声音权益保护。必须事先取得本人同意，并说清用在哪里、说什么。', f: '怎样做：书面同意 + 只用于本片 + 片尾注明“AI 声音，经本人同意”；不让他“说”他不会说的话。' },
+    { t: '发布时不加 AI 标识', d: '片子做得很逼真，怕加了标识没人看，发布时不勾选“AI 生成”。', v: 'no', r: '规则：《人工智能生成合成内容标识办法》第十条', x: '用户发布生成合成内容，应当主动声明并使用平台的标识功能；不得恶意删除、篡改、伪造、隐匿标识。', f: '怎样做：片头显式提示 ≥ 2 秒 + 发布时勾选平台的 AI 声明。' },
+    { t: '生成“某地发生事故”的新闻画面', d: '为了开场够震撼，生成一段“某市大桥坍塌”的新闻直播画面，还单独剪出来发到网上。', v: 'no', r: '规则：深度伪造 / 虚假信息', x: '以假乱真的新闻画面一旦脱离片子传播，就是谣言，可能被依法追究责任（2023 年甘肃平凉 AI 假新闻案）。', f: '怎样改：用虚构的地名和明显的片中设定，不做成“新闻”样式，不单独截取传播。' }
+  ];
+  let si = 0;
+  $('#scnList').innerHTML = SCN.map((s, i) => `<button type="button" data-i="${i}"><span class="n">0${i + 1}</span><span>${s.t}</span><span class="v"></span></button>`).join('');
+  const scnBtns = $$('#scnList button');
+  const showScn = i => {
+    si = i; const s = SCN[i];
+    $('#scnNo').textContent = `情境 ${i + 1} / ${SCN.length}`;
+    $('#scnTitle').textContent = s.t; $('#scnDesc').textContent = s.d;
+    $('#scnAns').hidden = true;
+    scnBtns.forEach((b, j) => b.classList.toggle('sel', j === i));
+  };
+  const reveal = () => {
+    const s = SCN[si], [txt, cls] = V[s.v];
+    const vd = $('#scnVerdict'); vd.textContent = txt; vd.className = 'verdict ' + cls;
+    $('#scnRule').textContent = s.r; $('#scnWhy').textContent = s.x; $('#scnFix').textContent = s.f;
+    $('#scnAns').hidden = false;
+    const tag = scnBtns[si].querySelector('.v'); tag.textContent = txt; tag.className = 'v ' + cls;
+  };
+  scnBtns.forEach(b => b.addEventListener('click', () => showScn(+b.dataset.i)));
+  $('#scnReveal').addEventListener('click', reveal);
+  $('#scnNext').addEventListener('click', () => showScn((si + 1) % SCN.length));
+  showScn(0);
+})();
+</script>
+</body>

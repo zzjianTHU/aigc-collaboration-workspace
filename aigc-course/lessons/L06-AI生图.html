@@ -1,0 +1,752 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 06 课 · AI 生图：角色、场景与关键帧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：生图工作台、改写对照、参考矩阵、角色漂移模拟器、关键帧留白图 */
+.code { white-space: normal; word-break: break-word; }
+.wb .fields { display: grid; grid-template-columns: 1fr; gap: 6px 10px; }
+@media (min-width: 600px) { .wb .fields { grid-template-columns: 1fr 1fr; } }
+.wb label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); min-width: 0; }
+.wb label span b { font-family: var(--mono); color: var(--warm); margin-right: 4px; }
+.lab.wb input[type=text] { width: 100%; font-size: 13px; padding: 5px 8px; }
+.wb .prompt { font-size: 14px; line-height: 1.6; padding: 8px 10px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); min-height: 3.2em; word-break: break-word; }
+.wb .prompt i { font-style: normal; color: var(--muted); }
+.wb .warns { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; }
+.wb .warns span { padding: 4px 8px; border-radius: 8px; background: rgba(255,84,104,.08); color: #ff9aa6; }
+.wb .warns span.ok { background: rgba(63,224,160,.08); color: var(--g); }
+.fix { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: center; }
+@media (min-width: 900px) { .fix { grid-template-columns: 1fr auto 1fr; } }
+.fix .bad, .fix .good { padding: 12px 14px; border-radius: 12px; font-family: var(--display); font-size: clamp(17px, 1.7vw, 22px); line-height: 1.4; border: 1px solid var(--line); background: #05060a; }
+.fix .bad { color: #ff9aa6; border-color: rgba(255,84,104,.4); }
+.fix .good { color: var(--g); border-color: rgba(63,224,160,.4); }
+.fix .arr { font-family: var(--mono); color: var(--warm); text-align: center; }
+.fix small { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .1em; }
+.vchain { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .vchain { grid-template-columns: repeat(3, 1fr); } }
+.vchain div { padding: 10px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+.vchain div b { display: block; font-family: var(--mono); font-size: 12px; color: var(--c); letter-spacing: .08em; }
+.vchain div em { font-style: normal; color: var(--fg); background: rgba(255,196,107,.16); padding: 0 3px; border-radius: 4px; }
+.mtx { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: 13.5px; table-layout: fixed; }
+.mtx th { font-family: var(--display); font-size: clamp(14px, 1.3vw, 17px); color: var(--fg); padding: 6px 4px; text-align: center; }
+.mtx th:first-child { width: 28%; }
+.mtx td { padding: 7px 6px; border-radius: 8px; background: var(--panel2); color: var(--muted); text-align: center; line-height: 1.4; }
+.mtx td:first-child { text-align: left; color: var(--fg); background: transparent; font-weight: 700; }
+.mtx td.y { background: rgba(63,224,160,.14); color: var(--g); font-weight: 700; }
+.mtx td.n { color: rgba(144,151,173,.7); }
+.qa { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .qa { grid-template-columns: repeat(3, 1fr); } }
+.qa .card p { color: var(--fg); font-size: 15px; }
+.qa .ans { font-family: var(--display); font-weight: 800; color: var(--g); font-size: clamp(16px, 1.5vw, 19px); }
+.qa .ans small { display: block; font-family: var(--body); font-weight: 500; font-size: 12.5px; color: var(--muted); }
+.drift .faces { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.drift .faces figure { margin: 0; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.drift .faces svg { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--line); }
+.drift .faces figcaption { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; }
+.drift .modes { display: flex; flex-wrap: wrap; gap: 6px; }
+.drift .modes button[aria-pressed=true] { background: var(--warm); color: #1a1408; border-color: var(--warm); }
+.drift .cardtxt { font-size: 12.5px; color: var(--muted); padding: 6px 10px; border-radius: 8px; background: #05060a; border: 1px solid var(--line); min-height: 2.6em; }
+.drift .cardtxt b { color: var(--warm); }
+.lab.drift input[type=number] { width: 6.5em; border-radius: 8px; border: 1px solid var(--line); background: #05060a; padding: 4px 8px; }
+.m5 { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; counter-reset: m; }
+.m5 li { counter-increment: m; display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 14px; color: var(--muted); line-height: 1.5; }
+.m5 li::before { content: counter(m); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--b); color: #06091a; font-family: var(--mono); font-weight: 700; font-size: 12px; }
+.m5 li b { color: var(--fg); }
+.room svg { width: 100%; height: auto; display: block; }
+.room text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+.check5 { display: flex; flex-direction: column; gap: 6px; }
+.check5 span { padding: 7px 12px; border-radius: 8px; background: var(--panel2); font-size: 14px; color: var(--muted); }
+.check5 span b { color: var(--fg); }
+.roles { display: flex; flex-direction: column; gap: 10px; }
+.roles .card { border-left: 3px solid var(--c); padding: 12px 14px; }
+.roles .card .k { font-family: var(--mono); font-size: 11px; color: var(--c); letter-spacing: .1em; }
+.tpl { font-size: 13px; line-height: 1.65; color: var(--muted); padding: 10px 12px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); }
+.tpl b { color: var(--warm); font-weight: 700; }
+.redcheck { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 900px) { .redcheck { grid-template-columns: repeat(4, 1fr); } }
+.redcheck div { padding: 10px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.redcheck div b { display: block; font-family: var(--display); font-size: 18px; color: var(--fg); }
+.redcheck div b::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--r); margin-right: 8px; vertical-align: 2px; }
+/* 投影仪常见的 1280×720：压缩 */
+@media (max-height: 800px) {
+  .wb .fields { gap: 4px 10px; }
+  .lab.wb input[type=text] { padding: 3px 8px; font-size: 12.5px; }
+  .wb .prompt { font-size: 13px; padding: 6px 10px; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .card { padding: 12px 14px; }
+  .card p, .card li { font-size: 13.5px; }
+  .m5 li { padding: 6px 10px; font-size: 13px; }
+  .slot.short { aspect-ratio: 16 / 7; }
+  .drift .faces { max-width: 520px; }
+  .tpl { font-size: 12.5px; padding: 8px 10px; }
+  .vchain div { padding: 8px 10px; }
+}
+</style>
+
+<body data-lesson="L06">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开口：“上节课结束时，各组的创作圣经已经过了关卡 1，故事定了，角色和场景也写在纸上了。从今天起进入第二幕：AI Studio，接下来四节课，我们要把纸上的东西一步步变成画面、镜头和声音。今天是第一步：把角色、场景和每个镜头的第一张画面生成出来。”把三个问题念一遍。强调今天的硬任务：下课前每组要交出角色设定集、2 到 3 张场景图、8 到 12 张关键帧，并通过关卡 2a 的交叉检查。所以讲解只有 35 分钟，实操时间很满。">
+  <div class="lesson-no" aria-hidden="true">06</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第二幕 · AI Studio</span><span>LESSON 06 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">AI 生图<br><span class="rgbword">角色、场景与关键帧</span></h1>
+    <p class="lead">把创作圣经里写好的人和地方，变成<b>稳定、可控、能接着生成视频</b>的画面。下课前过关卡 2a。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>一条“可控”的生图指令长什么样？哪些写法会失效？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>参考图和编辑工具，各自解决什么问题？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>怎样让同一个角色在 12 张图里不“换人”？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–12</b>指令结构与失效写法</span>
+      <span><b>12–22</b>参考图与图像编辑</span>
+      <span><b>22–35</b>角色一致性与关键帧</span>
+      <span><b>35–82</b>实操 · 角色 / 场景 / 关键帧</span>
+      <span><b>82–90</b>关卡 2a 检查</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 开场故事：900 次 ============ -->
+<section class="slide" data-min="1.5" data-note="用一个真实事件开场，1 分半。按 → 分两步。第一步讲故事：2022 年，美国科罗拉多州博览会的艺术比赛，数字艺术组的一等奖颁给了一幅叫《太空歌剧院》的作品，作者杰森·艾伦是用 Midjourney 生成的，消息传开后引发了很大争议。他自己说，为了这一张图花了 80 多个小时，生成了 900 多个版本，再挑出来、修图、放大。2023 年美国版权局在拒绝为这幅图的 AI 生成部分登记版权时，在决定书里写到他至少输入了 624 次提示词。版权的问题第 10 课专门讲，今天不展开。第二步，落到我们自己：问学生，我们的短片有 8 到 12 个镜头，如果每个镜头都像他那样抽几百次，要多少额度、多少时间？今天的规矩是：每张关键帧最多生成 4 次。所以我们不能靠多抽碰运气，要靠写得准、参考给得对。课前核实：80 小时、900 个版本来自艾伦本人接受媒体采访的说法；624 次来自美国版权局 2023 年 9 月的复审决定书。">
+  <div class="inner">
+    <div class="tc"><span class="ch">开场故事</span><span>模块 1 · 生图指令</span></div>
+    <h2 class="h-l">一张获奖的 AI 画，生成了 900 多次</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="step">
+          <div class="card story"><span class="tag">真实事件 · 美国科罗拉多州 2022</span>
+            <b>《太空歌剧院》</b>
+            <p>杰森·艾伦用 Midjourney 生成的作品，拿下州博览会艺术比赛数字艺术组<b>一等奖</b>，引发争议。他说为这一张图花了 <b>80 多个小时</b>，生成了 <b>900 多个版本</b>。</p>
+            <p>2023 年美国版权局的决定书写到：他至少输入了 <b>624 次</b>提示词。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="punch">我们每张关键帧，最多 4 次。<small>靠的不是多抽碰运气，而是写得准、参考给得对。</small></div>
+        </div>
+      </div>
+      <div class="slot" data-slot="allen"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 指令结构 + 生图工作台 ============ -->
+<section class="slide" id="s-wb" data-min="3" data-note="模块 1 的核心：一条完整的生图指令由八个部分组成。先讲比方：你给一位从没看过你剧本的摄影师打电话布置拍摄，他只能拍你说出口的东西；你没说的，他就自己猜。模型也一样，你没写的那几项，它会替你随机决定，这就是为什么同一句“一个女孩在教室”每次出来都不一样。然后用右边的生图工作台演示：八个格子依次是主体（外貌、服装）、动作与表情、场景与环境、景别与机位、光线、色彩、风格或媒介、画幅。默认已经填好一个例子，下面会自动拼成一整条指令。现场演示三件事：1. 把“光线”那一格清空，下面会提示这一项交给模型随机；2. 在“色彩”里输入“不要红色”，看它亮出否定词警告；3. 在“光线”里写“很有氛围感”，看它亮出抽象词警告。这两种警告下两页细讲。告诉学生：实操任务 3 写关键帧指令时可以直接用这个工作台，写好点“复制”，粘贴到生图工具里。落点：八项写全，模型就少猜一点。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 生图指令</span><span>12 MIN</span><span>① 结构</span></div>
+    <h2 class="h-l">一条完整的指令，有八个部分</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <b>给陌生摄影师打电话</b>
+          <p>他没看过你的剧本，<b>只能拍你说出口的东西</b>。你没说的光线、机位、色调，他就自己猜。</p>
+        </div>
+        <div class="card idea"><span class="tag">原理</span>
+          <p>模型也一样：没写的那几项，<b>由它随机决定</b>。所以只写“一个女孩在教室”，每次出来的图都不一样。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span><p>八项里，哪几项是第 2、3 课学过的？</p></div>
+      </div>
+      <div class="lab wb">
+        <span class="label">互动 · 生图工作台（实操任务 3 可直接用）</span>
+        <div class="fields" id="wbFields"></div>
+        <div class="prompt" id="wbOut"></div>
+        <div class="warns" id="wbWarn"></div>
+        <div class="row">
+          <button class="btn primary" id="wbCopy" type="button">复制指令</button>
+          <button class="btn" id="wbEx" type="button">换一个例子</button>
+          <button class="btn" id="wbClear" type="button">清空</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 写看得见的东西 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲写法的三条原则。按 → 分两步。第一步，最重要的一条：写看得见的东西。先给学生看左边：“很有氛围感的街道”，问：氛围感长什么样？每个人想的都不一样，模型也不知道。改成右边：“雨后湿润的柏油路，反射着霓虹灯”，这是摄影机能拍到的东西。打比方：给外地朋友指路，说“很好找”没有用，说“红色大门、门口有棵大槐树”才有用。第二步，另外三条：一，一张图一个焦点，你在一张图里塞进主角、猫、自行车、气球、彩虹，元素越多越容易互相干扰，有的会缺，有的会粘在一起；二，重要的写在前面，很多模型对靠前的描述更敏感，所以角色写第一句，次要的道具放后面；三，用第 2、3 课的专业词汇，景别、焦段、光位、色温，这些词就是在给模型指方向，第 1 课讲过：具体的词在“意思地图”上圈出的范围更小。可以随机抽一位同学，现场把“史诗感的战斗场面”改写成看得见的描述。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 生图指令</span><span>② 写法原则</span></div>
+    <h2 class="h-l">只写摄影机拍得到的东西</h2>
+    <div class="step">
+      <div class="fix">
+        <div class="bad"><small>✗ 看不见</small>很有氛围感的街道</div>
+        <div class="arr">改写 →</div>
+        <div class="good"><small>✓ 看得见</small>雨后湿润的柏油路，反射着霓虹灯</div>
+      </div>
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>给外地朋友指路：说“很好找”没用；说<b>“红色大门、门口有棵大槐树”</b>才有用。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="g3">
+        <div class="card idea"><span class="tag">一张图一个焦点</span><p>主角、猫、自行车、气球、彩虹全塞进去，元素<b>越多越容易互相干扰</b>：有的缺了，有的粘在一起。</p></div>
+        <div class="card idea"><span class="tag">重要的写前面</span><p>很多模型对<b>靠前的描述更敏感</b>。角色写第一句，次要道具放后面。</p></div>
+        <div class="card idea"><span class="tag">用专业词</span><p>景别、焦段、光位、色温：第 2、3 课学的词，在“意思地图”上<b>圈出的范围更小</b>（回扣第 1 课）。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 常见失效写法 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲三种常见的失效写法。按 → 分两步。第一步看上面三张卡。第一种，否定词：你写“不要红色”，结果画面里反而出现了红色。为什么？回扣第 1 课：提示词里的每个词都会把画面往“意思地图”上对应的方向拉，“红色”这个词本身就在把画面往红色拉，而“不要”这个小词，很多模型处理得不好。解决办法：直接写你要的颜色，比如“蓝色和灰色调”；或者把不想要的东西填进工具的负面提示框。要说明：新一代模型对否定词理解好了不少，但不保证，正面描述最稳。第二种，抽象情绪词：“孤独”“史诗感”效果不稳定，要翻译成景别、光线、色彩，比如“孤独”可以写成“大远景，人物很小，空旷的站台，冷蓝色调”。第三种，画面里的文字：片名、字幕、招牌上的字，仍然经常写错或变成乱码，片名与字幕一律后期在剪映里加。第二步讲下面的比方：1987 年心理学家韦格纳做过一个实验，要求参与者五分钟里别去想白熊，每想到一次就按一下铃，结果大家还是频频按铃，之后反而想得更多。人脑和模型的原理不一样，但现象很像：你越提它，它越在。课前核实：韦格纳白熊实验的具体数据。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 生图指令</span><span>③ 失效写法</span></div>
+    <h2 class="h-l">这三种写法，常常失效</h2>
+    <div class="step">
+      <div class="g3">
+        <div class="card idea"><span class="tag">① 否定词</span>
+          <p>写“不要红色”，<b>反而出现红色</b>：“红色”这个词本身就在把画面往红色拉。</p>
+          <p>改成 <span class="code">蓝色和灰色调</span>，或用工具的<b>负面提示框</b>。</p></div>
+        <div class="card idea"><span class="tag">② 抽象情绪词</span>
+          <p>“孤独”“史诗感”效果不稳定。<b>翻译成景别、光线、色彩</b>：</p>
+          <p><span class="code">大远景，人物很小，空旷的站台，冷蓝色调</span></p></div>
+        <div class="card idea"><span class="tag">③ 画面里的文字</span>
+          <p>片名、字幕、招牌上的字仍然<b>经常写错或变成乱码</b>。</p>
+          <p>片名与字幕一律<b>后期在剪辑软件里加</b>。</p></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="g2 wide-l">
+        <div class="card analogy"><span class="tag">打个比方 · 心理学实验 1987</span>
+          <p>韦格纳让参与者五分钟里<b>“别去想白熊”</b>，每想到一次就按铃。结果铃声不断，之后反而想得更多。人脑和模型原理不同，但现象很像：<b>你越提它，它越在。</b></p>
+          <p class="src">Wegner 等，Paradoxical effects of thought suppression，1987</p>
+        </div>
+        <div class="punch">想要什么，就直接写什么。<small>新一代模型对否定词理解更好了，但不保证。正面描述最稳。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 控制变量 ============ -->
+<section class="slide" data-min="2" data-note="模块 1 最后一条：控制变量。先问学生：物理课上，想知道摆长会不会影响单摆的周期，你会怎么做？只改摆长，其他都不动。生图调指令也一样。看屏幕上的三个版本：v1 是基础版；v2 只把光线从“正午顶光”改成“傍晚逆光”，其他一字不改，这时候画面变了，你就知道是光线词起的作用；v3 再只改景别。反过来，如果你一次改了三个词，图变好了，你不知道是哪个词的功劳，下一张图又得重新碰运气；图变差了，你也不知道该退回哪一个。追问：为什么这件事对我们特别重要？因为额度有限，每张关键帧最多 4 次，每次都要有收获。另外，生产日志里“修改原因”那一栏，记的就是你这一次改了哪个变量。落点：每次只改一个要素，才能知道是哪个词起了作用。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 生图指令</span><span>④ 控制变量</span></div>
+    <h2 class="h-l">每次只改一个词</h2>
+    <div class="vchain">
+      <div style="--c:var(--muted)"><b>v1 · 基础版</b>高中女生趴在窗台上，中景，<em>正午顶光</em>，暖色调</div>
+      <div style="--c:var(--warm)"><b>v2 · 只改光线</b>高中女生趴在窗台上，中景，<em>傍晚逆光，发丝有金边</em>，暖色调</div>
+      <div style="--c:var(--g)"><b>v3 · 只改景别</b>高中女生趴在窗台上，<em>近景</em>，傍晚逆光，发丝有金边，暖色调</div>
+    </div>
+    <div class="g3">
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>物理课测单摆：想知道摆长有没有影响，就<b>只改摆长</b>，其他都不动。</p>
+      </div>
+      <div class="card ask"><span class="tag">想一想</span>
+        <p>一次改了 3 个词，图变好了。是哪个词的功劳？下一张还能复现吗？</p>
+      </div>
+      <div class="card idea"><span class="tag">落到日志</span>
+        <p>生产日志里的<b>“修改原因”</b>，写的就是这次改了哪个变量、结果怎样。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 三种参考 ============ -->
+<section class="slide" data-min="4" data-note="进入模块 2，参考图与图像编辑，10 分钟。先讲为什么要用参考图：有些东西用文字很难说准，比如一张脸长什么样、一种色调到底多暖。一张图能代替很多字。三种参考的区别，看中间这张表，按“保留了什么”来记。第一种，图生图：以一张图为起点生成，工具里通常有一个“参考强度”滑杆，强度越高越接近原图。打比方：强度高像描红，照着原来的线描；强度低像临摹，看着原图自己画，构图大致在，细节都换了。适合：构图满意，想换光线、换风格。第二种，风格参考：只借色彩、笔触、光感，不借内容。比如把示范片的一张图当风格参考，新场景的色调就和它统一。第三种，主体或角色参考：上传角色图，让新图中出现同一个角色，这是今天角色一致性的关键武器。提醒学生：各个工具里这几个功能叫法不一样，有的叫“参考图”，有的叫“主体参考”或“角色参考”，以今天所用工具的当期界面为准，实操前老师会演示一遍按钮在哪。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 参考图与图像编辑</span><span>10 MIN</span><span>① 三种参考</span></div>
+    <h2 class="h-l">一张参考图，抵得过一段话</h2>
+    <div class="g2 wide-l">
+      <div class="lab"><span class="label">三种参考，看它“保留了什么”</span>
+        <table class="mtx">
+          <thead><tr><th></th><th>图生图</th><th>风格参考</th><th>主体参考</th></tr></thead>
+          <tbody>
+            <tr><td>构图与布局</td><td class="y">保留<br><small>强度越高越像</small></td><td class="n">不保留</td><td class="n">不保留</td></tr>
+            <tr><td>色彩、笔触、光感</td><td class="y">大致保留</td><td class="y">保留</td><td class="n">看情况</td></tr>
+            <tr><td>角色长相</td><td class="n">不稳定</td><td class="n">不保留</td><td class="y">保留</td></tr>
+            <tr><td>适合做什么</td><td>构图满意，换光线或风格</td><td>全片色调统一</td><td>同一角色出现在新画面</td></tr>
+          </tbody>
+        </table>
+        <p class="small">各工具叫法不同（参考图 / 主体参考 / 角色参考……），以当期界面为准。</p>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方 · 图生图的“参考强度”</span>
+          <p><b>强度高 = 描红</b>：照着原来的线描，几乎一样。<br><b>强度低 = 临摹</b>：看着原图自己画，构图还在，细节全换。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 风格参考</span>
+          <p>只借别人的<b>“滤镜”</b>，不借照片里的内容。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 编辑三件套 ============ -->
+<section class="slide" data-min="4" data-note="这一页讲三种编辑功能，核心意思是：不满意，别整张重抽。第一，局部重绘：用画笔圈出一块区域，只重新生成这一块，其他保持不变。最常用的场景是修手，AI 画的手经常多一根或少一根手指；还有改表情、换道具。打比方：补一颗牙，不用换整口牙。为什么重要？整张重抽，角色、构图、光线都可能变，好不容易对上的东西又丢了。第二，扩图：让模型往画面外面继续画。讲右边的故事：2022 年 OpenAI 给 DALL·E 2 推出扩图功能时，展示的例子之一是把维米尔的名画《戴珍珠耳环的少女》往四周扩展，画出了原画框外面的房间。如果有准备好的图，放在右边的媒体位。我们用扩图做两件事：把方图改成 16:9 画幅，或者给太紧的构图补一点环境。第三，超分辨率放大：提高分辨率。下节课要用关键帧生成视频，后面还要剪辑，图太糊会影响效果，所以定稿的关键帧要放大。课前核实：OpenAI 扩图功能发布时间（2022 年 8 月底）和示例作者。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 参考图与图像编辑</span><span>② 编辑三件套</span></div>
+    <h2 class="h-l">不满意？别整张重抽</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card idea"><span class="tag">局部重绘</span>
+          <p>圈出一块，<b>只重新生成这一块</b>：修手、改表情、换道具。整张重抽，好不容易对上的角色和光线可能又丢了。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span><p>补一颗牙，<b>不用换整口牙</b>。</p></div>
+        <div class="card idea"><span class="tag">扩图</span>
+          <p>让模型<b>往画面外继续画</b>：把方图改成 16:9，或给太紧的构图补点环境。</p>
+        </div>
+        <div class="card idea"><span class="tag">超分辨率放大</span>
+          <p>提高分辨率。定稿的关键帧要放大，<b>第 7 课生视频、剪辑都要用</b>。</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · OpenAI 2022</span>
+          <p>DALL·E 2 推出扩图功能时，演示之一是把维米尔的名画<b>《戴珍珠耳环的少女》往四周扩展</b>，画出了原画框外的房间。</p>
+        </div>
+        <div class="slot short" data-slot="outpaint"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 快问快答 ============ -->
+<section class="slide" data-min="2" data-note="模块 2 收尾，2 分钟快问快答。六个问题都来自往届学生最常遇到的情况。老师念题，请学生抢答用哪一招，按 → 逐个揭晓答案。参考答案：1. 手有六根手指，用局部重绘，只圈手；2. 方图改成 16:9，用扩图；3. 第 5 张图里主角换了发型，用主体参考附上设定图，同时检查角色卡文本是不是原样复制的，这个下一个模块细讲；4. 想让三个场景像同一部片子，用风格参考，选一张定调的图；5. 构图很好但光线不对，用图生图，中等强度，同时只改光线词，回扣控制变量；6. 图要拿去生视频但太糊，用超分辨率放大。落点：先判断问题出在哪，再选工具，不要一不满意就整张重抽。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 参考图与图像编辑</span><span>③ 快问快答</span></div>
+    <h2 class="h-l">遇到这些问题，用哪一招？</h2>
+    <div class="qa">
+      <div class="card"><p>关键帧里，角色的手有六根手指。</p><div class="step"><div class="ans">局部重绘<small>只圈手，其他不动</small></div></div></div>
+      <div class="card"><p>导演想把一张方图改成 16:9。</p><div class="step"><div class="ans">扩图<small>往左右两边继续画</small></div></div></div>
+      <div class="card"><p>第 5 张图里，主角换了发型。</p><div class="step"><div class="ans">主体参考 + 角色卡<small>附设定图，角色卡原样复制</small></div></div></div>
+      <div class="card"><p>三个场景，想像同一部片子。</p><div class="step"><div class="ans">风格参考<small>选一张定调的图</small></div></div></div>
+      <div class="card"><p>构图很好，只是光线不对。</p><div class="step"><div class="ans">图生图（中等强度）<small>只改光线词，控制变量</small></div></div></div>
+      <div class="card"><p>图要拿去生视频，但太糊。</p><div class="step"><div class="ans">超分辨率放大<small>定稿后再放大</small></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 为什么难：漂移模拟器 ============ -->
+<section class="slide" id="s-drift" data-min="3" data-note="进入模块 3，角色一致性与关键帧，13 分钟。先讲为什么难。回扣第 5 课：每次生成都从一张新的随机噪声出发，种子决定这张初始噪声；模型并不“记得”上一张图里的角色，每一张都是重新画。打比方：《我的世界》的世界种子，同一个种子永远生成同一个世界，换一个种子就是另一个世界。种子就像一张菜谱的编号，编号不变、配料不变，做出来的菜就一样。用右边的模拟器演示，注意这是示意，不是真的模型。按顺序：1. 选“只写：一个高中女生”，点“生成 4 张”，四个人完全不一样；再点一次，又是四个新的人。2. 勾上“固定种子”，连点两次，结果一模一样，这就是可复现。但问学生：能不能靠固定种子保证角色一致？不能，因为每个镜头的动作、场景、景别都要改，指令一改，画面就变了。3. 切到“+ 角色卡文本”，发型、眼镜、校服、书包稳定了，但脸型和眼睛还在变。4. 切到“+ 设定图参考”，基本是同一个人了，只有表情和姿态在变，这正是我们想要的。落点：一致性不能靠运气，要靠文字和参考图把角色锁住。下一页讲具体方法。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 角色一致性与关键帧</span><span>13 MIN</span><span>① 为什么难</span></div>
+    <h2 class="h-l">模型不记得上一张图里的人</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">回扣第 5 课</span>
+          <p>每次生成都从<b>一张新的随机噪声</b>出发，种子决定这张噪声。模型并不“记得”上一张图，<b>每一张都是重新画</b>。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>《我的世界》的<b>世界种子</b>：同一个种子永远生成同一个世界，换一个就是另一个世界。</p>
+          <p>可每个镜头的动作、场景都要改，指令一变，画面就变，<b>光靠固定种子锁不住角色</b>。</p>
+        </div>
+      </div>
+      <div class="lab drift">
+        <span class="label">互动 · 角色漂移模拟器（示意，不是真实模型）</span>
+        <div class="modes" role="group" aria-label="指令写法">
+          <button class="btn" type="button" data-mode="0" aria-pressed="true">只写：一个高中女生</button>
+          <button class="btn" type="button" data-mode="1" aria-pressed="false">+ 角色卡文本</button>
+          <button class="btn" type="button" data-mode="2" aria-pressed="false">+ 设定图参考</button>
+        </div>
+        <div class="cardtxt" id="driftTxt"></div>
+        <div class="faces" id="driftFaces"></div>
+        <div class="row small">
+          <button class="btn primary" id="driftGen" type="button">生成 4 张</button>
+          <label class="row small">种子 <input type="number" id="driftSeed" value="1024" min="1" max="99999" aria-label="起始种子"></label>
+          <label class="row small"><input type="checkbox" id="driftLock"> 固定种子</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 五个方法 ============ -->
+<section class="slide" data-min="4" data-note="这一页讲五个方法。先讲故事：传统动画长片要由几十上百位动画师一起画同一个角色，每个人手上的习惯都不一样，怎么保证画出来是同一个人？从 1930 年代的迪士尼开始，动画工作室就用“角色设定表”，英文叫 model sheet：同一个角色的正面、侧面、背面，各种表情，和其他角色的身高比例，全都画在一张纸上，贴在每位动画师的桌前，谁画都照着它。今天我们做的角色设定图，就是给 AI 准备的这张纸。如果有示范项目的设定图，放到媒体位。然后按 → 讲五个方法：1. 角色卡文本，把外观写成固定的一段话，每次原样复制，不改词序，改一个字都可能变脸；2. 角色设定图，白底三视图加表情表，作为后面所有生成的参考图；3. 主体参考或多图参考，每次生成都附上设定图；4. 对话式图像编辑，部分模型支持在同一个对话里说“保持角色不变，只把动作改成转身”；5. 统一风格词与光线词，风格一漂移，看起来就像换了一个人。对应刚才的模拟器：方法 1 是“+ 角色卡文本”，方法 2、3 是“+ 设定图参考”。课前核实：迪士尼使用 model sheet 的年代表述。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 角色一致性与关键帧</span><span>② 五个方法</span></div>
+    <h2 class="h-l">给角色办一张“身份证”</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 动画工作室的设定表</span>
+          <p>一部动画长片，几十上百位动画师画同一个角色。从 1930 年代的迪士尼开始，工作室用<b>角色设定表（model sheet）</b>：正面、侧面、背面、各种表情、身高比例，贴在每个人桌前，<b>谁画都照着它</b>。</p>
+        </div>
+        <div class="slot short" data-slot="modelsheet"></div>
+      </div>
+      <div class="step">
+        <ol class="m5">
+          <li><div><b>角色卡文本</b>：外观写成固定的一段话，<b>每次原样复制，不改词序</b>。</div></li>
+          <li><div><b>角色设定图</b>：白底三视图（正、侧、背）+ 表情表，作为后面所有生成的参考。</div></li>
+          <li><div><b>主体参考 / 多图参考</b>：每次生成都附上设定图。</div></li>
+          <li><div><b>对话式编辑</b>：部分模型支持在同一对话里“保持角色不变，只改动作”。</div></li>
+          <li><div><b>统一风格词与光线词</b>：风格一漂移，看起来就像换了一个人。</div></li>
+        </ol>
+        <div class="punch">文字锁住特征，图片锁住长相。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 关键帧 ============ -->
+<section class="slide" data-min="3.5" data-note="这一页讲关键帧。先讲来历：传统手绘动画里，原画师只画关键的动作，比如一个角色跳起来，画起跳、最高点、落地这几张，中间的过程由中间画师一张张补齐。关键帧这个词就是这么来的。到了 AI 视频制作里，关键帧是每个镜头的首帧或代表帧，它决定了这个镜头的构图、角色、光线和色调；下节课，补中间画的工作交给视频模型。所以关键帧不是随便一张好看的图，它是这个镜头的起点。然后看右边四张示意图，这是最容易出错的地方：关键帧要为运动留空间。左上，分镜写着“镜头向前推”，可主体已经占满了画面，推无可推，视频模型只能硬推，脸会变形或被切掉；右上，留出余量，推完正好是近景。左下，分镜写着“角色向右走出画面”，可角色已经贴着右边了；右下，把角色放在左边三分之一，前方留出空间。问学生：如果镜头要向上摇，看到天空中的风筝，关键帧应该怎么构图？引导出：起幅要在下面，天空留在画面外或只露一点。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 角色一致性与关键帧</span><span>③ 关键帧</span></div>
+    <h2 class="h-l">关键帧：每个镜头的起点</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">来历 · 传统手绘动画</span>
+          <p><b>原画师</b>只画关键动作：起跳、最高点、落地；中间的过程由<b>中间画师</b>一张张补齐。</p>
+          <p>在 AI 视频里，补中间的工作交给视频模型（第 7 课）。</p>
+        </div>
+        <div class="card idea"><span class="tag">定义</span>
+          <p>关键帧 = 每个镜头的<b>首帧或代表帧</b>，决定构图、角色、光线和色调。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span><p>镜头要向上摇，看到天上的风筝。关键帧该怎么构图？</p></div>
+      </div>
+      <div class="lab room"><span class="label">示意 · 关键帧要为运动留空间</span>
+        <svg viewBox="0 0 600 330" role="img" aria-label="四个画框：推镜头时主体占满画面是错的，留出余量是对的；角色走出画面时贴边是错的，前方留空间是对的">
+          <defs><marker id="arR" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ffc46b"/></marker></defs>
+          <g font-size="14" font-weight="700">
+            <text x="10" y="18" fill="#ff5468">✗ 要“向前推”，主体已占满</text>
+            <text x="310" y="18" fill="#3fe0a0">✓ 留出推近的余量</text>
+            <text x="10" y="184" fill="#ff5468">✗ 要“向右走出”，人贴着右边</text>
+            <text x="310" y="184" fill="#3fe0a0">✓ 前方留出空间</text>
+          </g>
+          <g fill="#0d1018" stroke="rgba(220,228,255,.25)" stroke-width="1.5">
+            <rect x="10" y="28" width="270" height="140" rx="6"/><rect x="310" y="28" width="270" height="140" rx="6"/>
+            <rect x="10" y="194" width="270" height="130" rx="6"/><rect x="310" y="194" width="270" height="130" rx="6"/>
+          </g>
+          <!-- 1 占满 -->
+          <g fill="#5b8cff"><circle cx="145" cy="78" r="48"/><path d="M45 168 Q145 100 245 168 Z"/></g>
+          <!-- 2 中景 + 推近终点框 -->
+          <g fill="#5b8cff"><circle cx="445" cy="86" r="20"/><path d="M395 168 Q445 110 495 168 Z"/></g>
+          <rect x="385" y="56" width="120" height="62" fill="none" stroke="#ffc46b" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="385" y="50" fill="#ffc46b" font-size="12">推完停在这里</text>
+          <!-- 3 贴右边 -->
+          <g fill="#5b8cff"><circle cx="258" cy="232" r="13"/><rect x="247" y="247" width="22" height="50" rx="8"/><rect x="248" y="294" width="8" height="26"/><rect x="260" y="294" width="8" height="26"/></g>
+          <line x1="272" y1="270" x2="296" y2="270" stroke="#ffc46b" stroke-width="2.5" marker-end="url(#arR)"/>
+          <!-- 4 左三分之一 -->
+          <g fill="#5b8cff"><circle cx="400" cy="232" r="13"/><rect x="389" y="247" width="22" height="50" rx="8"/><rect x="390" y="294" width="8" height="26"/><rect x="402" y="294" width="8" height="26"/></g>
+          <line x1="420" y1="270" x2="540" y2="270" stroke="#ffc46b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arR)"/>
+          <line x1="400" y1="194" x2="400" y2="324" stroke="rgba(220,228,255,.12)"/><line x1="490" y1="194" x2="490" y2="324" stroke="rgba(220,228,255,.12)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 生成预算 ============ -->
+<section class="slide" data-min="2.5" data-note="知识讲解最后一页：生成预算。规则：每张关键帧不超过 4 次。超过 4 次还不对，停下来，回头检查指令和参考图，而不是继续抽。回扣开场：艾伦为一张图生成了 900 多次，我们一部片子 8 到 12 张关键帧，额度要按组记账。打比方：投篮连续 4 次不进，闭着眼继续扔大概率还是不进，该停下来看看姿势。按 → 揭开右边的检查清单，五个问题对应今天讲过的五件事：角色卡是不是原样复制的；设定图和场景图附上了没有；是不是一次改了好几个词；有没有否定词或抽象词；一张图里的焦点是不是太多。还有一个常被忽略的原因：分镜本身就不合理，比如要求一个镜头里同时出现太多动作，这时候该回去和导演商量改分镜。讲完进入实操。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 角色一致性与关键帧</span><span>④ 生成预算</span></div>
+    <h2 class="h-l">每张关键帧，最多 4 次</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>投篮连续 4 次不进，闭着眼继续扔，大概率还是不进。<b>该停下来看看姿势了。</b></p>
+        </div>
+        <div class="card idea"><span class="tag">规则</span>
+          <p>超过 4 次还不对，<b>回头检查指令和参考图</b>，而不是继续抽。每一次生成都算进本组额度，制片记账。</p>
+        </div>
+        <div class="punch">艾伦为一张图抽了 900 次；<br>我们要用 4 次以内，拿到能用的关键帧。</div>
+      </div>
+      <div class="step">
+        <span class="label">抽了 4 次还不对？回头查这 5 件事</span>
+        <div class="check5">
+          <span>① <b>角色卡</b>是原样复制的吗？</span>
+          <span>② <b>设定图和场景图</b>附上了吗？</span>
+          <span>③ 是不是<b>一次改了好几个词</b>？</span>
+          <span>④ 有没有<b>否定词或抽象词</b>？</span>
+          <span>⑤ 一张图里<b>焦点是不是太多</b>？分镜本身合不合理？</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，47 分钟。先讲清分工和节奏：前 20 分钟，任务 1 和任务 2 并行：视觉总监做角色设定，制片做场景空镜，导演这段时间打开分镜表，用生图工作台把每个镜头的关键帧指令先写好。后 27 分钟，三个人一起做任务 3，逐镜生成关键帧。老师先用一分钟演示今天所用工具里“参考图 / 主体参考”“局部重绘”按钮的位置，各工具叫法以当期界面为准。确认每组都打开了共享资产库文件夹和生产日志表。如果有示范项目的设定集和关键帧，放到右边的媒体位给学生看“做完长什么样”。">
+  <div class="inner">
+    <span class="num">实操 · 47 MIN</span>
+    <h2 class="h-l">把角色、场景和每个镜头，生成出来</h2>
+    <div class="g2 wide-l">
+      <div class="roles">
+        <div class="card" style="--c:var(--b)"><span class="k">35–55 分 · 视觉总监</span><b>任务 1 · 角色设定</b><p>角色卡、白底三视图、3 种表情。</p></div>
+        <div class="card" style="--c:var(--warm)"><span class="k">35–55 分 · 制片（与任务 1 并行）</span><b>任务 2 · 场景空镜</b><p>2–3 个场景的无人物空镜；入库命名、记账。</p></div>
+        <div class="card" style="--c:var(--g)"><span class="k">35–55 分 · 导演 → 55–82 分 · 全组</span><b>任务 3 · 逐镜关键帧</b><p>导演先写好每镜指令；后 27 分钟全组生成 8–12 张关键帧。</p></div>
+      </div>
+      <div class="slot" data-slot="demokf"></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool"><img src="../media/logos/jimeng.png" alt="">即梦</span>
+      <span class="tool"><img src="../media/logos/libtv.png" alt="">LibTV</span>
+      <span class="tool">生图工作台 <i>本课件第 3 页</i></span>
+      <span class="tool">角色设定模板</span>
+      <span class="tool">共享资产库 <i>文件夹</i></span>
+      <span class="tool">生产日志表 <i>飞书表格</i></span>
+    </div>
+    <p class="small">生图工具须支持参考图，用学校批准的一个即可。</p>
+  </div>
+</section>
+
+<!-- ============ 15 任务 1：角色设定 ============ -->
+<section class="slide practice" data-min="10" data-note="任务 1，角色设定，视觉总监主做，和任务 2 并行，共 20 分钟（时间轴上这一页和下一页合起来是 19 分钟，加上总览 1 分钟）。步骤：1. 按模板写角色卡文本，七项都要写：年龄、体型、发型发色、五官特征、服装的颜色与材质、标志性道具、画风。注意必须和创作圣经里的角色设定一致，写完以后这段文字就“冻结”了，后面每次原样复制。2. 生成白底全身三视图：正面、侧面、背面，可以分 3 次生成，后两次都附上第一张作为参考。3. 以三视图为参考，生成 3 种表情的近景，比如平静、惊讶、悲伤，按剧本里这个角色需要的情绪来选。4. 选出最终版，按格式命名存入资产库。有第 2 个角色，同样操作。巡视重点：角色卡里有没有抽象词，比如“很可爱”“气质好”，要改成看得见的特征；三视图的服装颜色是否前后一致。红线提醒：不使用真实明星或同学的脸，不模仿受保护的动漫角色。降级方案：生图排队严重时，先完成正面图和角色卡，侧面、背面课后补。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">20 分钟 · 与任务 2 并行</span><span>主做：视觉总监</span></div>
+    <h2 class="h-m">角色设定：一段冻结的文字 + 一套三视图 + 三种表情</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>按模板写角色卡文本</b><span>，七项写全，与创作圣经一致。写完就“冻结”，后面原样复制。</span></div></li>
+          <li><div><b>生成白底全身三视图：正面、侧面、背面</b><span>。可分 3 次生成，后两次都附第一张作参考。</span></div></li>
+          <li><div><b>以三视图为参考，生成 3 种表情的近景</b><span>（如平静、惊讶、悲伤，按剧情选）。</span></div></li>
+          <li><div><b>选出最终版，存入资产库</b><span>：</span><span class="code">G组号_角色名_设定_v1</span><span>。有第 2 个角色同样操作。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>每个角色：<b>角色卡文本 + 三视图 + 3 种表情</b>，已命名入库。</div>
+      </div>
+      <div class="col">
+        <div class="card"><span class="tag" style="color:var(--b)">角色卡模板 · 七项</span>
+          <div class="tpl"><b>年龄</b> 16 岁女生 · <b>体型</b> 瘦高 · <b>发型发色</b> 黑色齐肩短发、齐刘海 · <b>五官</b> 单眼皮、圆框黑色眼镜 · <b>服装</b> 深绿色校服外套、白衬衫 · <b>道具</b> 红色帆布书包 · <b>画风</b> 日系动画风格</div>
+          <p class="small">三视图可加：<span class="code">白色背景，全身，同一角色的正面、侧面、背面</span></p>
+        </div>
+        <p class="small">红线：不用真实明星或同学的脸，不模仿受保护的动漫角色。排队严重时，先完成正面图 + 角色卡，侧面、背面课后补。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 任务 2：场景 ============ -->
+<section class="slide practice" data-min="9" data-note="任务 2，场景，制片主做，和任务 1 并行。步骤：1. 为 2 到 3 个场景各写一段场景描述，五项：地点、时间、天气、光线方向、主色调。光线方向特别重要，要和创作圣经里的镜头连续性规则一致，比如同一场戏里太阳一直在画面左边。2. 生成每个场景的无人物空镜。空镜有两个用途：一是后面生成关键帧时作为背景参考，二是第 7 课的备用镜头，转场、交代环境都能用。提示学生：“没有人物”这种否定写法可能失效，直接写“空无一人的走廊”这类正面描述更稳。3. 按格式命名存入资产库。同时，导演这 20 分钟在做什么？打开分镜表，用生图工作台为每个镜头写好关键帧指令，任务 3 一开始就能直接生成。制片还要在生产日志里登记今天每一次生成。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">20 分钟 · 与任务 1 并行</span><span>主做：制片</span></div>
+    <h2 class="h-m">场景：2–3 张无人物空镜，既是背景参考，也是备用镜头</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>每个场景写一段描述，五项：地点、时间、天气、光线方向、主色调</b><span>。光线方向要符合创作圣经的连续性规则。</span></div></li>
+          <li><div><b>生成每个场景的无人物空镜</b><span>：关键帧的背景参考 + 第 7 课的备用镜头。</span></div></li>
+          <li><div><b>存入资产库</b><span>：</span><span class="code">G组号_场景名_v1</span><span>；在生产日志里登记每一次生成。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span><b>2–3 张场景图</b>，光线方向前后一致，已命名入库、已记账。</div>
+      </div>
+      <div class="col">
+        <div class="card"><span class="tag" style="color:var(--warm)">场景描述示例</span>
+          <div class="tpl"><b>地点</b> 空无一人的高中教室，靠窗一排课桌 · <b>时间</b> 傍晚放学后 · <b>天气</b> 晴，薄云 · <b>光线方向</b> 夕阳从画面左侧窗户斜射入 · <b>主色调</b> 暖橙与青灰</div>
+          <p class="small">“没有人物”可能失效，写<b>“空无一人的……”</b>更稳。</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--g)"><b>同一时间，导演在做什么？</b>
+          <p>打开分镜表，用<b>生图工作台</b>为每个镜头写好关键帧指令，任务 3 一开始就能直接生成。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 任务 3：关键帧 ============ -->
+<section class="slide practice" data-min="27" data-note="任务 3，逐镜关键帧，27 分钟，全组一起做。步骤：1. 打开分镜表，每个镜头的关键帧指令按公式拼：角色卡文本原样复制，加动作与表情、场景描述、景别机位、光线，画幅 16:9。导演前 20 分钟应该已经写好了。2. 附上角色设定图和对应场景图作为参考，生成。3. 有小问题，手部、表情、道具，用局部重绘修正，不要整张重抽。4. 按镜号命名存入资产库。5. 制片在生产日志里逐张记录：使用的指令、参考图、生成次数、采用还是弃用。巡视重点，每组至少巡到两次：第一，关键帧是否为运动留了空间，拿分镜表对照，“推”的镜头主体不能占满，“走出”的镜头前方要留白；第二，有没有超过 4 次还在抽的，超过就让他们对照上一页的五项检查；第三，第 1 个镜头和最后一个镜头的角色放在一起看，还是不是同一个人。最后 3 分钟提醒定稿的关键帧做超分辨率放大。降级方案：生图排队严重时，次要镜头先用手绘草图或手机实拍照片占位，在资产库里标注“占位”，课后补生成。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">27 分钟</span><span>全组 · 工具：即梦 / LibTV + 生图工作台</span></div>
+    <h2 class="h-m">逐镜关键帧：覆盖分镜里的每一个镜头</h2>
+    <div class="tpl"><b>指令公式</b>　角色卡文本（原样复制）＋ 动作与表情 ＋ 场景描述 ＋ 景别机位 ＋ 光线 ＋ 画幅 16:9　｜　<b>附</b>　角色设定图 ＋ 对应场景图</div>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>按公式为每个镜头写关键帧指令</b><span>（导演前 20 分钟已写好）。</span></div></li>
+        <li><div><b>附上角色设定图和对应场景图</b><span>作为参考，生成。每张最多 4 次。</span></div></li>
+        <li><div><b>小问题用局部重绘</b><span>（手部、表情、道具），不整张重抽。定稿后超分辨率放大。</span></div></li>
+        <li><div><b>按镜号命名入库</b><span>：</span><span class="code">G组号_S镜号_关键帧_v版本</span></div></li>
+        <li><div><b>制片逐张记录</b><span>：指令、参考图、生成次数、采用或弃用。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">完成标准（全课）</span>角色设定集（三视图 + 3 种表情）、<b>2–3 张场景图</b>、<b>8–12 张覆盖全部镜头的关键帧</b>，生产日志逐张记录。</div>
+        <div class="card"><b>巡视时会看三件事</b>
+          <ul>
+            <li>“推”“走出”的镜头，有没有<b>为运动留空间</b></li>
+            <li>有没有超过 4 次还在抽</li>
+            <li>第 1 镜和最后一镜，<b>还是不是同一个人</b></li>
+          </ul>
+        </div>
+        <p class="small">降级方案：排队严重时，次要镜头先用手绘草图或实拍照片占位，标注“占位”，课后补生成。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 关卡 2a 检查 ============ -->
+<section class="slide practice" data-min="6" data-note="关卡 2a 检查，6 分钟。第一步，相邻两组交换资产库，用一致性检查表核对对方的全部关键帧：脸型、发型、服装、比例四项，发现不一致的地方，在截图或打印稿上用红点标注，并写一句具体描述，比如“S04 的外套从深绿变成了墨绿，书包不见了”。反馈必须指向具体镜号和具体部位，不能只说“感觉不像”。第二步，同时老师逐组检查：关键帧是否覆盖了分镜里的全部镜头，缺哪几个，直接列入这一组的课后任务。没通过不是“挂科”，而是拿到一张最小修订单，修完再进入第 7 课。当堂产出要齐：角色设定集、场景图、关键帧画板、资产清单、生产日志。">
+  <div class="inner">
+    <div class="tc"><span class="ch">关卡 2a · 检查</span><span class="timechip">6 分钟</span></div>
+    <h2 class="h-l">交换资产库，找出“换了人”的地方</h2>
+    <div class="redcheck">
+      <div><b>脸型</b>圆脸变长脸？五官位置变了？</div>
+      <div><b>发型</b>长度、刘海、发色是否一致？</div>
+      <div><b>服装</b>颜色、款式、道具有没有丢？</div>
+      <div><b>比例</b>身高、头身比是否忽大忽小？</div>
+    </div>
+    <div class="g2">
+      <ol class="steps">
+        <li><div><b>相邻两组交换资产库</b><span>，按上面四项逐张核对对方的关键帧。</span></div></li>
+        <li><div><b>不一致处标红点，写一句具体描述</b><span>：例如“S04 外套从深绿变墨绿，书包不见了”。</span></div></li>
+        <li><div><b>老师检查覆盖率</b><span>：关键帧是否覆盖分镜全部镜头，缺口列入课后任务。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">当堂产出</span>角色设定集 · 场景图 · 关键帧画板 · 资产清单 · 生产日志</div>
+        <p class="small">未通过不“挂科”，拿到一张最小修订单，修完再进入第 7 课。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 总结 ============ -->
+<section class="slide" data-min="2" data-note="最后 2 分钟。按 → 分两步。第一步，三个问题各请一位同学用一句话回答。参考答案：一条可控的指令写全八项、只写看得见的东西、每次只改一个词，否定词、抽象情绪词和画面里的文字容易失效；图生图保留构图、风格参考保留色调、主体参考保留角色，局部重绘、扩图、超分用来修而不是重抽；角色一致性靠冻结的角色卡文本加设定图参考，因为模型每次都从新的噪声开始，不记得上一张。第二步，布置课后任务：补齐缺失的关键帧，在本组额度内完成，制片记账；选做：视觉总监用角色设定图在混元 3D 生成角色的 3D 模型，这是衍生作品之一。最后每人在记录表写下：今天学会的一个概念，加一个卡住的问题。下节课生成视频，今天的关键帧就是每个镜头的第一帧。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>2 MIN</span></div>
+    <h2 class="h-l">三个问题，请你来回答</h2>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">指令</span><b>可控的指令长什么样？哪些写法会失效？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">参考与编辑</span><b>三种参考各保留什么？什么时候不该整张重抽？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">一致性</span><b>为什么会“换人”？靠哪两样东西锁住角色？</b></div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务：在本组额度内补齐缺失的关键帧。<small>选做：视觉总监用角色设定图在混元 3D 生成角色的 3D 模型（衍生作品）。下节课，今天的关键帧就是每个镜头的第一帧。</small></div>
+      <div class="toolrow"><span class="tool"><img src="../media/logos/hunyuan.png" alt="">混元 3D <i>课后选做</i></span><span class="small">课末小结：记录表写下一个学会的概念 + 一个卡住的问题。</span></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适素材后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  allen: { type: 'media', label: '《太空歌剧院》获奖报道', hint: '新闻截图或 1 分钟报道，讲清“获奖 + 争议”即可', find: 'https://search.bilibili.com/all?keyword=%E5%A4%AA%E7%A9%BA%E6%AD%8C%E5%89%A7%E9%99%A2%20AI%E7%BB%98%E7%94%BB%20%E8%8E%B7%E5%A5%96', cred: 'Jason M. Allen · Colorado State Fair · 2022' },
+  outpaint: { type: 'media', label: 'DALL·E 扩图：《戴珍珠耳环的少女》', hint: 'OpenAI 2022 年发布扩图功能时的演示图，或一段扩图过程的短视频', find: 'https://search.bilibili.com/all?keyword=AI%E6%89%A9%E5%9B%BE%20%E6%88%B4%E7%8F%8D%E7%8F%A0%E8%80%B3%E7%8E%AF%E7%9A%84%E5%B0%91%E5%A5%B3', cred: 'OpenAI · DALL·E 2 Outpainting · 2022' },
+  modelsheet: { type: 'media', label: '角色设定表（model sheet）', hint: '一张正面、侧面、背面 + 表情表的示例；优先用示范项目自己的设定图', find: 'https://search.bilibili.com/all?keyword=%E8%A7%92%E8%89%B2%E8%AE%BE%E5%AE%9A%E5%9B%BE%20%E4%B8%89%E8%A7%86%E5%9B%BE%20%E5%8A%A8%E7%94%BB', cred: '动画角色设定表' },
+  demokf: { type: 'media', label: '示范项目 · 设定集与关键帧', hint: '教师示范片的三视图、表情表和 3–4 张关键帧（最好含一张失败版和修复版）', find: 'https://search.bilibili.com/all?keyword=AI%E8%A7%92%E8%89%B2%E4%B8%80%E8%87%B4%E6%80%A7%20%E4%B8%89%E8%A7%86%E5%9B%BE%20%E6%95%99%E7%A8%8B', cred: '本课程示范项目' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /* ---------- 生图工作台 ---------- */
+  const SLOTS8 = ['主体（外貌、服装）', '动作与表情', '场景与环境', '景别与机位', '光线', '色彩', '风格 / 媒介', '画幅'];
+  const EXAMPLES = [
+    ['16 岁高中女生，黑色齐肩短发，圆框眼镜，深绿色校服外套', '趴在窗台上望向窗外，嘴角微微上扬', '放学后空荡荡的教室，桌上摊着试卷', '中景，略低机位，侧面拍摄', '傍晚夕阳从窗外斜射进来，逆光，发丝有金边', '暖橙色与青灰色对比', '胶片摄影质感', '16:9'],
+    ['穿黄色雨衣的小男孩，手里拿着一把透明雨伞', '站在便利店门口，抬头看雨', '雨夜的街角，湿润的柏油路反射着霓虹灯', '大远景，固定机位，平视', '便利店的白色灯光从室内照出，侧光', '冷蓝色为主，一点暖黄', '电影剧照风格', '16:9'],
+  ];
+  let exI = 0;
+  const fields = $('#wbFields');
+  fields.innerHTML = SLOTS8.map((n, i) => `<label><span><b>${i + 1}</b>${n}</span><input type="text" data-i="${i}" aria-label="${n}"></label>`).join('');
+  const ins = [...fields.querySelectorAll('input')];
+  const NEG = /不要|别出现|不能有|没有|不带|不含|去掉/;
+  const ABS = /氛围感|高级感|史诗|孤独|唯美|震撼|好看|美丽|大片感|电影感|绝美|治愈|温馨|酷炫|有感觉/;
+  const TXT = /写着|文字|标题|字样|字幕|logo/i;
+  const wbUpdate = () => {
+    const v = ins.map(x => x.value.trim());
+    const body = v.slice(0, 7).filter(Boolean).join('，');
+    $('#wbOut').innerHTML = body || v[7] ? esc(body) + (v[7] ? `${body ? '，' : ''}画幅 ${esc(v[7])}` : '') : '<i>在上面填写，这里会拼出完整指令。</i>';
+    const w = [];
+    v.forEach((x, i) => {
+      if (NEG.test(x)) w.push(`第 ${i + 1} 项有否定词“${x.match(NEG)[0]}”：可能反而强化它。直接写你要的，或用负面提示框。`);
+      const a = x.match(ABS); if (a) w.push(`第 ${i + 1} 项有抽象词“${a[0]}”：翻译成景别、光线、色彩等看得见的东西。`);
+      if (TXT.test(x)) w.push(`第 ${i + 1} 项要求画面里出现文字：容易写错，片名字幕请后期加。`);
+    });
+    if ((v[0].match(/和|、|与|以及/g) || []).length >= 3) w.push('主体里的元素有点多：一张图一个焦点。');
+    v.forEach((x, i) => { if (!x) w.push(`第 ${i + 1} 项“${SLOTS8[i]}”空着：这一项交给模型随机决定。`); });
+    $('#wbWarn').innerHTML = w.length ? w.slice(0, 2).map(t => `<span>${esc(t)}</span>`).join('') + (w.length > 2 ? `<span>还有 ${w.length - 2} 条提示……</span>` : '') : '<span class="ok">八项写全，没有发现常见的失效写法。</span>';
+  };
+  const wbLoad = i => { EXAMPLES[i].forEach((t, j) => { ins[j].value = t; }); wbUpdate(); };
+  fields.addEventListener('input', wbUpdate);
+  $('#wbEx').onclick = () => { exI = (exI + 1) % EXAMPLES.length; wbLoad(exI); };
+  $('#wbClear').onclick = () => { ins.forEach(x => { x.value = ''; }); wbUpdate(); };
+  $('#wbCopy').onclick = () => {
+    const t = $('#wbOut').textContent;
+    if (!ins.some(x => x.value.trim())) { window.deckToast('先填写指令'); return; }
+    const ok = () => window.deckToast('已复制，粘贴到生图工具里');
+    try { navigator.clipboard.writeText(t).then(ok, () => window.deckToast('复制失败，请手动选中复制')); } catch (e) { window.deckToast('复制失败，请手动选中复制'); }
+  };
+  wbLoad(0);
+
+  /* ---------- 角色漂移模拟器（示意） ---------- */
+  const rngOf = a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const pick = (r, arr) => arr[Math.floor(r() * arr.length)];
+  const HAIR = ['#17171c', '#4a2f1c', '#8a5a2b', '#c9a06a', '#6b2f2f'];
+  const STYLE = ['short', 'bob', 'long', 'pony'];
+  const SKIN = ['#f3d2b8', '#e9bf9c', '#d9a982', '#f6dcc6'];
+  const CLOTH = ['#2f6b4f', '#3b5bdb', '#c0392b', '#8e44ad', '#c9952b', '#4b5563'];
+  const EYES = ['dot', 'almond', 'big', 'smile'];
+  const MOUTH = ['smile', 'flat', 'open'];
+  const BG = ['#1a2238', '#22301f', '#2e2219', '#2a1d2c', '#1c2a2e'];
+  const CANON = { hair: '#17171c', style: 'bob', bangs: true, glasses: true, cloth: '#2f6b4f', bag: true, skin: '#f3d2b8', eye: 'dot', rx: 28, ry: 34, len: 0 };
+  const TXTS = [
+    '指令：<b>一个高中女生</b>。其余全部交给模型随机决定。',
+    '指令：<b>16 岁女生，黑色齐肩短发、齐刘海，圆框眼镜，深绿色校服外套，红色帆布书包</b>',
+    '指令：同上的角色卡文本 ＋ <b>附上角色设定图（三视图）</b>',
+  ];
+  let mode = 0;
+  const attrs = (seed) => {
+    const r = rngOf(seed);
+    const a = {
+      hair: pick(r, HAIR), style: pick(r, STYLE), bangs: r() < .5, glasses: r() < .4, cloth: pick(r, CLOTH), bag: r() < .4,
+      skin: pick(r, SKIN), eye: pick(r, EYES), rx: 23 + r() * 12, ry: 29 + r() * 10, len: r() * 16 - 8,
+      mouth: pick(r, MOUTH), tilt: r() * 14 - 7, bg: pick(r, BG), bt: r() * 6 - 3,
+    };
+    if (mode >= 1) Object.assign(a, { hair: CANON.hair, style: CANON.style, bangs: true, glasses: true, cloth: CANON.cloth, bag: true });
+    if (mode >= 2) Object.assign(a, { skin: CANON.skin, eye: CANON.eye, rx: CANON.rx + (a.rx - 29) * .08, ry: CANON.ry + (a.ry - 34) * .08, len: a.len * .1, bt: 0 });
+    return a;
+  };
+  const face = a => {
+    const cx = 60, cy = 62, { rx, ry } = a;
+    const ex = rx * .4, ey = cy + 3;
+    let back = '';
+    if (a.style === 'long') back = `<path d="M${cx - rx - 5} ${cy - 6} L${cx - rx - 7} ${cy + 46 + a.len} L${cx + rx + 7} ${cy + 46 + a.len} L${cx + rx + 5} ${cy - 6} Z" fill="${a.hair}"/>`;
+    if (a.style === 'pony') back = `<ellipse cx="${cx + rx + 6}" cy="${cy + 6}" rx="8" ry="${20 + a.len}" fill="${a.hair}"/>`;
+    let side = '';
+    if (a.style === 'bob') side = `<rect x="${cx - rx - 5}" y="${cy - 8}" width="10" height="${ry * .8 + a.len}" rx="4" fill="${a.hair}"/><rect x="${cx + rx - 5}" y="${cy - 8}" width="10" height="${ry * .8 + a.len}" rx="4" fill="${a.hair}"/>`;
+    if (a.style === 'long') side = `<rect x="${cx - rx - 5}" y="${cy - 8}" width="8" height="${ry + 6}" rx="3" fill="${a.hair}"/><rect x="${cx + rx - 3}" y="${cy - 8}" width="8" height="${ry + 6}" rx="3" fill="${a.hair}"/>`;
+    const capLow = a.bangs ? cy - ry * .32 : cy - ry * .9;
+    const cap = `<path d="M${cx - rx - 4} ${cy - 2} A${rx + 4} ${ry + 5} 0 0 1 ${cx + rx + 4} ${cy - 2} L${cx + rx - 1} ${cy - ry * .3} Q${cx} ${capLow} ${cx - rx + 1} ${cy - ry * .3} Z" fill="${a.hair}"/>`;
+    const eye = x => {
+      if (a.eye === 'dot') return `<circle cx="${x}" cy="${ey}" r="2.6" fill="#1b1b22"/>`;
+      if (a.eye === 'almond') return `<ellipse cx="${x}" cy="${ey}" rx="4.4" ry="2.3" fill="#1b1b22"/>`;
+      if (a.eye === 'big') return `<circle cx="${x}" cy="${ey}" r="4.4" fill="#1b1b22"/><circle cx="${x + 1.4}" cy="${ey - 1.4}" r="1.3" fill="#fff"/>`;
+      return `<path d="M${x - 4} ${ey + 1} Q${x} ${ey - 4} ${x + 4} ${ey + 1}" stroke="#1b1b22" stroke-width="2" fill="none"/>`;
+    };
+    const my = cy + ry * .52;
+    const mouth = a.mouth === 'smile' ? `<path d="M${cx - 6} ${my} Q${cx} ${my + 5} ${cx + 6} ${my}" stroke="#7a2e2e" stroke-width="2" fill="none"/>`
+      : a.mouth === 'open' ? `<ellipse cx="${cx}" cy="${my + 1}" rx="3.6" ry="3" fill="#7a2e2e"/>`
+      : `<line x1="${cx - 5}" y1="${my + 1}" x2="${cx + 5}" y2="${my + 1}" stroke="#7a2e2e" stroke-width="2"/>`;
+    const glasses = a.glasses ? `<g fill="none" stroke="#111" stroke-width="1.8"><circle cx="${cx - ex}" cy="${ey}" r="7"/><circle cx="${cx + ex}" cy="${ey}" r="7"/><line x1="${cx - ex + 7}" y1="${ey}" x2="${cx + ex - 7}" y2="${ey}"/></g>` : '';
+    const bag = a.bag ? `<line x1="38" y1="118" x2="86" y2="150" stroke="#d6453d" stroke-width="6"/>` : '';
+    return `<svg viewBox="0 0 120 150" role="img" aria-label="示意角色"><rect width="120" height="150" fill="${a.bg}"/>${back}
+      <path d="M8 150 Q60 100 112 150 Z" fill="${a.cloth}"/><path d="M50 112 L60 126 L70 112 Z" fill="#f2f2f2"/>${bag}
+      <rect x="53" y="${cy + ry - 8}" width="14" height="16" fill="${a.skin}"/>
+      <g transform="rotate(${a.tilt.toFixed(1)} ${cx} ${cy + ry})">${side}<ellipse cx="${cx}" cy="${cy}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${a.skin}"/>${cap}
+      <line x1="${cx - ex - 4}" y1="${ey - 10 + a.bt}" x2="${cx - ex + 4}" y2="${ey - 10 - a.bt}" stroke="#2a2018" stroke-width="1.8"/><line x1="${cx + ex - 4}" y1="${ey - 10 - a.bt}" x2="${cx + ex + 4}" y2="${ey - 10 + a.bt}" stroke="#2a2018" stroke-width="1.8"/>
+      ${eye(cx - ex)}${eye(cx + ex)}${glasses}${mouth}</g></svg>`;
+  };
+  const seedIn = $('#driftSeed');
+  const driftRender = () => {
+    const s0 = Math.max(1, parseInt(seedIn.value, 10) || 1);
+    $('#driftFaces').innerHTML = [0, 1, 2, 3].map(k => `<figure>${face(attrs(s0 + k))}<figcaption>种子 ${s0 + k}</figcaption></figure>`).join('');
+    $('#driftTxt').innerHTML = TXTS[mode];
+  };
+  $('#driftGen').onclick = () => {
+    if (!$('#driftLock').checked) seedIn.value = 1 + Math.floor(Math.random() * 99990);
+    driftRender();
+  };
+  document.querySelectorAll('.drift .modes button').forEach(b => b.addEventListener('click', () => {
+    mode = +b.dataset.mode;
+    document.querySelectorAll('.drift .modes button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    driftRender();
+  }));
+  seedIn.addEventListener('change', driftRender);
+  driftRender();
+})();
+</script>
+</body>

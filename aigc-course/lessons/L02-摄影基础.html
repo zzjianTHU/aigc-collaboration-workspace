@@ -1,0 +1,1145 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 02 课 · 摄影基础：看懂一张好照片</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：曝光三角、距离与透视、视场角、景别取景框、布光台、色温条、调色、参数卡 */
+.lab canvas { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--line); background: #05060a; object-fit: contain; }
+.lab svg { width: 100%; height: auto; display: block; }
+.ctl { display: grid; grid-template-columns: 4.6em 1fr 4.6em; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.ctl b { color: var(--warm); font-family: var(--mono); font-size: 13px; text-align: right; }
+.ctl input[type=range] { width: 100%; accent-color: var(--warm); }
+.readout { display: flex; flex-wrap: wrap; gap: 6px; }
+.readout span { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--panel2); color: var(--muted); border: 1px solid var(--line); }
+.readout span b { color: var(--fg); }
+.readout span.hot { border-color: rgba(255,84,104,.5); }
+.readout span.hot b { color: var(--r); }
+.btn.on { background: var(--warm); color: #1a1408; border-color: var(--warm); }
+.trio { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .trio { grid-template-columns: repeat(3, 1fr); } }
+.trio .card { border-top: 3px solid var(--c); }
+.trio .card .k { font-family: var(--mono); font-size: 11px; color: var(--c); letter-spacing: .12em; }
+.eff { font-size: 13px !important; padding: 6px 10px; border-radius: 8px; background: var(--panel2); }
+.fl4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (min-width: 900px) { .fl4 { grid-template-columns: repeat(4, 1fr); } }
+.fl4 div { padding: 8px 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.fl4 div b { display: block; color: var(--fg); font-family: var(--display); font-size: 16px; }
+.fl4 div i { font-style: normal; color: var(--c); font-family: var(--mono); font-size: 11.5px; }
+.wgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.wgrid span { display: flex; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 8px; background: var(--panel2); font-size: 14px; color: var(--fg); }
+.wgrid span::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--warm)); }
+.comp6 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 900px) { .comp6 { grid-template-columns: repeat(6, 1fr); } }
+.comp6 figure { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.comp6 svg { width: 100%; height: auto; display: block; border-radius: 8px; border: 1px solid var(--line); background: #0d1018; }
+.comp6 figcaption { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.comp6 figcaption b { display: block; color: var(--fg); font-size: 14.5px; font-family: var(--display); }
+.shot-lab svg { border-radius: 10px; border: 1px solid var(--line); background: #0d1018; aspect-ratio: 16 / 9; }
+.shot-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.shot-cap b { font-family: var(--display); font-size: 20px; }
+.shot-cap span { font-size: 13px; color: var(--muted); }
+.meter { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.meter i { font-style: normal; color: var(--warm); letter-spacing: 2px; }
+.ratios { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+.ratios div { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.ratios .box { height: 92px; border-radius: 6px; border: 2px solid var(--c); background: linear-gradient(160deg, rgba(255,255,255,.06), transparent); }
+.ratios b { font-family: var(--mono); color: var(--c); font-size: 14px; }
+.ratios span { font-size: 12px; color: var(--muted); }
+.mini5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.mini5 figure { margin: 0; display: flex; flex-direction: column; gap: 4px; text-align: center; }
+.mini5 canvas { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); display: block; }
+.mini5 b { font-family: var(--display); font-size: 16px; }
+.mini5 span { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.light-lab { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .light-lab { grid-template-columns: .9fr 1fr; align-items: start; } }
+.light-lab canvas { max-height: 46vh; }
+.kbar { height: 26px; border-radius: 8px; border: 1px solid var(--line); }
+.kmarks { position: relative; height: 34px; font-size: 11.5px; color: var(--muted); }
+.kmarks span { position: absolute; top: 0; transform: translateX(-50%); text-align: center; white-space: nowrap; line-height: 1.3; }
+.kmarks span::before { content: ""; display: block; width: 1px; height: 6px; background: var(--muted); margin: 0 auto 2px; }
+.kmarks span b { font-family: var(--mono); color: var(--fg); font-size: 11.5px; }
+.grade svg { border-radius: 10px; border: 1px solid var(--line); transition: filter .3s ease; }
+.grade svg * { transition: fill .4s ease, stop-color .4s ease; }
+.wheel { width: 74px; height: 74px; flex: none; border-radius: 50%; background: conic-gradient(from 90deg, #ff4040, #ffb000, #e8ff40, #40ff70, #40e8ff, #4070ff, #b040ff, #ff40a0, #ff4040); position: relative; }
+.wheel::after { content: ""; position: absolute; inset: 22px; border-radius: 50%; background: var(--panel); }
+.ptable { display: grid; grid-template-columns: 3.6em 1fr; gap: 6px 10px; font-size: 13.5px; align-items: baseline; }
+.ptable .k { font-family: var(--mono); font-size: 11.5px; color: var(--warm); letter-spacing: .08em; }
+.ptable .v { color: var(--muted); line-height: 1.5; }
+.ptable .v em { font-style: normal; color: var(--fg); }
+.ptable .v code { font-family: var(--mono); font-size: 12px; color: var(--b); }
+.prompt { font-size: 14px; line-height: 1.65; padding: 10px 12px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); color: var(--fg); }
+.prompt mark { background: none; color: var(--warm); border-bottom: 1.5px solid rgba(255,196,107,.6); }
+.prompt.dim { color: var(--muted); }
+.g5 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .g5 { grid-template-columns: repeat(5, 1fr); } }
+.g5 .card { border-top: 3px solid var(--g); padding: 12px 14px; gap: 6px; }
+.g5 .card > b { font-size: 18px; }
+.g5 .card p { font-size: 13.5px; line-height: 1.55; }
+.g5 .card .n { font-family: var(--mono); font-size: 11px; color: var(--g); letter-spacing: .1em; }
+.g5 .card .cnt { margin-top: auto; font-family: var(--mono); font-size: 12px; color: var(--warm); }
+.anno { display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; font-size: 13.5px; padding: 12px 14px; border-radius: 12px; background: #05060a; border: 1px solid var(--line); }
+.anno span:nth-child(odd) { font-family: var(--mono); font-size: 11.5px; color: var(--muted); letter-spacing: .06em; padding-top: 2px; }
+.anno span:nth-child(even) { color: var(--fg); }
+.trip3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .trip3 { grid-template-columns: repeat(3, 1fr); } }
+.trip3 .q b { font-size: clamp(16px, 1.5vw, 20px); }
+.trip3 .q p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+/* 投影仪常见的 1280×720：压缩互动区和卡片 */
+@media (max-height: 800px) {
+  .lab canvas { max-height: 38vh; }
+  .expo canvas { max-height: 35vh; }
+  .light-lab canvas { max-height: 40vh; }
+  .card { padding: 11px 14px; gap: 6px; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.5; }
+  .slot.short { aspect-ratio: 16 / 6; }
+  .shot-lab svg { max-height: 40vh; }
+  .ratios .box { height: 70px; }
+  .g5 .card p { font-size: 12.5px; line-height: 1.45; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .inner { gap: 16px; }
+  .ctl { font-size: 12px; }
+}
+</style>
+
+<body data-lesson="L02">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开口：“上节课的课后任务，每人拍了 3 张你觉得好看的照片。今天我们要回答一个问题：好看，到底好看在哪？”接着说：上节课结尾讲过，“85mm、浅景深”这样的词对 AI 是精确的门牌号，今天就是来学这些门牌号到底指什么。前 40 分钟讲三件事：相机怎么收光、画面怎么摆、光从哪里来；后面 42 分钟到校园里实拍，再把照片变成生图指令。把三个问题念一遍，告诉学生下课前每人都要能回答。">
+  <div class="lesson-no" aria-hidden="true">02</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第一幕 · 看见与构思</span><span>LESSON 02 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">摄影基础<br><span class="rgbword">看懂一张好照片</span></h1>
+    <p class="lead">“好看”不是玄学。每一张好照片背后，都有<b>一组可以说清楚的选择</b>：怎么收光、怎么摆、光从哪来。学会这些词，你既能拍，也能指挥 AI 画。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>想让背景虚化，有哪三种办法？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>这张照片里你第一眼看到什么？为什么？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>想拍出“孤独感”，景别、光线、色彩怎么选？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–40</b>知识讲解 · 曝光与镜头 / 构图 / 光线与色彩</span>
+      <span><b>40–82</b>实操 · 校园实拍 / 标注 / 照片变指令</span>
+      <span><b>82–90</b>讲评与产出</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 开场：你带来的照片 ============ -->
+<section class="slide" data-min="1.5" data-note="开场 1 分半，先不讲知识。请两三位同学把作业照片投屏或举起手机，问：你为什么觉得它好看？学生多半会说“光好看”“背景虚虚的”“有感觉”。不评价，把这些词写在黑板一角。然后按 → 揭示三张卡：你们说的“有感觉”，其实可以拆成三个具体的选择。第一，相机怎么收光：亮不亮、背景虚不虚、动作是清楚还是拖影，这是曝光与镜头。第二，画面怎么摆：观众先看哪里，这是构图。第三，光从哪里来、什么颜色，这是光线与色彩。落点：今天学的每一个词，都会变成你下午写给 AI 的指令。过渡到模块 1。">
+  <div class="inner">
+    <div class="tc"><span class="ch">开场</span><span>课后任务回收</span></div>
+    <h2 class="h-l">你带来的照片，为什么好看？</h2>
+    <div class="card ask"><span class="tag">先说说看</span><p>拿出你拍的 3 张照片，挑一张，用一句话说出它好看在哪。说不出专业词没关系，“有感觉”也算，我们先记下来。</p></div>
+    <div class="step">
+      <div class="trio">
+        <div class="card" style="--c:var(--b)"><span class="k">模块 1 · 15 MIN</span><b>相机怎么收光</b><p>亮不亮、背景虚不虚、动作是凝固还是拖影：<b>曝光与镜头</b>。</p></div>
+        <div class="card" style="--c:var(--g)"><span class="k">模块 2 · 13 MIN</span><b>画面怎么摆</b><p>观众第一眼看哪里、看到多少：<b>构图与视觉注意力</b>。</p></div>
+        <div class="card" style="--c:var(--r)"><span class="k">模块 3 · 12 MIN</span><b>光从哪里来</b><p>方向、软硬、颜色，决定情绪：<b>光线与色彩</b>。</p></div>
+      </div>
+      <div class="punch">“有感觉”可以拆成三个具体的选择。<small>今天学的每个词，下半节课都会写进你给 AI 的指令里。</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 曝光三要素 ============ -->
+<section class="slide" data-min="3" data-note="模块 1，曝光与镜头，15 分钟。先讲曝光：曝光就是让多少光落到传感器上。按 → 依次出三张卡。光圈：镜头里那个可以开大缩小的孔。f 值是一个分母，等于焦距除以开口直径，所以数字越小开口越大，f/1.8 比 f/8 大得多。光圈除了管进光量，还管景深，也就是背景虚不虚，后面细讲。快门：传感器感光多长时间。1/1000 秒能把跳起来的人凝固在半空，1/15 秒会把奔跑的人拉成一道拖影。ISO：把传感器收到的信号放大。打比方，像音量旋钮：对方说话太小声，你把音量调大，声音听清了，可是底下的沙沙声也一起被放大了，这沙沙声就是照片里的噪点。最后讲总的比方：接满一杯水就是一张亮度正好的照片。龙头开大（大光圈），一下就满了（快门要快）；龙头开小，就得多接一会儿（快门要慢）。三个要素此消彼长：一个往上调，另一个就得往下调，这叫曝光三角。下一页用互动演示验证。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 曝光与镜头</span><span>15 MIN</span><span>① 曝光三要素</span></div>
+    <h2 class="h-l">三个旋钮，决定一张照片有多亮</h2>
+    <div class="trio">
+      <div class="step"><div class="card" style="--c:var(--b)"><span class="k">光圈 · f 值</span>
+        <b>镜头开口有多大</b>
+        <p>f 值是分母：<b>数字越小，开口越大</b>，f/1.8 比 f/8 进光多得多。</p>
+        <p class="eff">同时管：<b>景深</b>（背景虚不虚）</p>
+      </div></div>
+      <div class="step"><div class="card" style="--c:var(--warm)"><span class="k">快门速度</span>
+        <b>感光多长时间</b>
+        <p><b>1/1000 秒</b>凝固跳起的人；<b>1/15 秒</b>把奔跑拉成一道拖影。</p>
+        <p class="eff">同时管：<b>运动</b>是凝固还是模糊</p>
+      </div></div>
+      <div class="step"><div class="card" style="--c:var(--r)"><span class="k">ISO · 感光度</span>
+        <b>把信号放大多少</b>
+        <p>像<b>音量旋钮</b>：调大能听清小声说话，底下的沙沙声也一起变大。</p>
+        <p class="eff">代价：越高越亮，<b>噪点越多</b></p>
+      </div></div>
+    </div>
+    <div class="step">
+      <div class="g2">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>曝光正好 = <b>接满一杯水</b>。龙头开大（大光圈），一下就满（快门要快）；龙头开小，就得多接一会儿（快门要慢）。</p>
+        </div>
+        <div class="punch">三者此消彼长，叫“曝光三角”。<small>一个往上调一档，另一个就得往下调一档，亮度才不变。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 曝光三角互动 ============ -->
+<section class="slide" id="s-expo" data-min="3" data-note="这一页先讲一个故事，再用右边的模拟相机演示。故事：1878 年 6 月，美国加州，铁路大亨利兰·斯坦福想知道一个问题：马奔跑时会不会四只蹄子同时离地？肉眼根本看不清。摄影师爱德华·迈布里奇在跑道边排了一排相机，用细线连着快门，马跑过去一根根绊断细线，依次拍下照片。照片证明：马确实有四蹄同时离地的瞬间，而且是收在肚子下面，而不是很多油画里画的前后伸开。这组照片也被看作电影的前身之一。落点：快门够快，就能看见眼睛看不见的瞬间。然后演示，按这个顺序点预设：1. 点“标准”：f/4、1/125、ISO 400，亮度正好。2. 点“凝固动作”：快门 1/1000，球被冻住了；但快门快了 3 档，为了不变暗，光圈开到 f/2.8、ISO 提到 1600，于是背景变虚、噪点变多，这就是代价。3. 点“拉出拖影”：快门 1/15，球拖出一道线，光圈缩到 f/11 补回来，背景变清楚了。4. 点“背景虚化”：f/1.4，背景的灯变成一团团光斑。5. 最后只拖动一个滑杆，比如只把 ISO 拉满，看画面过曝。提醒：大多数手机的光圈是固定的，手机自动调快门和 ISO；人像模式里的光圈数值是算法模拟的。课前核实：迈布里奇使用的相机数量（常见说法为 12 台）。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 曝光与镜头</span><span>② 曝光三角 · 互动</span></div>
+    <h2 class="h-l">动一个旋钮，就得赔另一个</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 加州 1878</span>
+          <b>马跑起来，会四蹄离地吗？</b>
+          <p>肉眼看不清。摄影师<b>迈布里奇</b>在跑道边排了一排相机，马跑过时绊断细线、依次触发快门。照片证明：<b>马确实有四蹄同时离地的瞬间</b>，而且蹄子收在肚子下面，和很多油画画的都不一样。</p>
+          <p class="src">Eadweard Muybridge, The Horse in Motion, 1878</p>
+        </div>
+        <div class="punch">快门够快，就能看见眼睛看不见的瞬间。<small>代价是：光少了，要从光圈或 ISO 那里补回来。</small></div>
+      </div>
+      <div class="lab expo">
+        <span class="label">互动 · 模拟相机：傍晚的操场</span>
+        <canvas id="expoCv" width="480" height="300" aria-label="模拟相机拍到的画面：前景人物、飞过的足球和远处的灯"></canvas>
+        <div class="row">
+          <button class="btn" type="button" data-expo="3,3,2">标准</button>
+          <button class="btn" type="button" data-expo="2,0,4">凝固动作</button>
+          <button class="btn" type="button" data-expo="6,6,2">拉出拖影</button>
+          <button class="btn" type="button" data-expo="0,0,2">背景虚化</button>
+        </div>
+        <label class="ctl">光圈<input type="range" id="expoA" min="0" max="7" step="1" value="3"><b id="expoAV">f/4</b></label>
+        <label class="ctl">快门<input type="range" id="expoS" min="0" max="7" step="1" value="3"><b id="expoSV">1/125</b></label>
+        <label class="ctl">ISO<input type="range" id="expoI" min="0" max="6" step="1" value="2"><b id="expoIV">400</b></label>
+        <div class="readout" id="expoRead"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 焦段与视角 ============ -->
+<section class="slide" id="s-fov" data-min="2.5" data-note="讲焦段。先说明：焦段都按全画幅等效焦距来说，这样手机和相机可以放在一起比较。左边的扇形是不同焦段能看到的范围：16mm 将近 100 度，200mm 只有 10 度左右。按 → 讲四档：16 到 24mm 广角，视野宽，近处的东西被放大，适合交代环境，也能拍出压迫感；35 到 50mm 标准，接近人眼看世界的感觉，适合叙事；85 到 135mm 中长焦，人像最常用，背景像被“压”到人身后；200mm 以上长焦，空间被强烈压缩，有偷窥感、距离感。打比方：用两只手的拇指和食指框一个取景框，贴近眼睛，框里的东西很多，这是广角；把手臂伸直，框里只剩一小块，这是长焦。注意：你的眼睛没动，框里那一小块的样子也没变，只是框大框小。这句话先记住，下一页要用。讲故事：希区柯克 1954 年的《后窗》，主角摔断了腿困在家里，用一支长焦镜头偷看对面楼的邻居，最后看出了一桩案子。长焦让观众和主角一起“隔着距离偷看”。最后对一下手机：0.5x 大约是 13 到 16mm，1x 大约是 23 到 26mm，3x 大约是 70 到 77mm，具体看机型参数，实操时会用到。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 曝光与镜头</span><span>③ 焦段与视角</span></div>
+    <h2 class="h-l">焦段，决定你能“框”进多少</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="lab"><span class="label">视场角 · 全画幅等效焦距（水平方向）</span>
+          <svg id="fovSvg" viewBox="0 0 560 230" role="img" aria-label="不同焦段的视野范围扇形"></svg>
+          <p class="small">手机对照（以机型参数为准）：<b class="warm">0.5x ≈ 13–16mm</b> · <b class="warm">1x ≈ 23–26mm</b> · <b class="warm">3x ≈ 70–77mm</b></p>
+        </div>
+        <div class="step"><div class="fl4">
+          <div style="--c:var(--r)"><i>16–24mm</i><b>广角</b>视野宽、近大远小，环境感、压迫感</div>
+          <div style="--c:var(--warm)"><i>35–50mm</i><b>标准</b>接近人眼观感，适合叙事</div>
+          <div style="--c:var(--g)"><i>85–135mm</i><b>中长焦</b>人像常用，背景贴到人身后</div>
+          <div style="--c:var(--b)"><i>200mm+</i><b>长焦</b>强烈压缩空间，偷窥感、距离感</div>
+        </div></div>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>用双手框一个取景框：<b>贴近眼睛 = 广角</b>，框进很多；<b>手臂伸直 = 长焦</b>，只剩一小块。</p>
+          <p>注意：你没动，框里那一块的样子也没变，<b>只是框大框小</b>。</p>
+        </div>
+        <div class="card story"><span class="tag">参考片 · 希区柯克《后窗》1954</span>
+          <p>主角摔断腿困在家里，用一支<b>长焦镜头</b>偷看对面楼的邻居，看出了一桩案子。长焦让观众和他一起<b>隔着距离偷看</b>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 透视由距离决定 ============ -->
+<section class="slide" id="s-persp" data-min="2.5" data-note="这一页纠正一个常被讲错的知识点：很多人说广角镜头会让脸变形。其实透视变形是由拍摄距离决定的，焦段只决定框进多少。广角显得脸大、鼻子大，是因为用广角时人往往站得太近。先讲故事：2018 年美国罗格斯大学的研究者在《美国医学会杂志：面部整形外科》发表论文，比较了约 30 厘米外拍的自拍和 1.5 米外拍的照片，发现近距离自拍会让鼻子看起来大约 30%。不少人因为自拍里的鼻子去咨询整形，其实只是离得太近。然后用右边的演示证明。模式一，“后退并变焦”：拖滑杆，相机越来越远，同时焦段变长，人脸始终一样大。看两个变化：鼻子相对脸的放大倍数越来越接近 1，耳朵慢慢露出来；背后的树越来越大、越来越近，这就是“压缩感”。模式二，“站着不动只变焦”：拖滑杆，脸变大变小，但鼻子的放大倍数一直不变，就像把照片裁切放大。落点：想让脸好看，退远一点再拉长焦。再讲电影里的应用：希区柯克 1958 年的《迷魂记》第一次用了“推拉变焦”：相机往后退，同时镜头往长焦推，人物大小不变、背景却在变，表现主角的恐高眩晕。斯皮尔伯格 1975 年的《大白鲨》里，警长在海滩上看到鲨鱼袭击那一刻也用了这个手法。有时间可以放 10 秒片段。课前核实：论文中 30% 这个数字与研究机构。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 曝光与镜头</span><span>④ 常被讲错的知识点</span></div>
+    <h2 class="h-l">脸被拍大，怪的是距离，不是焦段</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">研究 · 美国 2018</span>
+          <b>自拍为什么显得鼻子大？</b>
+          <p>研究者比较了<b>约 30 厘米</b>外的自拍和 <b>1.5 米</b>外的照片：近距离自拍让鼻子看起来<b>大了约 30%</b>。不是脸变了，是离得太近。</p>
+          <p class="src">Ward 等, Nasal Distortion in Short-Distance Photographs: The Selfie Effect, JAMA Facial Plastic Surgery, 2018</p>
+        </div>
+        <div class="card story"><span class="tag">参考片 · 《迷魂记》1958 /《大白鲨》1975</span>
+          <p><b>推拉变焦</b>：相机后退、同时推长焦，人物不变、背景在动，像一阵眩晕。</p>
+        </div>
+        <div class="slot short" data-slot="dollyzoom"></div>
+      </div>
+      <div class="lab persp">
+        <span class="label">互动 · 同一张脸，不同距离</span>
+        <div class="row">
+          <button class="btn on" type="button" id="perspModeD">后退并变焦（脸一样大）</button>
+          <button class="btn" type="button" id="perspModeZ">站着不动，只变焦</button>
+        </div>
+        <canvas id="perspCv" width="480" height="300" aria-label="根据拍摄距离和焦段渲染的人脸与背景"></canvas>
+        <label class="ctl"><span id="perspLbl">距离</span><input type="range" id="perspR" min="0" max="100" step="1" value="10"><b id="perspRV">0.5 m</b></label>
+        <div class="readout" id="perspRead"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 景深与计算摄影 ============ -->
+<section class="slide" data-min="2" data-note="讲景深。景深就是照片里“看起来清楚”的那一段前后距离。打比方：对焦时，相当于在空间里立了一块透明的玻璃板，板附近的东西是清楚的；景深就是这块板的厚度。按 → 出三种办法，这正是本课问题 1 的答案：想让背景虚化，第一，开大光圈，f 值调小；第二，用更长的焦段；第三，靠近主体，同时让背景离主体远一点。还有第四个因素是传感器尺寸，传感器越大越容易虚化，这也是手机原生虚化弱的原因：手机传感器很小。那手机人像模式是怎么虚化的？讲故事：2016 年苹果在 iPhone 7 Plus 上推出人像模式，用两颗摄像头像人的两只眼睛一样估算距离；2017 年谷歌 Pixel 2 只用一颗摄像头，靠机器学习估算哪里是人、哪里是背景。这叫计算摄影：算法先猜每个像素有多远，再把远处的模糊掉。既然是猜，就会猜错：发丝、眼镜边、透明杯子的边缘常常被误切。放一张老师自己拍的人像模式照片，放大发丝边缘给学生看。落点：手机的虚化是算出来的，AI 生图里的“浅景深”也是。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 曝光与镜头</span><span>⑤ 景深</span></div>
+    <h2 class="h-l">背景虚化的三种办法</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>对焦 = 在空间里立一块<b>透明玻璃板</b>，板附近的东西清楚。<b>景深就是这块板的厚度</b>。</p>
+        </div>
+        <div class="step">
+          <div class="card idea"><span class="tag">让“板”变薄的办法</span>
+            <ol>
+              <li><b>开大光圈</b>：f 值调小，f/1.8 比 f/8 虚</li>
+              <li><b>用更长的焦段</b>：85mm 比 24mm 虚</li>
+              <li><b>靠近主体，让背景离远</b>：人贴近你，背景越远越虚</li>
+            </ol>
+            <p>还有第四个因素：<b>传感器越大越容易虚</b>，所以手机原生虚化很弱。</p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">计算摄影 · 2016 / 2017</span>
+          <b>手机的虚化，是算出来的</b>
+          <p>2016 年 iPhone 7 Plus 用<b>两颗摄像头</b>像双眼一样估算距离；2017 年谷歌 Pixel 2 只用<b>一颗摄像头 + 机器学习</b>。算法先猜每个像素多远，再把远处模糊掉。</p>
+          <p>既然是猜，就会错：<b>发丝、眼镜边、透明杯</b>的边缘常被误切。</p>
+        </div>
+        <div class="slot short" data-slot="portraitedge"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 视觉权重 ============ -->
+<section class="slide" data-min="3" data-note="模块 2，构图与视觉注意力，13 分钟。先抛问题：看一张照片时，你的眼睛不是均匀扫过去的，它会先跳到某几个地方。哪些地方？讲故事：1967 年，苏联心理学家亚尔布斯出版了一本研究眼球运动的书。他让人看列宾的油画《意外归来》，画的是一个流放的人突然回家，一屋子家人的反应。他用仪器记下眼睛停留的位置，发现视线反复落在人脸上，尤其是眼睛；更有意思的是，他让同一个人带着不同问题看，比如“估计这家人的年龄”或“记住每个人穿什么”，眼睛的路线就完全不一样。按 → 出七种视觉权重：人脸和眼睛、最亮处、高对比处、暖色、清晰处、文字、孤立的物体。每说一种，可以问学生举一个例子：比如一张全是灰色的照片里有一把红伞，你一定先看红伞。落点：构图，就是在安排视觉权重，决定观众的眼睛先去哪、再去哪。可以投一张有大片暗部和一张亮脸的照片，请学生说第一眼看哪里。课前核实：油画中文名的通行译法。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 构图与视觉注意力</span><span>13 MIN</span><span>① 视觉权重</span></div>
+    <h2 class="h-l">眼睛会先跳到哪里？</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card story"><span class="tag">实验 · 苏联 1967</span>
+          <b>追踪眼睛的人</b>
+          <p>心理学家<b>亚尔布斯</b>记录人们看列宾油画《意外归来》时眼睛停在哪里：视线<b>反复落在人脸和眼睛上</b>。带着不同问题看（猜年龄 / 记衣服），眼睛的路线就完全不同。</p>
+          <p class="src">Alfred Yarbus, Eye Movements and Vision, 1967</p>
+        </div>
+        <div class="slot short" data-slot="yarbus"></div>
+      </div>
+      <div class="col">
+        <div class="step">
+          <div class="card idea"><span class="tag">七种视觉权重 · 眼睛优先去的地方</span>
+            <div class="wgrid">
+              <span style="--c:var(--r)">人脸与眼睛</span>
+              <span style="--c:#fff">最亮处</span>
+              <span style="--c:var(--b)">高对比处</span>
+              <span style="--c:var(--warm)">暖色</span>
+              <span style="--c:var(--g)">清晰处</span>
+              <span style="--c:#c58bff">文字</span>
+              <span style="--c:var(--muted)">孤立的物体</span>
+            </div>
+          </div>
+        </div>
+        <div class="step"><div class="punch">构图，就是在安排视觉权重。<small>决定观众的眼睛先去哪、再去哪。</small></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 常用构图 ============ -->
+<section class="slide" data-min="3" data-note="讲六种常用构图，每种 20 秒，边指图边讲。三分法：横竖各画两条线，主体放在交点上，比放正中间更有呼吸感，手机相机设置里可以打开网格线。中心与对称：稳定、庄重、有仪式感，导演韦斯·安德森几乎每个镜头都对称，像一个精致的玩具盒。引导线：道路、栏杆、走廊的线条会把视线一路带到主体。框架构图：用门、窗、树枝在画面里再框一个画面，像画中画。负空间：大面积留白，人物很小，表达孤独或自由。前中后景：前景放一点虚化的东西，中间是人，后面是背景，画面一下就有了纵深。打比方：构图就像给观众的眼睛修路，线条是路，框是大门，留白是广场。讲故事：约翰·福特 1956 年的西部片《搜索者》，开场是从昏暗的屋里透过一扇门看向外面明亮的荒野，结尾主角站在门外，门在他面前关上，同一个门框把“家”和“荒野”分开，被认为是电影史上最有名的框架构图之一。落点：实操任务 1 的构图组，你要从三分法、引导线、框架构图里选两种拍。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 构图与视觉注意力</span><span>② 常用构图</span></div>
+    <h2 class="h-l">六种常用构图：给眼睛修路</h2>
+    <div class="comp6">
+      <figure><svg viewBox="0 0 160 90" aria-hidden="true"><g stroke="rgba(255,196,107,.5)" stroke-dasharray="3 3"><path d="M53 0V90M107 0V90M0 30H160M0 60H160"/></g><rect x="0" y="60" width="160" height="30" fill="#1a2433"/><circle cx="107" cy="30" r="9" fill="#ffc46b"/><rect x="101" y="40" width="12" height="20" rx="4" fill="#ffc46b"/></svg><figcaption><b>三分法</b>主体放在交点上</figcaption></figure>
+      <figure><svg viewBox="0 0 160 90" aria-hidden="true"><path d="M30 90V25L80 8L130 25V90" fill="#1a2433" stroke="#5b8cff"/><path d="M62 90V48a18 18 0 0 1 36 0V90" fill="#0d1018" stroke="#5b8cff"/><circle cx="80" cy="60" r="6" fill="#ffc46b"/><rect x="75" y="66" width="10" height="20" rx="3" fill="#ffc46b"/><path d="M80 0V90" stroke="rgba(255,196,107,.35)" stroke-dasharray="3 3"/></svg><figcaption><b>中心与对称</b>稳定、仪式感</figcaption></figure>
+      <figure><svg viewBox="0 0 160 90" aria-hidden="true"><rect y="38" width="160" height="52" fill="#1a2433"/><path d="M0 90L74 38M160 90L86 38M30 90L77 38M130 90L83 38" stroke="#3fe0a0" stroke-width="1.5"/><circle cx="80" cy="30" r="4" fill="#ffc46b"/><rect x="77" y="34" width="6" height="8" rx="2" fill="#ffc46b"/></svg><figcaption><b>引导线</b>线条把视线带到主体</figcaption></figure>
+      <figure><svg viewBox="0 0 160 90" aria-hidden="true"><rect width="160" height="90" fill="#06070b"/><rect x="50" y="12" width="60" height="78" fill="#2a3a52"/><rect x="50" y="62" width="60" height="28" fill="#3a3326"/><circle cx="84" cy="44" r="5" fill="#ffc46b"/><rect x="80" y="49" width="8" height="14" rx="3" fill="#ffc46b"/></svg><figcaption><b>框架构图</b>门窗形成画中画</figcaption></figure>
+      <figure><svg viewBox="0 0 160 90" aria-hidden="true"><rect width="160" height="90" fill="#1c2a3e"/><rect y="78" width="160" height="12" fill="#121a26"/><circle cx="128" cy="71" r="3" fill="#ffc46b"/><rect x="126" y="74" width="4" height="6" rx="1" fill="#ffc46b"/></svg><figcaption><b>负空间</b>大片留白：孤独或自由</figcaption></figure>
+      <figure><svg viewBox="0 0 160 90" aria-hidden="true"><path d="M0 50L35 22L70 44L105 18L160 46V90H0Z" fill="#1a2433"/><circle cx="92" cy="44" r="7" fill="#ffc46b"/><rect x="86" y="52" width="12" height="24" rx="4" fill="#ffc46b"/><ellipse cx="18" cy="84" rx="34" ry="22" fill="#2f5a46" opacity=".75"/></svg><figcaption><b>前中后景</b>三层叠出纵深</figcaption></figure>
+    </div>
+    <div class="g2">
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>构图是给观众的眼睛<b>修路</b>：线条是路，框是大门，留白是广场。路修到哪，眼睛就走到哪。</p>
+      </div>
+      <div class="card story"><span class="tag">参考片 · 约翰·福特《搜索者》1956</span>
+        <p>开场从昏暗的屋里<b>透过一扇门</b>看向明亮的荒野；结尾主角站在门外，门在他面前关上。同一个门框，把“家”和“荒野”分开。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 景别 ============ -->
+<section class="slide" id="s-shot" data-min="2.5" data-note="讲景别：画面框进多少。用右边的演示，从远景依次点到特写。远景：人很小，交代环境和氛围；全景：看见人的全身和他所在的环境，交代人和环境的关系；中景：大约腰部以上，看清动作和人与人的互动；近景：胸部以上，看清表情和情绪；特写：只有脸或一个细节，强调。每点一次，看下面的指标：景别越近，信息越少，情绪越强。打比方：景别就像人和人说话的距离。人类学家霍尔在 1966 年把人际距离分成几档：公共距离，三四米以外，像台上讲话；社交距离，一两米，像和老师谈话；个人距离，不到一米，像和朋友聊天；亲密距离，不到半米，只有家人和很亲近的人。镜头离得越近，观众就越像被拉进了这个人的“亲密距离”，所以情绪越强。问学生：如果拍一个人考试失利，你会用哪个景别？可能的回答：特写他攥紧的手，或者远景里空荡荡的教室只有他一个人。两种都对，表达的情绪不同。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 构图与视觉注意力</span><span>③ 景别</span></div>
+    <h2 class="h-l">景别越近，信息越少，情绪越强</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">五种景别</span>
+          <ul>
+            <li><b>远景</b>：环境与氛围</li>
+            <li><b>全景</b>：人物与环境的关系</li>
+            <li><b>中景</b>：动作与互动（腰部以上）</li>
+            <li><b>近景</b>：表情与情绪（胸部以上）</li>
+            <li><b>特写</b>：细节与强调</li>
+          </ul>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 霍尔的人际距离 1966</span>
+          <p>景别像<b>说话的距离</b>：台上讲话（公共）→ 和老师谈话（社交）→ 和朋友聊天（个人）→ 只有亲近的人（亲密）。镜头越近，观众越像被拉进<b>亲密距离</b>。</p>
+        </div>
+      </div>
+      <div class="lab shot-lab">
+        <span class="label">互动 · 同一个人，五种景别</span>
+        <svg id="shotSvg" viewBox="0 0 1600 900" role="img" aria-label="操场上一个学生，可以切换不同景别">
+          <defs>
+            <linearGradient id="shSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20345a"/><stop offset="1" stop-color="#e59a6a"/></linearGradient>
+          </defs>
+          <rect width="1600" height="900" fill="url(#shSky)"/>
+          <path d="M0 560H260V380H420V470H560V330H760V560H1600V900H0Z" fill="#1b2232"/>
+          <g fill="#ffd38a" opacity=".8"><rect x="300" y="410" width="20" height="26"/><rect x="350" y="410" width="20" height="26"/><rect x="600" y="370" width="20" height="26"/><rect x="660" y="420" width="20" height="26"/><rect x="600" y="470" width="20" height="26"/></g>
+          <rect y="740" width="1600" height="160" fill="#7a3b2e"/><path d="M0 780H1600M0 830H1600" stroke="#f3e3d0" stroke-width="4" opacity=".6"/>
+          <rect y="560" width="1600" height="180" fill="#2b4a33"/>
+          <circle cx="1350" cy="500" r="90" fill="#1f3a28"/><rect x="1340" y="560" width="20" height="120" fill="#2a1e17"/>
+          <!-- 人物 -->
+          <g id="kid">
+            <path d="M955 640L948 765H966L978 660L990 660L1002 765H1020L1010 640Z" fill="#23283a"/>
+            <path d="M944 505Q980 492 1016 505L1024 646H936Z" fill="#3b5bdb"/>
+            <path d="M944 512L918 600L930 604L956 530Z" fill="#3b5bdb"/><path d="M1016 512L1040 596L1028 600L1004 530Z" fill="#3b5bdb"/>
+            <circle cx="924" cy="604" r="8" fill="#e8b89c"/><circle cx="1034" cy="600" r="8" fill="#e8b89c"/>
+            <rect x="972" y="492" width="16" height="16" fill="#e0ad92"/>
+            <ellipse cx="980" cy="470" rx="25" ry="29" fill="#e8b89c"/>
+            <path d="M954 466Q952 438 980 438Q1008 438 1006 466Q1000 452 980 452Q962 452 954 466Z" fill="#1d1a1a"/>
+            <ellipse cx="970" cy="472" rx="2.6" ry="3.2" fill="#1d1a1a"/><ellipse cx="990" cy="472" rx="2.6" ry="3.2" fill="#1d1a1a"/>
+            <path d="M966 464Q970 461 974 464M986 464Q990 461 994 464" stroke="#1d1a1a" stroke-width="1.2" fill="none"/>
+            <path d="M979 476Q977 482 981 483" stroke="#b9826a" stroke-width="1.2" fill="none"/>
+            <path d="M972 488Q980 493 988 488" stroke="#9c4a44" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+            <path d="M968 486Q965 488 966 490" stroke="#c98d76" stroke-width="0" fill="none"/>
+            <circle cx="967" cy="482" r="3" fill="#f0a08a" opacity=".35"/><circle cx="993" cy="482" r="3" fill="#f0a08a" opacity=".35"/>
+          </g>
+        </svg>
+        <div class="row" id="shotBtns">
+          <button class="btn on" type="button" data-shot="0">远景</button>
+          <button class="btn" type="button" data-shot="1">全景</button>
+          <button class="btn" type="button" data-shot="2">中景</button>
+          <button class="btn" type="button" data-shot="3">近景</button>
+          <button class="btn" type="button" data-shot="4">特写</button>
+        </div>
+        <div class="shot-cap"><b id="shotName">远景</b><span id="shotUse">环境与氛围</span><span class="meter">信息 <i id="shotInfo">●●●●●</i> · 情绪 <i id="shotEmo">●</i></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 画幅比例 ============ -->
+<section class="slide" data-min="2" data-note="讲画幅比例。画幅本身就是构图的一部分。下面四个框是同样高度下的真实比例：9:16 竖屏短视频，适合拍一个人、拍高的东西；1:1 方形，集中、像相册；16:9 横屏视频，电视和大部分网络视频；2.39:1 电影宽银幕，横向很宽，适合风景、对峙、群像。讲两个故事。第一个：李安 2012 年的《少年派的奇幻漂流》，飞鱼群冲出海面那场戏，在 3D 版里画面上下的黑边被打破，鱼好像从画框里飞出来，扑向观众，导演把画幅本身变成了特效。第二个：冯小刚 2016 年的《我不是潘金莲》，大部分画面是圆形的，像一幅中国画或一面镜子；主角到了北京，画面变成方形。画幅的形状本身在讲故事。落点：拍之前先想清楚，这条视频是在哪里看的，手机竖屏还是电影院。下一页我们用今天学的词，拆解你们带来的照片。课前核实：《我不是潘金莲》各段落的具体画幅形状，以及《少年派》飞鱼段落在 2D 和 3D 版本中的差别。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 构图与视觉注意力</span><span>④ 画幅比例</span></div>
+    <h2 class="h-l">画幅的形状，本身就在构图</h2>
+    <div class="lab"><span class="label">同样高度下的真实比例</span>
+      <div class="ratios">
+        <div><div class="box" style="--c:var(--g);aspect-ratio:9/16"></div><b style="--c:var(--g)">9:16</b><span>竖屏短视频</span></div>
+        <div><div class="box" style="--c:#c58bff;aspect-ratio:1/1"></div><b style="--c:#c58bff">1:1</b><span>方形，集中</span></div>
+        <div><div class="box" style="--c:var(--b);aspect-ratio:16/9"></div><b style="--c:var(--b)">16:9</b><span>横屏视频</span></div>
+        <div><div class="box" style="--c:var(--warm);aspect-ratio:2.39/1"></div><b style="--c:var(--warm)">2.39:1</b><span>电影宽银幕：风景、对峙、群像</span></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card story"><span class="tag">参考片 · 李安《少年派的奇幻漂流》2012</span>
+        <p>飞鱼冲出海面那场戏，3D 版里鱼<b>冲破了画面上下的黑边</b>，好像从画框里飞出来，扑向观众。</p>
+      </div>
+      <div class="card story"><span class="tag">参考片 · 冯小刚《我不是潘金莲》2016</span>
+        <p>大部分画面是<b>圆形</b>的，像一幅中国画；主角到了北京，画面变成<b>方形</b>。形状本身在讲故事。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 拆解你的照片 ============ -->
+<section class="slide" data-min="2.5" data-note="模块 2 的收尾练习。把课前收上来的两三张学生照片拖到左边的媒体位，一张一张看。每张照片问同一个问题：你第一眼看到什么？请两位同学回答，再追问：是哪一种视觉权重造成的？用右边的清单逐项对：有没有人脸、最亮处在哪、哪里对比最强、有没有暖色、哪里最清楚、有没有文字、有没有孤立的东西。然后问：它用了哪种构图、什么景别？如果第一眼看到的不是作者想让你看的东西，就是构图出了问题，比如背后有一块很亮的天空把视线抢走了。这正好回答了本课问题 2。注意：只用学生自愿分享的照片，涉及他人正脸的照片先问过本人。过渡到模块 3：刚才有同学说“光好看”，那光到底怎么好看？">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 构图与视觉注意力</span><span>⑤ 当堂练习</span></div>
+    <h2 class="h-l">拆解你带来的照片</h2>
+    <div class="g2 wide-l">
+      <div class="slot" data-slot="studentphoto"></div>
+      <div class="col">
+        <div class="card ask"><span class="tag">问题 2</span><p>这张照片里，你<b>第一眼</b>看到什么？是哪种视觉权重造成的？</p></div>
+        <div class="card idea"><span class="tag">逐项对一遍</span>
+          <ul>
+            <li>有没有<b>人脸 / 眼睛</b>？</li>
+            <li><b>最亮</b>、<b>对比最强</b>的地方在哪？</li>
+            <li>有没有<b>暖色</b>、<b>文字</b>、<b>孤立的东西</b>？</li>
+            <li>哪里<b>最清楚</b>？用了什么<b>构图</b>和<b>景别</b>？</li>
+          </ul>
+          <p>第一眼看到的不是作者想让你看的，构图就出了问题。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 光的方向 ============ -->
+<section class="slide" id="s-dir" data-min="3" data-note="模块 3，光线与色彩，12 分钟。先讲光的方向，上面五张小图是同一个石膏头像，只改了光从哪里来。顺光：光从相机方向来，脸很平、很清楚，证件照就是这样，但缺少立体感。侧光：光从侧面来，一半亮一半暗，立体、戏剧化。讲故事：17 世纪荷兰画家伦勃朗的很多肖像和自画像，光从斜上方一侧打来，暗的那半边脸颊上会留下一个小小的三角形亮斑，后来摄影师把这种布光就叫“伦勃朗光”。逆光：光从人背后来，人的边缘亮出一圈轮廓，如果背景很亮，人就成了剪影，很有氛围。顶光：光从正上方来，眼窝变成两个黑洞，压抑、有审讯感。讲电影：1972 年的《教父》，摄影师戈登·威利斯大量用顶光，让教父的眼睛藏在阴影里，观众看不清他在想什么，人物显得深不可测。底光：光从下往上，和我们日常见到的光方向相反，所以显得诡异，打比方：小时候拿手电筒从下巴往上照讲鬼故事，就是底光。问学生：恐怖片海报为什么常用底光？落点：光的方向决定情绪。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 光线与色彩</span><span>12 MIN</span><span>① 光的方向</span></div>
+    <h2 class="h-l">同一张脸，光从哪来，情绪就不同</h2>
+    <div class="mini5" id="dirMinis">
+      <figure><canvas width="220" height="250" data-dir="front" aria-label="顺光下的头像"></canvas><b>顺光</b><span>平、清楚，缺少立体感</span></figure>
+      <figure><canvas width="220" height="250" data-dir="side" aria-label="侧光下的头像"></canvas><b>侧光</b><span>立体、戏剧化</span></figure>
+      <figure><canvas width="220" height="250" data-dir="back" aria-label="逆光下的头像"></canvas><b>逆光</b><span>轮廓光、剪影、氛围</span></figure>
+      <figure><canvas width="220" height="250" data-dir="top" aria-label="顶光下的头像"></canvas><b>顶光</b><span>压抑、审讯感</span></figure>
+      <figure><canvas width="220" height="250" data-dir="bottom" aria-label="底光下的头像"></canvas><b>底光</b><span>诡异、恐怖</span></figure>
+    </div>
+    <div class="g3">
+      <div class="card story"><span class="tag">侧光 · 伦勃朗 17 世纪</span>
+        <p>荷兰画家伦勃朗的肖像里，光从斜上方一侧打来，暗的半边脸颊留下一个<b>小三角形亮斑</b>。摄影师把它叫作<b>“伦勃朗光”</b>。</p>
+      </div>
+      <div class="card story"><span class="tag">顶光 · 《教父》1972</span>
+        <p>摄影师戈登·威利斯大量用顶光，让教父的<b>眼睛藏在阴影里</b>，观众看不清他在想什么，人物深不可测。</p>
+      </div>
+      <div class="card analogy"><span class="tag">底光 · 打个比方</span>
+        <p>拿手电筒<b>从下巴往上照</b>讲鬼故事。光的方向和日常相反，脸就变得陌生、诡异。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 软硬光 + 三点布光 + 布光台 ============ -->
+<section class="slide" id="s-light" data-min="3" data-note="讲光的质感和三点布光，用右边的布光台演示。第一，软硬：硬光阴影边缘锐利，软光阴影边缘柔和。决定软硬的不是光有多强，而是光源相对主体有多大。打比方：正午的太阳虽然本身巨大，但离得太远，在天上只有指甲盖那么大，是一个小光源，所以阴影又黑又硬；阴天整片云层都在发光，是一个巨大的光源，所以阴影很软。演示：选侧光，把光源大小拖到最小，看鼻子的影子边缘锐利；拖到最大，影子变柔和。第二，三点布光，看左下的俯视图：主光决定光的方向，通常在侧前方 45 度；辅光在另一侧，把阴影补亮一点，主光和辅光的强度之比叫光比，光比大，明暗反差大，戏剧感强；光比小，画面柔和。演示：把辅光从 0 拖到 50%，看暗部被补亮，读数里的光比从“无辅光”变成 2:1。轮廓光从背后打，在头发和肩膀边缘勾一道亮边，把人从背景里分出来。演示：打开轮廓光。色温滑杆先不讲，下一页讲。落点：硬光戏剧、软光温柔；主光定方向，辅光定反差，轮廓光定分离。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 光线与色彩</span><span>② 软硬与三点布光 · 互动</span></div>
+    <h2 class="h-l">硬光还是软光？看光源有多大</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p><b>正午太阳</b>虽然巨大，但离得太远，在天上只有指甲盖大：<b>小光源 → 硬光</b>，阴影边缘锐利。<b>阴天</b>整片云都在发光：<b>大光源 → 软光</b>，阴影柔和。</p>
+        </div>
+        <div class="card idea"><span class="tag">三点布光（俯视）</span>
+          <div class="g2" style="gap:10px;align-items:center">
+            <svg viewBox="0 0 220 170" role="img" aria-label="三点布光俯视示意：主光、辅光、轮廓光和相机的位置">
+              <circle cx="110" cy="70" r="16" fill="#eef0f6"/><text x="110" y="75" text-anchor="middle" font-size="11" fill="#08090e" font-weight="700">人</text>
+              <g font-size="11" font-weight="700" font-family="sans-serif">
+                <rect x="96" y="140" width="28" height="18" rx="4" fill="#9097ad"/><text x="110" y="153" text-anchor="middle" fill="#08090e">相机</text>
+                <circle cx="35" cy="130" r="13" fill="#ffc46b"/><text x="35" y="160" text-anchor="middle" fill="#ffc46b">主光</text>
+                <circle cx="190" cy="125" r="9" fill="rgba(255,196,107,.45)"/><text x="190" y="152" text-anchor="middle" fill="#ffc46b">辅光</text>
+                <circle cx="170" cy="18" r="9" fill="#5b8cff"/><text x="196" y="22" text-anchor="middle" fill="#5b8cff">轮廓</text>
+              </g>
+              <g stroke-width="2" stroke-dasharray="4 3"><line x1="45" y1="122" x2="96" y2="80" stroke="#ffc46b"/><line x1="182" y1="119" x2="125" y2="78" stroke="rgba(255,196,107,.5)"/><line x1="163" y1="25" x2="122" y2="58" stroke="#5b8cff"/></g>
+            </svg>
+            <ul>
+              <li><b>主光</b>：决定方向</li>
+              <li><b>辅光</b>：控制阴影深浅，主辅强度之比叫<b>光比</b></li>
+              <li><b>轮廓光</b>：把人从背景里分出来</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · 布光台</span>
+        <div class="light-lab">
+          <canvas id="lightCv" width="300" height="354" aria-label="根据布光设置渲染的石膏头像"></canvas>
+          <div class="col" style="gap:9px">
+            <div class="row" id="lightDirs">
+              <button class="btn" type="button" data-ld="front">顺光</button>
+              <button class="btn on" type="button" data-ld="side">侧光</button>
+              <button class="btn" type="button" data-ld="back">逆光</button>
+              <button class="btn" type="button" data-ld="top">顶光</button>
+              <button class="btn" type="button" data-ld="bottom">底光</button>
+            </div>
+            <label class="ctl">光源大小<input type="range" id="lightSoft" min="0" max="100" value="10"><b id="lightSoftV">硬</b></label>
+            <label class="ctl">辅光<input type="range" id="lightFill" min="0" max="100" value="0"><b id="lightFillV">0%</b></label>
+            <label class="ctl">色温<input type="range" id="lightK" min="2500" max="8000" step="100" value="5600"><b id="lightKV">5600K</b></label>
+            <label class="row small"><input type="checkbox" id="lightRim"> 打开轮廓光（从背后）</label>
+            <div class="readout" id="lightRead"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 色温与时段 ============ -->
+<section class="slide" id="s-kelvin" data-min="2.5" data-note="讲色温。色温的单位是 K，开尔文。先指着色温条讲一个反直觉的地方：数字越低越暖、越黄；数字越高越冷、越蓝。打比方：看火焰，蜡烛的火苗是橙黄色的，煤气灶的火苗是蓝色的，而蓝色的火其实更热。记几个数：钨丝灯大约 3200K，偏暖；白天的日光大约 5600K；阴天、阴影里偏冷，更高。回到上一页的布光台，把色温拖到 3000K 再拖到 7500K 给学生看。“暖光 + 冷影”是电影里非常常见的配色：被阳光照到的地方暖，影子里偏蓝，画面一下就有了层次。再讲时段：日出后和日落前那段时间叫黄金时刻，太阳角度低，光又暖又长，影子拉得很长；太阳落下去以后、天黑之前，天空一片深蓝，叫蓝调时刻。讲故事：1978 年泰伦斯·马利克的《天堂之日》，大量镜头专门在日落前后这一小段时间拍，每天能拍的时间很短，摄影师内斯托·阿尔门德罗斯因此获得了奥斯卡最佳摄影奖。实操时，如果今天下课时正好接近傍晚，提醒学生注意光线。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 光线与色彩</span><span>③ 色温与时段</span></div>
+    <h2 class="h-l">色温：数字越高，反而越冷</h2>
+    <div class="lab"><span class="label">色温条 · 单位 K（开尔文），以日光 5600K 为白</span>
+      <div class="kbar" id="kBar"></div>
+      <div class="kmarks">
+        <span style="left:0%;transform:none"><b>1900K</b> 烛光</span>
+        <span style="left:16.05%"><b>3200K</b> 钨丝灯</span>
+        <span style="left:45.68%"><b>5600K</b> 日光</span>
+        <span style="left:69.14%"><b>7500K</b> 阴天、阴影</span>
+        <span style="left:100%;transform:translateX(-100%)"><b>10000K</b> 晴天的蓝天</span>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>看火焰：蜡烛的火苗<b>橙黄</b>，煤气灶的火苗<b>发蓝</b>，而蓝色的火其实<b>更热</b>。</p>
+      </div>
+      <div class="card idea"><span class="tag">时段光线</span>
+        <ul>
+          <li><b>黄金时刻</b>：日出后、日落前，低角度暖光，影子很长</li>
+          <li><b>蓝调时刻</b>：日落后、天黑前，整片天空深蓝</li>
+          <li><b>暖光 + 冷影</b>：电影最常见的配色之一</li>
+        </ul>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">参考片 · 《天堂之日》1978</span>
+          <p>大量镜头专门在<b>日落前后</b>那一小段时间拍，每天只能拍很短时间。摄影师<b>阿尔门德罗斯</b>因此获得奥斯卡最佳摄影奖。</p>
+        </div>
+        <div class="slot short" data-slot="magichour"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 色彩基础 ============ -->
+<section class="slide" id="s-grade" data-min="2" data-note="讲色彩基础，用左边的调色演示。三个属性：色相，就是红黄蓝绿，是哪一种颜色；饱和度，颜色有多浓，越低越接近灰；明度，颜色有多亮。拖三个滑杆给学生看同一幅画面怎么变。然后点四个预设。“暖光冷影”：亮的地方橙，暗的地方青，橙和青在色环上正好相对，叫互补色，放在一起对比最强。好莱坞大片很爱用这套配色，原因之一是人的肤色偏橙，背景推向青色，人物就从画面里跳出来。“压抑”：低饱和、偏冷，很多悬疑片、灾难片这样调。“活力”：高饱和、暖色，青春片、广告常用。问学生，也是本课问题 3：想拍出“孤独感”，你会选什么景别、光线方向和色彩？可以引导：远景或负空间、人很小；逆光剪影或傍晚的侧光；低饱和、偏冷的蓝调时刻。答案不唯一，但要说出理由。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 光线与色彩</span><span>④ 色彩基础 · 互动</span></div>
+    <h2 class="h-l">色相、饱和度、明度，调出情绪</h2>
+    <div class="g2 wide-l">
+      <div class="lab grade">
+        <span class="label">互动 · 同一个画面，四种调色</span>
+        <svg id="gradeSvg" viewBox="0 0 640 300" role="img" aria-label="傍晚街道上一个行人的画面，可以调色">
+          <defs><linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" id="gSky1"/><stop offset="1" id="gSky2"/></linearGradient></defs>
+          <rect width="640" height="300" fill="url(#gSky)"/>
+          <circle cx="470" cy="150" r="34" class="g-sun"/>
+          <path d="M0 300V120H70V90H130V140H170V60H250V300Z" class="g-shadow"/>
+          <path d="M250 300V60H262V300Z" class="g-light"/>
+          <path d="M560 300V110H600V80H640V300Z" class="g-shadow"/>
+          <rect y="230" width="640" height="70" class="g-ground"/>
+          <path d="M300 300L420 230H440L380 300Z" class="g-light" opacity=".5"/>
+          <path d="M330 236L210 290L230 296L344 240Z" class="g-shadow" opacity=".8"/>
+          <g class="g-fig"><circle cx="340" cy="168" r="10"/><path d="M330 180H350L354 214L346 214L344 238H337L336 214L326 214Z"/></g>
+        </svg>
+        <div class="row" id="gradeBtns">
+          <button class="btn on" type="button" data-gp="neutral">原样</button>
+          <button class="btn" type="button" data-gp="teal">暖光冷影</button>
+          <button class="btn" type="button" data-gp="gloom">压抑</button>
+          <button class="btn" type="button" data-gp="vivid">活力</button>
+        </div>
+        <label class="ctl">色相<input type="range" id="gH" min="-90" max="90" value="0"><b id="gHV">0°</b></label>
+        <label class="ctl">饱和度<input type="range" id="gS" min="0" max="200" value="100"><b id="gSV">100%</b></label>
+        <label class="ctl">明度<input type="range" id="gB" min="50" max="150" value="100"><b id="gBV">100%</b></label>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">互补色对比</span>
+          <div class="row" style="display:flex;gap:12px;align-items:center">
+            <div class="wheel" aria-hidden="true"></div>
+            <p>色环上正对面的两种颜色叫<b>互补色</b>，放在一起对比最强。<b>橙与青</b>最常见：肤色偏橙，背景推向青，人物就跳出来。</p>
+          </div>
+        </div>
+        <div class="card idea"><span class="tag">情绪的常见搭配</span>
+          <ul>
+            <li><b>低饱和 + 偏冷</b>：压抑、疏离</li>
+            <li><b>高饱和 + 暖色</b>：活力、热烈</li>
+          </ul>
+        </div>
+        <div class="card ask"><span class="tag">问题 3</span><p>想拍出<b>“孤独感”</b>，你会选什么景别、光线方向和色彩？说出理由。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 术语就是指令 ============ -->
+<section class="slide" data-min="1.5" data-note="模块 3 的落点，也是今天知识讲解的收尾。回扣第 1 课一句话：模型在训练时见过大量专业照片，它们的描述里本来就写着这些术语，所以这些词在模型的地图上指向非常具体的地方。左边是今天学过的词，中英对照，课程包里的《中英双语摄影参数卡》就是这张表的完整版，实操时发下去。右边是一个例子：上节课凭直觉写的“放学后的教室”，用今天的五类参数改写以后，你能准确说出你想要的景别、焦段、光线、构图和色彩。告诉学生：下半节课的任务 3，就是用你自己的照片和你自己的参数，做这样一次改写。过渡到实操。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 光线与色彩</span><span>⑤ 和 AI 的关系</span></div>
+    <h2 class="h-l">今天学的每个词，都是给 AI 的门牌号</h2>
+    <div class="g2">
+      <div class="card idea"><span class="tag">参数卡 · 节选（中英对照）</span>
+        <div class="ptable">
+          <span class="k">景别</span><span class="v"><em>远景</em> <code>wide shot</code> · <em>中景</em> <code>medium shot</code> · <em>特写</em> <code>close-up</code></span>
+          <span class="k">焦段</span><span class="v"><em>24mm 广角</em> <code>wide-angle</code> · <em>85mm</em> <code>85mm lens</code> · <em>浅景深</em> <code>shallow depth of field</code></span>
+          <span class="k">光线</span><span class="v"><em>侧光</em> <code>side lighting</code> · <em>逆光</em> <code>backlight</code> · <em>软光</em> <code>soft light</code> · <em>黄金时刻</em> <code>golden hour</code></span>
+          <span class="k">构图</span><span class="v"><em>三分法</em> <code>rule of thirds</code> · <em>引导线</em> <code>leading lines</code> · <em>框架构图</em> <code>frame within a frame</code></span>
+          <span class="k">色彩</span><span class="v"><em>暖光冷影</em> <code>warm highlights, cool shadows</code> · <em>低饱和</em> <code>desaturated</code></span>
+        </div>
+      </div>
+      <div class="col">
+        <p class="prompt dim"><span class="label">第 1 课 · 凭直觉</span><br>放学后的教室，很好看，有氛围感。</p>
+        <p class="prompt"><span class="label">第 2 课 · 参数化</span><br>放学后的教室，<mark>中景</mark>，<mark>35mm 镜头</mark>，<mark>黄金时刻</mark>的低角度暖光从左侧窗户射入（<mark>侧光、硬光</mark>），桌椅投下长影；一个学生坐在<mark>右侧三分线</mark>上，前景是虚化的课桌边（<mark>浅景深</mark>）；<mark>暖光冷影</mark>，略低饱和。</p>
+        <div class="punch">模型见过大量带这些术语的专业照片。<small>回扣第 1 课：图文对齐。你写得越具体，它找得越准。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，42 分钟，三个任务。这一分钟算进任务 1 的 25 分钟里，用来分组和交代规则。三人一组，轮流当摄影师和模特，每人都要当过摄影师。发《中英双语摄影参数卡》，确认共享文件夹每个人都能上传。安全和隐私规则：只拍本组同学，不拍路人正脸；去哪拍要在老师划定的范围内，25 分钟后准时回教室。如果天气或场地不行，改在教室里用台灯、手机手电筒和白纸完成光线组，白纸当反光板，也就是辅光。">
+  <div class="inner">
+    <span class="num">实操 · 42 MIN</span>
+    <h2 class="h-xl">走出教室，<br>把今天的词拍出来</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 25 分钟</span><b>校园实拍五组照片</b><p>景别、焦段与距离、光线、景深、构图。三人一组轮流拍。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 7 分钟</span><b>标注与筛选</b><p>每人选 3 张，按模板标注后上传。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 10 分钟</span><b>从照片到指令</b><p>用 5 类参数写指令，重做第 1 课的基线图并对比。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool">手机相机 <i>人像模式 · 0.5x / 1x / 3x</i></span>
+      <span class="tool">中英双语摄影参数卡 <i>课程包</i></span>
+      <span class="tool">共享文件夹</span>
+      <span class="tool"><img src="../media/logos/jimeng.png" alt="">即梦</span>
+      <span class="tool"><img src="../media/logos/libtv.png" alt="">LibTV</span>
+    </div>
+    <p class="small">只拍本组同学，不拍路人正脸。天气或场地受限：在教室用台灯、手机手电与白纸完成布光练习。</p>
+  </div>
+</section>
+
+<!-- ============ 19 任务 1：校园实拍 ============ -->
+<section class="slide practice" data-min="24" data-note="任务 1，25 分钟（含上一页的 1 分钟）。三人一组，一人拍、一人当模特、一人对照参数卡检查，每组拍完轮换。五组按顺序拍。景别组：同一个人、同一个地点不动，摄影师前后移动或变焦，拍远景、全景、中景、近景、特写 5 张。焦段与距离组，这是今天最重要的一组：先用 0.5x 在近处拍一张人像，让脸占画面差不多三分之一；然后切到 3x，往后退，直到人在画面里一样大，再拍一张。回去对比两张的背景：3x 那张背景更大、更近。这就是刚才演示的压缩感。光线组：在窗边或户外，模特不动脚，只转身体，分别让光从正面、侧面、背后来，拍顺光、侧光、逆光各 1 张。景深组：用人像模式拍 1 张，如果手机支持，在相册编辑里把虚化强度从最小拖到最大，各截一张图，并检查发丝边缘有没有出错。构图组：三分法、引导线、框架构图里任选两种，各拍一张。巡视重点：焦段组有没有真的后退；光线组有没有真的转身。降级方案：如果天气或场地不行，在教室里拉上窗帘，用台灯或手机手电当主光，从五个方向打；白纸当辅光；景别组和构图组在教室和走廊完成。提前 2 分钟提醒收队。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">25 分钟</span><span>工具：手机相机（人像模式、0.5x / 1x / 3x）· 参数卡</span></div>
+    <h2 class="h-m">校园实拍五组照片：三人一组，轮流当摄影师、模特和检查员</h2>
+    <div class="g5">
+      <div class="card"><span class="n">1 · 景别组</span><b>五种景别</b><p>同一人、同一地点，拍<b>远景、全景、中景、近景、特写</b>。</p><span class="cnt">5 张</span></div>
+      <div class="card"><span class="n">2 · 焦段与距离组</span><b>0.5x 近拍 vs 3x 退远</b><p>先用 <b>0.5x</b> 近拍人像；再切 <b>3x</b>，<b>后退</b>到人在画面里一样大，再拍。对比背景。</p><span class="cnt">2 张</span></div>
+      <div class="card"><span class="n">3 · 光线组</span><b>顺光、侧光、逆光</b><p>在窗边或户外，模特<b>只转身体</b>，让光分别从正面、侧面、背后来。</p><span class="cnt">3 张</span></div>
+      <div class="card"><span class="n">4 · 景深组</span><b>人像模式</b><p>拍 1 张浅景深；若机型支持，在相册编辑里<b>调虚化强度</b>，看发丝边缘。</p><span class="cnt">1 张</span></div>
+      <div class="card"><span class="n">5 · 构图组</span><b>任选两种构图</b><p>从<b>三分法、引导线、框架构图</b>里选 2 种，各拍 1 张。</p><span class="cnt">2 张</span></div>
+    </div>
+    <div class="g2">
+      <div class="done-box"><span class="label">完成标准</span>每组五类照片<b>齐全（至少 13 张）</b>；焦段组的两张人物大小一致，<b>背景能看出差别</b>。</div>
+      <div class="card ask"><span class="tag">规则</span><p><b>只拍本组同学，不拍路人正脸</b>；在划定范围内拍，25 分钟准时回教室。</p></div>
+    </div>
+    <p class="small">降级方案：天气或场地受限时，在教室用台灯或手机手电当主光、白纸当辅光完成光线组；其余各组在教室和走廊完成。</p>
+  </div>
+</section>
+
+<!-- ============ 20 任务 2：标注与筛选 ============ -->
+<section class="slide practice" data-min="7" data-note="任务 2，7 分钟。每人从本组照片里选自己拍的 3 张最好的，不一定来自同一组，选你觉得最能说明一个知识点的。按格式命名后上传共享文件夹。然后用模板逐张标注五项：景别、焦段、光线方向与质感、构图方法、观众第一眼看哪里。右边是一个示范。强调最后一项，第一眼看哪里，要写出原因：是哪一种视觉权重。标注不确定的地方，可以和组员讨论，也可以看参数卡。巡视时随机抽一两位学生，请他说一张照片的第一眼和原因。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">7 分钟</span><span>工具：共享文件夹 · 标注模板</span></div>
+    <h2 class="h-m">标注与筛选：说清楚每张照片“为什么长这样”</h2>
+    <div class="g2">
+      <ol class="steps">
+        <li><div><b>从本组照片里选 3 张最好的</b><span>，最好来自不同的组。</span></div></li>
+        <li><div><b>命名并上传共享文件夹</b><span>：</span><span class="code">姓名_L02_01</span><span> / </span><span class="code">_02</span><span> / </span><span class="code">_03</span></div></li>
+        <li><div><b>按模板逐张标注五项</b><span>：景别 / 焦段 / 光线方向与质感 / 构图方法 / 观众第一眼看哪里（写出原因）。</span></div></li>
+      </ol>
+      <div class="col">
+        <span class="label">标注示范</span>
+        <div class="anno">
+          <span>文件</span><span>张三_L02_02</span>
+          <span>景别</span><span>近景</span>
+          <span>焦段</span><span>3x（约 77mm），后退约 2 米拍</span>
+          <span>光线</span><span>侧光，窗户进来的软光</span>
+          <span>构图</span><span>三分法，人在右侧竖线上</span>
+          <span>第一眼</span><span>眼睛：人脸 + 画面里最清楚的地方</span>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>3 张照片已上传，<b>每张五项标注齐全</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 21 任务 3：从照片到指令 ============ -->
+<section class="slide practice" data-min="10" data-note="任务 3，10 分钟。第一步，选一张你自己拍的、最满意的照片，参照参数卡，用至少 5 个专业参数把它写成一条生图指令，五类参数是景别、焦段、光线、构图、色彩，每类至少一个。写完可以先生成一次，看看 AI 画出来的和你的照片像不像。第二步是重点：把同样的参数用到第 1 课的基线主题“放学后的教室”上，重新生成。第三步，把新图和第 1 课的基线图并排放进个人文件夹，写一句“改变了什么”，比如“加了侧光和黄金时刻以后，教室有了明暗和时间感”。如果生成的效果和预期不符，也写下来：哪个参数模型没听懂？讲评时会用到。降级方案：生图工具不可用时，老师投屏操作，学生口述自己的指令，记录在表里。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">10 分钟</span><span>工具：即梦 / LibTV（任选学校批准的一个）· 参数卡</span></div>
+    <h2 class="h-m">从照片到指令：用 5 类参数，重做“放学后的教室”</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>选 1 张自己的照片，写成生图指令</b><span>：参照参数卡，至少 5 个参数，<b>景别、焦段、光线、构图、色彩</b>各一个。</span></div></li>
+          <li><div><b>用同样的参数重写“放学后的教室”</b><span>，重新生成。</span></div></li>
+          <li><div><b>新图与第 1 课基线图并排放入文件夹</b><span>，写一句“改变了什么”；没达到预期的，写下哪个参数模型没听懂。</span></div></li>
+        </ol>
+        <p class="prompt"><span class="label">指令结构</span><br>[主题] + [景别] + [焦段 / 景深] + [光线方向、质感、时段] + [构图] + [色彩]</p>
+      </div>
+      <div class="col">
+        <div class="toolrow">
+          <span class="tool"><img src="../media/logos/jimeng.png" alt="">即梦</span>
+          <span class="tool"><img src="../media/logos/libtv.png" alt="">LibTV</span>
+          <span class="tool">参数卡 <i>中英双语</i></span>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span><b>3 张标注照片</b> + <b>1 组“基线 vs 参数化”对比图</b>，附一句“改变了什么”。</div>
+        <div class="card"><b>建议命名</b><p><span class="code">姓名_L02_指令</span>（文字）<br><span class="code">姓名_L02_对比</span>（两图并排）</p></div>
+        <p class="small">降级方案：生图工具不可用时，教师投屏操作，学生口述指令并记录。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 22 讲评与产出 ============ -->
+<section class="slide" data-min="8" data-note="最后 8 分钟。第一步，讲评：从共享文件夹里随机抽 4 组对比图投屏，每组 1 分钟多一点。请作者说三件事：用了哪些参数？效果是否符合预期？哪个参数模型没听懂？老师点评时用今天的词，比如“侧光让教室有了立体感，但你写的浅景深没生效，可能因为画面里没有明确的前景”。第二步，按 → 出三个问题，快速请三位同学回答。参考答案：问题 1，开大光圈、用更长的焦段、靠近主体并让背景远离，传感器越大也越容易虚；同一张脸广角和长焦不一样，是因为用广角时往往站得近，透视由距离决定。问题 2，第一眼看哪里要说出是哪种视觉权重。问题 3，例如远景加负空间、逆光或蓝调时刻、低饱和偏冷。第三步，确认当堂产出都在文件夹里，然后布置课后任务：从你喜欢的电影或短视频里截 3 个镜头，标注景别、机位和运镜，机位和运镜下节课正式讲，今天先凭感觉写。">
+  <div class="inner">
+    <div class="tc"><span class="ch">讲评与产出</span><span>8 MIN</span></div>
+    <h2 class="h-l">随机抽 4 组对比图，作者来说</h2>
+    <div class="card ask"><span class="tag">作者回答三件事</span><p>用了哪些参数？效果符合预期吗？<b>哪个参数模型没听懂？</b></p></div>
+    <div class="step">
+      <div class="trip3">
+        <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>想让背景虚化，有哪三种办法？</b><p>追问：同一张脸，广角和长焦为什么不一样？</p></div>
+        <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>你第一眼看到什么？为什么？</b><p>说出是哪一种视觉权重。</p></div>
+        <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>“孤独感”怎么拍？</b><p>景别、光线方向、色彩，各说一个。</p></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="g2">
+        <div class="done-box"><span class="label">当堂产出</span>3 张标注照片 · 参数化指令 · 基线对比图</div>
+        <div class="punch">课后任务：从喜欢的电影或短视频里截 3 个镜头，标注景别、机位与运镜。<small>为第 3 课“视听语言”做准备。机位和运镜下节课讲，今天先凭感觉写。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  dollyzoom: { type: 'media', label: '推拉变焦 · 《迷魂记》/《大白鲨》片段', hint: '10 秒左右：《大白鲨》海滩上警长的推拉变焦镜头，或推拉变焦原理讲解', find: 'https://search.bilibili.com/all?keyword=%E6%8E%A8%E6%8B%89%E5%8F%98%E7%84%A6%20%E5%A4%A7%E7%99%BD%E9%B2%A8%20%E8%BF%B7%E9%AD%82%E8%AE%B0', cred: 'Vertigo 1958 · Jaws 1975' },
+  portraitedge: { type: 'media', label: '人像模式的发丝边缘', hint: '老师课前用手机人像模式拍一张，截图放大发丝或眼镜边缘', find: 'https://search.bilibili.com/all?keyword=%E6%89%8B%E6%9C%BA%E4%BA%BA%E5%83%8F%E6%A8%A1%E5%BC%8F%20%E8%99%9A%E5%8C%96%20%E5%8F%91%E4%B8%9D', cred: '教师示范照片' },
+  yarbus: { type: 'media', label: '亚尔布斯眼动实验图', hint: '列宾油画与眼动轨迹并排的经典插图', find: 'https://search.bilibili.com/all?keyword=Yarbus%20%E7%9C%BC%E5%8A%A8%E5%AE%9E%E9%AA%8C', cred: 'Alfred Yarbus · 1967' },
+  magichour: { type: 'media', label: '《天堂之日》黄金时刻剧照', hint: '一两张麦田里日落逆光的剧照即可', find: 'https://search.bilibili.com/all?keyword=%E5%A4%A9%E5%A0%82%E4%B9%8B%E6%97%A5%20%E9%BB%84%E9%87%91%E6%97%B6%E5%88%BB', cred: 'Days of Heaven · Terrence Malick · 1978' },
+  studentphoto: { type: 'media', label: '学生作业照片', hint: '课前收 2–3 张学生自愿分享的“好看的照片”，一张一张拖进来', find: 'https://search.bilibili.com/all?keyword=%E7%85%A7%E7%89%87%E6%9E%84%E5%9B%BE%E5%88%86%E6%9E%90', cred: '学生作品 · 第 1 课课后任务' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+  /* ---------- 色温 → RGB（Tanner Helland 近似），以 5600K 为白 ---------- */
+  const kRaw = K => {
+    const t = K / 100; let r, g, b;
+    if (t <= 66) { r = 255; g = 99.4708025861 * Math.log(t) - 161.1195681661; b = t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307; }
+    else { r = 329.698727446 * Math.pow(t - 60, -0.1332047592); g = 288.1221695283 * Math.pow(t - 60, -0.0755148492); b = 255; }
+    return [r, g, b].map(v => clamp(v, 0, 255) / 255);
+  };
+  const W56 = kRaw(5600);
+  const kRGB = K => { const c = kRaw(K).map((v, i) => v / W56[i]); const m = Math.max(...c); return c.map(v => v / m); };
+
+  /* =====================================================================
+     1. 曝光三角：光圈、快门、ISO → 亮度、景深、运动模糊、噪点
+     ===================================================================== */
+  const AP = [1.4, 2, 2.8, 4, 5.6, 8, 11, 16];
+  const SH = [1000, 500, 250, 125, 60, 30, 15, 8];
+  const ISO = [100, 200, 400, 800, 1600, 3200, 6400];
+  const EW = 480, EH = 300;
+  const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+  let rs = 11; const rnd = () => (rs = (rs * 16807) % 2147483647) / 2147483647;
+  // 背景：傍晚的操场、远处楼房、一串灯
+  const bg = mk(EW, EH); {
+    const g = bg.getContext('2d');
+    const sky = g.createLinearGradient(0, 0, 0, 170); sky.addColorStop(0, '#203560'); sky.addColorStop(.6, '#b86b55'); sky.addColorStop(1, '#eea867');
+    g.fillStyle = sky; g.fillRect(0, 0, EW, 175);
+    g.fillStyle = '#1b1f2b';
+    [[0, 95, 70], [62, 120, 60], [118, 80, 90], [205, 110, 70], [270, 70, 80], [345, 105, 60], [400, 85, 80]].forEach(([x, y, w]) => g.fillRect(x, y, w, 175 - y));
+    for (let i = 0; i < 70; i++) { const x = rnd() * EW, y = 90 + rnd() * 75; if (rnd() < .55) { g.fillStyle = rnd() < .5 ? '#ffd38a' : '#ffe9c2'; g.fillRect(x, y, 4, 5); } }
+    g.fillStyle = '#16301f'; for (let i = 0; i < 9; i++) { g.beginPath(); g.arc(i * 60 + 10, 168, 26 + rnd() * 10, 0, 7); g.fill(); }
+    g.fillStyle = '#284a32'; g.fillRect(0, 172, EW, 40);
+    g.fillStyle = '#7a3e30'; g.fillRect(0, 212, EW, 88);
+    g.strokeStyle = 'rgba(243,227,208,.55)'; g.lineWidth = 2; [235, 262, 290].forEach(y => { g.beginPath(); g.moveTo(0, y); g.lineTo(EW, y); g.stroke(); });
+    g.strokeStyle = 'rgba(30,30,30,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(0, 48); g.quadraticCurveTo(240, 92, EW, 52); g.stroke();
+    for (let i = 0; i <= 16; i++) { const x = i * 30 + 6, y = 48 + Math.sin(i / 16 * Math.PI) * 22 + (i / 16) * 4; g.fillStyle = ['#fff1b8', '#ffc46b', '#ff9e7a', '#bfe3ff'][i % 4]; g.beginPath(); g.arc(x, y, 3.2, 0, 7); g.fill(); }
+  }
+  // 前景人物（始终在焦平面上）
+  const fg = mk(EW, EH); {
+    const g = fg.getContext('2d');
+    g.fillStyle = '#23283a'; g.fillRect(132, 222, 12, 58); g.fillRect(150, 222, 12, 58);
+    g.fillStyle = '#3b5bdb'; g.beginPath(); g.moveTo(124, 162); g.quadraticCurveTo(147, 152, 170, 162); g.lineTo(174, 226); g.lineTo(120, 226); g.closePath(); g.fill();
+    g.fillRect(112, 166, 12, 46); g.fillRect(170, 166, 12, 46);
+    g.fillStyle = '#e8b89c'; g.beginPath(); g.arc(147, 136, 17, 0, 7); g.fill();
+    g.fillStyle = '#1d1a1a'; g.beginPath(); g.arc(147, 131, 17, Math.PI, 0); g.fill();
+    g.fillStyle = '#e8b89c'; g.beginPath(); g.arc(118, 214, 6, 0, 7); g.arc(176, 214, 6, 0, 7); g.fill();
+    g.fillStyle = '#111'; g.fillRect(128, 278, 18, 6); g.fillRect(148, 278, 18, 6);
+  }
+  const ball = (g, x, y) => {
+    g.fillStyle = '#f4f4f4'; g.beginPath(); g.arc(x, y, 12, 0, 7); g.fill();
+    g.fillStyle = '#222'; g.beginPath(); g.arc(x, y, 4.5, 0, 7); g.fill();
+    [0, 1.26, 2.51, 3.77, 5.03].forEach(a => { g.beginPath(); g.arc(x + Math.cos(a) * 10, y + Math.sin(a) * 10, 2.6, 0, 7); g.fill(); });
+  };
+  const blurInto = (src, px) => {
+    const out = mk(EW, EH), o = out.getContext('2d');
+    if (px < 1.2) { o.drawImage(src, 0, 0); return out; }
+    let cur = src, w = EW, h = EH;
+    const steps = Math.ceil(Math.log2(px));
+    for (let i = 0; i < steps; i++) { w = Math.max(8, Math.round(w / 2)); h = Math.max(5, Math.round(h / 2)); const c = mk(w, h), x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(cur, 0, 0, w, h); cur = c; }
+    for (let i = 0; i < steps; i++) { w = Math.min(EW, w * 2); h = Math.min(EH, h * 2); const c = mk(w, h), x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(cur, 0, 0, w, h); cur = c; }
+    o.drawImage(cur, 0, 0, EW, EH); return out;
+  };
+  const eCv = $('#expoCv'), eCtx = eCv.getContext('2d');
+  const eA = $('#expoA'), eS = $('#expoS'), eI = $('#expoI');
+  const bgCache = new Map();
+  const renderExpo = () => {
+    const ia = +eA.value, is = +eS.value, ii = +eI.value;
+    const N = AP[ia], t = 1 / SH[is], iso = ISO[ii];
+    $('#expoAV').textContent = 'f/' + N; $('#expoSV').textContent = '1/' + SH[is]; $('#expoIV').textContent = iso;
+    const ev = (3 - ia) + (is - 3) + (ii - 2);
+    const blurPx = 22 * 1.4 / N;
+    if (!bgCache.has(ia)) bgCache.set(ia, blurInto(bg, blurPx));
+    eCtx.clearRect(0, 0, EW, EH);
+    eCtx.drawImage(bgCache.get(ia), 0, 0);
+    eCtx.drawImage(fg, 0, 0);
+    // 运动模糊：曝光时间内，球以 900 像素/秒向右飞，把每个位置叠加平均
+    const L = 900 * t, n = Math.max(1, Math.ceil(L / 1.5));
+    const mb = mk(EW, EH), m = mb.getContext('2d'); m.globalCompositeOperation = 'lighter'; m.globalAlpha = 1 / n;
+    for (let k = 0; k < n; k++) ball(m, 330 - L + (n === 1 ? L : L * k / (n - 1)), 196);
+    eCtx.drawImage(mb, 0, 0);
+    // 亮度（线性空间乘增益）+ ISO 噪点
+    const gain = Math.pow(2, ev), lut = new Uint8ClampedArray(256);
+    for (let v = 0; v < 256; v++) lut[v] = 255 * Math.pow(Math.min(1, Math.pow(v / 255, 2.2) * gain), 1 / 2.2);
+    const sig = ii === 0 ? 1.5 : 1.5 + 5.2 * ii * ii / 2.4;
+    const img = eCtx.getImageData(0, 0, EW, EH), d = img.data;
+    for (let p = 0; p < d.length; p += 4) {
+      const nl = (Math.random() + Math.random() + Math.random() - 1.5) * sig * 1.4;
+      for (let c = 0; c < 3; c++) d[p + c] = lut[d[p + c]] + nl + (Math.random() - .5) * sig * .8;
+    }
+    eCtx.putImageData(img, 0, 0);
+    const exTxt = ev === 0 ? '正好' : ev > 2 ? '严重过曝' : ev > 0 ? '偏亮' : ev < -2 ? '严重欠曝' : '偏暗';
+    const dof = N <= 2.8 ? '浅：背景很虚' : N <= 5.6 ? '中' : '深：前后都清楚';
+    const mo = t <= 1 / 500 ? '凝固' : t <= 1 / 125 ? '轻微拖影' : '明显拖影';
+    const no = iso <= 400 ? '少' : iso <= 1600 ? '中' : '多';
+    $('#expoRead').innerHTML = `<span class="${ev ? 'hot' : ''}">曝光 <b>${ev > 0 ? '+' : ''}${ev} 档 · ${exTxt}</b></span><span>景深 <b>${dof}</b></span><span>运动 <b>${mo}</b></span><span>噪点 <b>${no}</b></span>`;
+  };
+  [eA, eS, eI].forEach(el => el.addEventListener('input', renderExpo));
+  document.querySelectorAll('[data-expo]').forEach(b => b.addEventListener('click', () => { const [a, s, i] = b.dataset.expo.split(','); eA.value = a; eS.value = s; eI.value = i; renderExpo(); }));
+  renderExpo();
+
+  /* =====================================================================
+     2. 视场角扇形
+     ===================================================================== */
+  {
+    const F = [[16, '#ff5468'], [24, '#ff8a5c'], [50, '#ffc46b'], [85, '#3fe0a0'], [200, '#5b8cff']];
+    const ox = 215, oy = 218, R = 200;
+    let s = '';
+    F.forEach(([f, c]) => {
+      const h = Math.atan(18 / f), a1 = -Math.PI / 2 - h, a2 = -Math.PI / 2 + h;
+      const x1 = ox + R * Math.cos(a1), y1 = oy + R * Math.sin(a1), x2 = ox + R * Math.cos(a2), y2 = oy + R * Math.sin(a2);
+      s += `<path d="M${ox} ${oy}L${x1.toFixed(1)} ${y1.toFixed(1)}A${R} ${R} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}Z" fill="${c}" fill-opacity=".09" stroke="${c}" stroke-width="1.6"/>`;
+    });
+    F.forEach(([f, c], i) => { const h = Math.atan(18 / f); s += `<rect x="432" y="${40 + i * 30}" width="14" height="14" rx="3" fill="${c}"/><text x="454" y="${52 + i * 30}" fill="${c}" font-size="15" font-weight="700" font-family="sans-serif">${f}mm · ${(2 * h * 180 / Math.PI).toFixed(0)}°</text>`; });
+    s += `<rect x="${ox - 9}" y="${oy - 4}" width="18" height="11" rx="2" fill="#eef0f6"/>`;
+    $('#fovSvg').innerHTML = s;
+  }
+
+  /* =====================================================================
+     3. 距离与透视：针孔相机投影一张脸和远处的树
+     ===================================================================== */
+  const pCv = $('#perspCv'), pg = pCv.getContext('2d'), pR = $('#perspR');
+  let pMode = 'dolly';
+  const K = EW / 36; // 每毫米多少像素（全画幅宽 36mm）
+  const renderPersp = () => {
+    const r = +pR.value / 100;
+    let d, f;
+    if (pMode === 'dolly') { d = 0.25 + r * r * 2.75; f = 90 * d; }
+    else { d = 1; f = 24 + r * 111; }
+    const P = (X, Y, Z) => [240 + f * X / Z * K, 158 - f * Y / Z * K];
+    const S = Z => f / Z * K; // 每米多少像素
+    // 天空与地面
+    const sky = pg.createLinearGradient(0, 0, 0, 158); sky.addColorStop(0, '#2a4a7a'); sky.addColorStop(1, '#a9c4dd');
+    pg.fillStyle = sky; pg.fillRect(0, 0, EW, 158);
+    pg.fillStyle = '#5d7a4a'; pg.fillRect(0, 158, EW, EH - 158);
+    // 远处楼房（主体后 20 米）与树（主体后 6 米）
+    const Zb = d + 20, Zt = d + 6;
+    pg.fillStyle = '#7d8aa3';
+    for (let i = -12; i <= 12; i++) { const X = i * 5, hgt = 8 + ((i * 7 + 13) % 5) * 3, [x, y] = P(X - 1.8, -1.6 + hgt, Zb); pg.fillRect(x, y, 3.6 * S(Zb), hgt * S(Zb)); }
+    for (let i = -10; i <= 10; i++) {
+      const X = i * 2.2 + 1.1, [tx, ty] = P(X, -1.6, Zt), s = S(Zt);
+      pg.fillStyle = '#4a3326'; pg.fillRect(tx - .12 * s, ty - 1.8 * s, .24 * s, 1.8 * s);
+      pg.fillStyle = i % 2 ? '#2f6b3d' : '#3b7d48'; pg.beginPath(); pg.ellipse(tx, ty - 2.6 * s, .8 * s, 1.1 * s, 0, 0, 7); pg.fill();
+    }
+    // 人：肩膀、脖子、耳朵、头、头发、五官（每个部件按自己的深度投影）
+    const ell = (X, Y, Z, rx, ry, col) => { const [x, y] = P(X, Y, Z), s = S(Z); pg.fillStyle = col; pg.beginPath(); pg.ellipse(x, y, rx * s, ry * s, 0, 0, 7); pg.fill(); };
+    const poly = (pts, col) => { pg.fillStyle = col; pg.beginPath(); pts.forEach((p, i) => { const [x, y] = P(...p); i ? pg.lineTo(x, y) : pg.moveTo(x, y); }); pg.closePath(); pg.fill(); };
+    poly([[-0.2, -0.17, d + 0.08], [0.2, -0.17, d + 0.08], [0.24, -0.7, d + 0.08], [-0.24, -0.7, d + 0.08]], '#3b5bdb');
+    poly([[-0.05, -0.06, d + 0.07], [0.05, -0.06, d + 0.07], [0.055, -0.19, d + 0.07], [-0.055, -0.19, d + 0.07]], '#d9a78c');
+    ell(-0.083, 0.0, d + 0.1, 0.017, 0.032, '#d9a284'); ell(0.083, 0.0, d + 0.1, 0.017, 0.032, '#d9a284');
+    ell(0, 0, d + 0.035, 0.077, 0.105, '#e8b89c');
+    poly([[-0.08, 0.03, d + 0.05], [-0.07, 0.085, d + 0.03], [0, 0.112, d + 0.03], [0.07, 0.085, d + 0.03], [0.08, 0.03, d + 0.05], [0.05, 0.065, d + 0.01], [-0.05, 0.065, d + 0.01]], '#231d1b');
+    ell(-0.032, 0.02, d + 0.006, 0.012, 0.007, '#fff'); ell(0.032, 0.02, d + 0.006, 0.012, 0.007, '#fff');
+    ell(-0.032, 0.02, d + 0.005, 0.006, 0.006, '#2a1d18'); ell(0.032, 0.02, d + 0.005, 0.006, 0.006, '#2a1d18');
+    poly([[-0.006, 0.03, d + 0.004], [0.006, 0.03, d + 0.004], [0.02, -0.03, d - 0.012], [0, -0.024, d - 0.028], [-0.02, -0.03, d - 0.012]], '#d69a7e');
+    ell(0, -0.024, d - 0.027, 0.011, 0.009, '#e0a68a');
+    poly([[-0.024, -0.058, d + 0.008], [0, -0.052, d + 0.004], [0.024, -0.058, d + 0.008], [0, -0.068, d + 0.006]], '#b4584f');
+    // 读数
+    const nose = (d + 0.035) / (d - 0.028);
+    const band = f < 30 ? '广角' : f < 60 ? '标准' : f < 150 ? '中长焦' : '长焦';
+    pg.fillStyle = 'rgba(5,6,10,.7)'; pg.fillRect(8, 8, 150, 24);
+    pg.fillStyle = '#ffc46b'; pg.font = '700 14px "JetBrains Mono", monospace'; pg.fillText(`${f.toFixed(0)}mm · ${d.toFixed(2)}m`, 16, 25);
+    $('#perspRV').textContent = pMode === 'dolly' ? d.toFixed(2) + ' m' : f.toFixed(0) + ' mm';
+    $('#perspRead').innerHTML = `<span>距离 <b>${d.toFixed(2)} m</b></span><span>等效焦段 <b>${f.toFixed(0)} mm · ${band}</b></span><span class="${nose > 1.08 ? 'hot' : ''}">鼻子相对放大 <b>${nose.toFixed(2)}×</b></span>`;
+  };
+  const setMode = m => { pMode = m; $('#perspModeD').classList.toggle('on', m === 'dolly'); $('#perspModeZ').classList.toggle('on', m === 'zoom'); $('#perspLbl').textContent = m === 'dolly' ? '距离' : '焦段'; pR.value = m === 'dolly' ? 10 : 30; renderPersp(); };
+  $('#perspModeD').onclick = () => setMode('dolly');
+  $('#perspModeZ').onclick = () => setMode('zoom');
+  pR.addEventListener('input', renderPersp);
+  renderPersp();
+
+  /* =====================================================================
+     4. 景别：切换 SVG 的取景框
+     ===================================================================== */
+  const SHOTS = [
+    ['远景', '环境与氛围', [0, 0, 1600, 900], 5, 1],
+    ['全景', '人物与环境的关系', [624, 400, 711, 400], 4, 2],
+    ['中景', '动作与互动', [780, 422, 400, 225], 3, 3],
+    ['近景', '表情与情绪', [882, 430, 196, 110], 2, 4],
+    ['特写', '细节与强调', [928, 437, 104, 58.5], 1, 5],
+  ];
+  const shotSvg = $('#shotSvg');
+  let vb = [0, 0, 1600, 900], anim = 0;
+  const setShot = i => {
+    const [name, use, to, info, emo] = SHOTS[i];
+    $('#shotName').textContent = name; $('#shotUse').textContent = use;
+    $('#shotInfo').textContent = '●'.repeat(info) + '○'.repeat(5 - info); $('#shotEmo').textContent = '●'.repeat(emo) + '○'.repeat(5 - emo);
+    document.querySelectorAll('[data-shot]').forEach(b => b.classList.toggle('on', +b.dataset.shot === i));
+    const from = vb.slice(), t0 = performance.now(); cancelAnimationFrame(anim);
+    const tick = now => {
+      const k = Math.min(1, (now - t0) / 600), e = 1 - Math.pow(1 - k, 3);
+      vb = from.map((v, j) => j < 2 ? v + (to[j] - v) * e : Math.exp(Math.log(v) * (1 - e) + Math.log(to[j]) * e));
+      shotSvg.setAttribute('viewBox', vb.map(v => v.toFixed(2)).join(' '));
+      if (k < 1) anim = requestAnimationFrame(tick);
+    };
+    anim = requestAnimationFrame(tick);
+  };
+  document.querySelectorAll('[data-shot]').forEach(b => b.addEventListener('click', () => setShot(+b.dataset.shot)));
+
+  /* =====================================================================
+     5. 布光台：高度场石膏头像 + 漫反射 + 软/硬阴影 + 辅光 + 轮廓光 + 色温
+     ===================================================================== */
+  const DIRS = { front: [0.12, -0.3, 1], side: [-1, -0.3, 0.45], back: [0.4, -0.35, -1], top: [0, -1, 0.12], bottom: [0, 1, 0.32] };
+  const norm = v => { const l = Math.hypot(...v); return v.map(x => x / l); };
+  const G = (x, s) => Math.exp(-x * x / (2 * s * s));
+  const heightAt = (u, v) => {
+    let h = -1;
+    const q = 1 - (u / 0.74) ** 2 - (v / 1.0) ** 2;
+    if (q > 0) {
+      h = 0.85 * Math.sqrt(q);
+      h += 0.2 * G(u, 0.065) * G(v - 0.12, 0.2) + 0.06 * G(Math.hypot(u, v - 0.3), 0.07);
+      h -= 0.1 * (G(Math.hypot(u - 0.29, v + 0.05), 0.11) + G(Math.hypot(u + 0.29, v + 0.05), 0.11));
+      h += 0.05 * G(v + 0.2, 0.06) * G(u, 0.4);
+      h += 0.04 * G(u, 0.17) * G(v - 0.55, 0.05) + 0.05 * G(Math.hypot(u, v - 0.82), 0.13);
+      h += 0.03 * (G(Math.hypot(u - 0.42, v - 0.2), 0.14) + G(Math.hypot(u + 0.42, v - 0.2), 0.14));
+    }
+    if (v > 0.55 && Math.abs(u) < 0.33) h = Math.max(h, 0.42 * Math.sqrt(1 - (u / 0.33) ** 2));
+    return h;
+  };
+  const fieldCache = new Map();
+  const field = (W, H) => {
+    const key = W + 'x' + H; if (fieldCache.has(key)) return fieldCache.get(key);
+    const sc = H * 0.34, cx = W / 2, cy = H * 0.42, hf = new Float32Array(W * H);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) hf[y * W + x] = heightAt((x - cx) / sc, (y - cy) / sc);
+    const o = { W, H, sc, cx, cy, hf }; fieldCache.set(key, o); return o;
+  };
+  const renderFace = (cv, o) => {
+    const { W, H, sc, hf } = field(cv.width, cv.height);
+    const ctx = cv.getContext('2d'), img = ctx.createImageData(W, H), px = img.data;
+    const L = norm(DIRS[o.dir]), soft = o.soft, kc = kRGB(o.K);
+    const lxy = Math.hypot(L[0], L[1]);
+    const Lf = norm(Math.abs(L[0]) > 0.3 ? [-Math.sign(L[0]) * 0.8, -0.15, 0.7] : [0.8, -0.15, 0.7]);
+    const Lr = norm([0.55, -0.6, -0.7]);
+    const kSh = 3 + 40 * (1 - soft) ** 2, wrap = soft * 0.55;
+    const hAt = (x, y) => { const xi = x | 0, yi = y | 0; if (xi < 1 || yi < 1 || xi >= W - 1 || yi >= H - 1) return -1; return hf[yi * W + xi]; };
+    const backlit = L[2] < -0.3;
+    const albedo = [0.86, 0.82, 0.77];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x, h = hf[i], p = i * 4;
+      let col;
+      if (h < 0) {
+        const t = y / H;
+        col = backlit ? kc.map(c => c * (0.75 - 0.25 * t)) : [0.012 + 0.01 * t, 0.014 + 0.01 * t, 0.022 + 0.012 * t];
+      } else {
+        const hx1 = hf[i + 1] >= 0 ? hf[i + 1] : h, hx0 = hf[i - 1] >= 0 ? hf[i - 1] : h;
+        const hy1 = hf[i + W] >= 0 ? hf[i + W] : h, hy0 = hf[i - W] >= 0 ? hf[i - W] : h;
+        let nx = -(hx1 - hx0) * sc / 2, ny = -(hy1 - hy0) * sc / 2, nz = 1;
+        // 外轮廓处高度场太陡，强制把法线压向侧面
+        const nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
+        const dk = nx * L[0] + ny * L[1] + nz * L[2];
+        let diff = Math.max(0, (dk + wrap) / (1 + wrap));
+        if (diff > 0 && lxy > 0.05) {
+          const sx = L[0] / lxy, sy = L[1] / lxy, rise = L[2] / lxy;
+          let res = 1;
+          for (let s = 2; s < 200; s += 2) {
+            const hh = hAt(x + sx * s, y + sy * s); if (hh < 0) break;
+            const hr = h + rise * s / sc;
+            res = Math.min(res, kSh * (hr - hh) / (s / sc));
+            if (res <= 0) { res = 0; break; }
+          }
+          diff *= clamp(res, 0, 1);
+        }
+        const fd = Math.max(0, (nx * Lf[0] + ny * Lf[1] + nz * Lf[2] + 0.4) / 1.4) * o.fill * 0.85;
+        const rimK = backlit ? Math.pow(1 - nz, 1.6) * Math.max(0, nx * L[0] + ny * L[1]) / Math.max(lxy, .2) * 1.6 : 0;
+        const rimT = o.rim ? Math.pow(Math.max(0, nx * Lr[0] + ny * Lr[1] + nz * Lr[2]), 1.2) * 1.4 : 0;
+        col = albedo.map((a, c) => a * (diff * kc[c] + fd + rimK * kc[c] + rimT * 0.95 + 0.015));
+        // 边缘抗锯齿：高度接近 0 的一圈与背景混合
+        const ea = clamp(h / 0.05, 0, 1);
+        if (ea < 1) { const t = y / H, bgc = backlit ? kc.map(c => c * (0.75 - 0.25 * t)) : [0.012 + 0.01 * t, 0.014 + 0.01 * t, 0.022 + 0.012 * t]; col = col.map((c, j) => c * ea + bgc[j] * (1 - ea)); }
+      }
+      for (let c = 0; c < 3; c++) px[p + c] = 255 * Math.pow(clamp(col[c], 0, 1), 1 / 2.2);
+      px[p + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  };
+  // 小图：五个方向
+  document.querySelectorAll('#dirMinis canvas').forEach(cv => renderFace(cv, { dir: cv.dataset.dir, soft: 0.2, fill: 0.05, rim: false, K: 5600 }));
+  // 布光台
+  const lt = { dir: 'side', soft: 0.1, fill: 0, rim: false, K: 5600 };
+  const lCv = $('#lightCv');
+  let lPending = false;
+  const renderLight = () => {
+    if (lPending) return; lPending = true;
+    requestAnimationFrame(() => {
+      lPending = false;
+      renderFace(lCv, lt);
+      $('#lightSoftV').textContent = lt.soft < .34 ? '硬' : lt.soft < .67 ? '中' : '软';
+      $('#lightFillV').textContent = Math.round(lt.fill * 100) + '%';
+      $('#lightKV').textContent = lt.K + 'K';
+      const ratio = lt.fill > 0.02 ? `${(1 / lt.fill).toFixed(1).replace(/\.0$/, '')} : 1` : '无辅光';
+      const kt = lt.K < 4000 ? '偏暖' : lt.K > 6500 ? '偏冷' : '中性';
+      $('#lightRead').innerHTML = `<span>质感 <b>${lt.soft < .34 ? '硬光：影子边缘锐利' : lt.soft < .67 ? '中等' : '软光：影子柔和'}</b></span><span>光比 <b>${ratio}</b></span><span>色温 <b>${kt}</b></span>`;
+    });
+  };
+  document.querySelectorAll('[data-ld]').forEach(b => b.addEventListener('click', () => { lt.dir = b.dataset.ld; document.querySelectorAll('[data-ld]').forEach(x => x.classList.toggle('on', x === b)); renderLight(); }));
+  $('#lightSoft').addEventListener('input', e => { lt.soft = e.target.value / 100; renderLight(); });
+  $('#lightFill').addEventListener('input', e => { lt.fill = e.target.value / 100; renderLight(); });
+  $('#lightK').addEventListener('input', e => { lt.K = +e.target.value; renderLight(); });
+  $('#lightRim').addEventListener('change', e => { lt.rim = e.target.checked; renderLight(); });
+  renderLight();
+
+  /* ---------- 色温条 ---------- */
+  {
+    const stops = [];
+    for (let K = 1900; K <= 10000; K += 450) { const c = kRGB(K).map(v => Math.round(v * 255)); stops.push(`rgb(${c}) ${((K - 1900) / 8100 * 100).toFixed(1)}%`); }
+    $('#kBar').style.background = `linear-gradient(90deg, ${stops.join(', ')})`;
+  }
+
+  /* =====================================================================
+     6. 调色：四种预设 + 色相 / 饱和度 / 明度
+     ===================================================================== */
+  const GP = {
+    neutral: { s1: '#8d9bb0', s2: '#d8d6d0', sun: '#f4f1e6', sh: '#4e545e', li: '#c9c3b8', gr: '#77777a', fig: '#24262b' },
+    teal: { s1: '#1f5566', s2: '#ff9a52', sun: '#ffd9a0', sh: '#163f4b', li: '#ffb066', gr: '#2f5f66', fig: '#0f2228' },
+    gloom: { s1: '#56626d', s2: '#8b959c', sun: '#b9c3c9', sh: '#2e363d', li: '#79858c', gr: '#4a5359', fig: '#171b1f' },
+    vivid: { s1: '#ff3d6e', s2: '#ffc93a', sun: '#fff1a0', sh: '#a3245e', li: '#ffb000', gr: '#ff6f3c', fig: '#4a0d33' },
+  };
+  const gSvg = $('#gradeSvg');
+  const setGrade = k => {
+    const p = GP[k];
+    $('#gSky1').setAttribute('stop-color', p.s1); $('#gSky2').setAttribute('stop-color', p.s2);
+    gSvg.querySelectorAll('.g-sun').forEach(e => e.setAttribute('fill', p.sun));
+    gSvg.querySelectorAll('.g-shadow').forEach(e => e.setAttribute('fill', p.sh));
+    gSvg.querySelectorAll('.g-light').forEach(e => e.setAttribute('fill', p.li));
+    gSvg.querySelectorAll('.g-ground').forEach(e => e.setAttribute('fill', p.gr));
+    gSvg.querySelectorAll('.g-fig').forEach(e => e.setAttribute('fill', p.fig));
+    document.querySelectorAll('[data-gp]').forEach(b => b.classList.toggle('on', b.dataset.gp === k));
+  };
+  const gH = $('#gH'), gS = $('#gS'), gB = $('#gB');
+  const updFilter = () => {
+    gSvg.style.filter = `hue-rotate(${gH.value}deg) saturate(${gS.value}%) brightness(${gB.value}%)`;
+    $('#gHV').textContent = gH.value + '°'; $('#gSV').textContent = gS.value + '%'; $('#gBV').textContent = gB.value + '%';
+  };
+  [gH, gS, gB].forEach(el => el.addEventListener('input', updFilter));
+  document.querySelectorAll('[data-gp]').forEach(b => b.addEventListener('click', () => { setGrade(b.dataset.gp); gH.value = 0; gS.value = 100; gB.value = 100; updFilter(); }));
+  setGrade('neutral'); updFilter();
+})();
+</script>
+</body>

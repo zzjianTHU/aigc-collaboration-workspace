@@ -1,0 +1,801 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 01 课 · AI 是怎样工作的</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：下山图、词向量地图、图文配对矩阵、提示词靶心 */
+.hill svg { width: 100%; height: auto; display: block; background: #05060a; border-radius: 10px; border: 1px solid var(--line); }
+.hill .stat { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.hill .stat b { color: var(--warm); }
+.loop4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 900px) { .loop4 { grid-template-columns: repeat(4, 1fr); } }
+.loop4 div { padding: 10px 12px; border-radius: 10px; background: var(--panel2); border-top: 3px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.loop4 div b { display: block; color: var(--fg); font-family: var(--display); font-size: 17px; }
+.rules { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.rules span { padding: 6px 10px; border-radius: 8px; background: var(--panel2); color: var(--muted); }
+.rules span.x { color: var(--r); background: rgba(255,84,104,.08); }
+.emb svg, .match svg, .aim svg { width: 100%; height: auto; display: block; }
+.emb text, .match text, .aim text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+.tok-ex { display: flex; flex-direction: column; gap: 10px; }
+.tok-ex .src-line { font-size: 13px; color: var(--muted); }
+.stage3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .stage3 { grid-template-columns: repeat(3, 1fr); } }
+.stage3 .card .k { font-family: var(--mono); font-size: 11px; color: var(--c); letter-spacing: .12em; }
+.stage3 .card { border-top: 3px solid var(--c); }
+.stage3 .card .chef { padding: 8px 10px; border-radius: 8px; background: rgba(63,224,160,.07); border-left: 3px solid var(--g); font-size: 13.5px; color: var(--fg); }
+.versus { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .versus { grid-template-columns: 1fr 1fr; } }
+.sent { font-family: var(--display); font-size: clamp(18px, 1.8vw, 24px); line-height: 1.5; padding: 12px 14px; border-radius: 12px; background: #05060a; border: 1px solid var(--line); }
+.sent em { font-style: normal; color: var(--warm); border-bottom: 2px solid var(--warm); }
+.sent i { font-style: normal; color: var(--g); }
+.trainer textarea { min-height: 150px; }
+.trainer .bars { min-height: 130px; }
+.gen-list { display: flex; flex-direction: column; gap: 6px; }
+.gen-list .out { font-size: clamp(17px, 1.6vw, 21px); min-height: 1.6em; padding: 6px 10px; }
+.sign5 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .sign5 { grid-template-columns: repeat(5, 1fr); } }
+.sign5 div { padding: 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); }
+.sign5 div b { display: block; font-family: var(--display); font-size: 18px; color: var(--c); }
+.sign5 div p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+/* 投影仪常见的 1280×720：压缩下山图和训练器的高度 */
+@media (max-height: 800px) {
+  .hill svg { max-height: 30vh; }
+  #s-hill .slot { aspect-ratio: 16 / 6; }
+  .loop4 div { padding: 7px 10px; font-size: 12.5px; }
+  .trainer textarea { min-height: 80px; }
+  .trainer .steps li { padding: 7px 10px; font-size: 14px; }
+}
+</style>
+
+<body data-lesson="L01">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开门见山，不再回顾第 0 节。开口：“上节课我们看到 AI 已经能做什么，这节课往下挖一层：它到底是怎么做到的？今天讲完，你们会知道 AI 是怎样学会东西的、聊天机器人的脑子里在发生什么、为什么它看得懂你写的画面描述。后半节课，你们要亲手训练一个自己的小模型。”把三个问题念一遍，告诉学生下课前每人都要能回答。">
+  <div class="lesson-no" aria-hidden="true">01</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第一幕 · 看见与构思</span><span>LESSON 01 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">AI 是怎样工作的<br><span class="rgbword">从数据到模型</span></h1>
+    <p class="lead">今天不聊 AI 能做什么，只讲<b>它为什么能做到</b>。讲完原理，你会亲手训练一个只属于你的小模型。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>机器是怎样“学会”一件事的？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>聊天机器人的“脑子”里，到底在发生什么？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>AI 为什么看得懂你描述的画面？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–40</b>知识讲解 · 四个模块</span>
+      <span><b>40–80</b>实操 · 训练小模型 / 对话实验 / 第一张图</span>
+      <span><b>80–90</b>总结 · AI 使用规范</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 开场故事：聪明的汉斯 ============ -->
+<section class="slide" data-min="2" data-note="用一个 100 多年前的故事开场，别急着讲 AI。按 → 分两步。第一步讲故事：1904 年前后的柏林，一位退休数学老师训练了一匹叫汉斯的马，问它“3 加 5 等于几”，它就用蹄子敲 8 下，还能回答日期、拼单词。很多人相信它真的会算数，连一个专家委员会都没看出破绽。可以停下来问学生：你们觉得它真的会算数吗？第二步揭晓：1907 年，心理学家奥斯卡·芬斯特做了对照实验：只要提问的人自己也不知道答案，或者汉斯看不见提问的人，它就答不对了。原来汉斯学会的不是算数，而是读人的表情：敲到正确次数时，提问者会不自觉地放松、抬一下头，汉斯就停下来。落点：汉斯很聪明，但它学到的是一条“捷径”，不是我们以为的规律。今天讲 AI，我们会反复问同一个问题：它到底学到了什么？过渡到模块 1。">
+  <div class="inner">
+    <div class="tc"><span class="ch">开场故事</span><span>模块 1 · 机器学习</span></div>
+    <h2 class="h-l">一匹“会算数”的马</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="step">
+          <div class="card story"><span class="tag">故事 · 柏林 1904</span>
+            <b>聪明的汉斯</b>
+            <p>主人问它“3 加 5 等于几”，它就用蹄子敲 <b>8 下</b>；还能回答日期、拼单词。围观的人越来越多，连一个专家委员会都没找到破绽。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="card story"><span class="tag">真相 · 1907</span>
+            <p>心理学家芬斯特发现：只要<b>提问的人自己也不知道答案</b>，或者汉斯<b>看不见提问的人</b>，它就答错。</p>
+            <p>汉斯学会的不是算数，而是<b>读人的表情</b>：敲到正确次数时，提问者会不自觉地放松，它就停下。</p>
+          </div>
+          <div class="punch">今天反复要问的一个问题：它到底学到了什么？</div>
+        </div>
+      </div>
+      <div class="slot" data-slot="hans"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 规则 vs 例子 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲机器学习和传统编程的根本区别，换一个角度：教电脑认猫。按 → 分两步。第一步，左边：如果用写规则的办法，你会写“有尖耳朵、有胡须、有四条腿、有尾巴”。马上问学生：这套规则会在哪里出错？引导出：折耳猫没有尖耳朵；只拍到背影的猫看不到胡须；狐狸也符合所有规则；表情包里的卡通猫怎么办？规则永远写不完。第二步，右边：机器学习的办法是不写规则，直接给它十万张标好“是猫/不是猫”的照片，让它自己去找区分的办法。打比方：你教三岁的小朋友认猫，从来不会背定义，而是指着说“这是猫，那是狗”，看多了他自己就会了。落点：机器学习 = 用例子代替规则。人负责准备例子和定义目标，机器负责找规律。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 机器学习</span><span>10 MIN</span></div>
+    <h2 class="h-l">怎样教电脑认出一只猫？</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="card idea"><span class="tag">办法一 · 人写规则</span>
+          <b>把“猫”的定义写下来</b>
+          <div class="rules">
+            <span>✓ 有尖耳朵</span><span>✓ 有胡须</span><span>✓ 四条腿、一条尾巴</span>
+            <span class="x">✗ 折耳猫没有尖耳朵</span><span class="x">✗ 只拍到背影，看不见胡须</span><span class="x">✗ 狐狸全部符合</span>
+          </div>
+          <p>规则永远写不完，世界上的例外比规则多。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card idea"><span class="tag">办法二 · 机器学习</span>
+          <b>不写规则，给它看例子</b>
+          <p>准备十万张照片，每张标好“是猫”或“不是猫”，让模型<b>自己找出区分的办法</b>。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>教三岁的孩子认猫，你从来不背定义，只是指着说“这是猫，那是狗”。<b>看得多了，他自己就会了。</b></p>
+        </div>
+        <div class="punch">机器学习 = 用例子代替规则<small>人负责准备例子、定好目标；机器负责找规律。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 训练 = 蒙眼下山 ============ -->
+<section class="slide" id="s-hill" data-min="2.5" data-note="这一页是模块 1 的核心：训练到底在做什么。先讲上面四步循环：猜一个答案，对照正确答案，算出错了多少（误差），把内部旋钮往误差变小的方向拧一点，然后重复，大模型要重复上万亿次。再讲“旋钮”：模型就是一个有大量旋钮的数学函数，旋钮就是参数，DeepSeek-V3 有 6710 亿个。然后用右边的互动图讲“蒙眼下山”：你被蒙着眼睛放在山上，目标是走到最低的山谷（误差最小），你看不见全貌，只能用脚试探哪边更低，往那边迈一步。这就是梯度下降。现场演示三件事：1. 点“走一步”几次，球慢慢滑到谷底，误差变小；2. 把步子调到很大，再走，球会在山谷两边来回跳，甚至越跳越高：步子太大会学崩；3. 换一个出发点，球可能停在一个小坑里出不来：这叫局部最优，模型不一定找到最好的答案。可选视频：3Blue1Brown 的神经网络系列第 2 集讲梯度下降，有中文配音版，课后推荐给感兴趣的同学。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 机器学习</span><span>训练在做什么</span></div>
+    <h2 class="h-l">训练，就是蒙着眼睛下山</h2>
+    <div class="loop4">
+      <div style="--c:var(--b)"><b>① 猜</b>模型用当前的旋钮算出一个答案</div>
+      <div style="--c:var(--warm)"><b>② 对答案</b>和正确答案比一比</div>
+      <div style="--c:var(--r)"><b>③ 算误差</b>用一个数字表示“错了多少”</div>
+      <div style="--c:var(--g)"><b>④ 拧旋钮</b>往误差变小的方向调一点点，然后重复。旋钮就是<b style="display:inline;font-size:inherit">参数</b>，DeepSeek-V3 有 6710 亿个</div>
+    </div>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>你被蒙着眼放在山上，要走到最低的山谷。看不见全貌，只能<b>用脚试探哪边更低，往那边迈一步</b>，再试探，再迈一步。</p>
+          <p>山的高度 = 误差；你的位置 = 旋钮的取值。这个办法叫<b>梯度下降</b>。</p>
+        </div>
+        <div class="slot" data-slot="gd3b1b"></div>
+      </div>
+      <div class="lab hill">
+        <span class="label">互动 · 下山实验</span>
+        <svg id="hillSvg" viewBox="0 0 600 280" role="img" aria-label="误差曲线和一个正在下山的小球"></svg>
+        <div class="row">
+          <button class="btn primary" id="hillStep" type="button">走一步</button>
+          <button class="btn" id="hillRun" type="button">连走 10 步</button>
+          <button class="btn" id="hillResetL" type="button">从左边出发</button>
+          <button class="btn" id="hillResetR" type="button">从右边出发</button>
+        </div>
+        <label class="row small">步子大小（学习率）<input type="range" id="hillLr" min="0.1" max="3.4" step="0.1" value="0.6" style="flex:1"><b id="hillLrV" class="warm">0.6</b></label>
+        <div class="stat">已走 <b id="hillN">0</b> 步 · 当前误差 <b id="hillE">–</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 过拟合与偏差 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲两个“学歪了”的情况，回扣开场的汉斯。按 → 分两步。第一步，过拟合：打比方，一个同学把历年真题和答案全背下来了，模拟考次次满分，可正式考试题目一换就不会了。模型也会这样：在训练数据上表现完美，遇到新数据就出错，因为它记住了答案，没学会规律。我们要的是“泛化”：学会规律，能处理没见过的情况。第二步，数据偏差，讲哈士奇和狼的故事：2016 年华盛顿大学的研究者故意训练了一个区分哈士奇和狼的模型，准确率看起来不错，但他们用解释工具一看，模型判断的依据根本不是动物，而是背景有没有雪，因为训练用的狼的照片大多在雪地里拍的。这和汉斯一模一样：学到了捷径。再举一个和生图有关的例子：如果训练图片里“医生”大多是男性，生成“一位医生”时就更容易画男性。落点：数据就是模型的教材，教材歪了，学生就歪了。第 6 课生图时你们会亲自碰到这个问题。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 机器学习</span><span>学歪了的两种情况</span></div>
+    <h2 class="h-l">背答案的学生，和看雪的模型</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="card analogy"><span class="tag">过拟合 · 打个比方</span>
+          <b>只背真题的同学</b>
+          <p>把历年真题和答案全背下来，模拟考次次满分；正式考试题目一换，就不会了。</p>
+          <p>模型也会这样：在训练数据上完美，遇到新数据就出错。我们要的是<b>泛化</b>：学会规律，能处理没见过的情况。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">数据偏差 · 华盛顿大学 2016</span>
+          <b>它看的不是狼，是雪</b>
+          <p>研究者训练了一个区分<b>哈士奇和狼</b>的模型，准确率看起来不错。用解释工具一查，模型依据的根本不是动物，而是<b>背景里有没有雪</b>，因为狼的训练照片大多拍在雪地里。</p>
+          <p>同理：训练图里“医生”多是男性，生成“一位医生”时就更容易画成男性。</p>
+        </div>
+        <div class="punch">数据就是模型的教材。<small>教材歪了，学生就歪了，就像汉斯学会的是看人脸色。</small></div>
+        <p class="src">来源：Ribeiro, Singh &amp; Guestrin, “Why Should I Trust You?”, KDD 2016</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 Token ============ -->
+<section class="slide" data-min="2" data-note="进入模块 2，大语言模型的内部，一共 15 分钟。先讲 token。模型读文字，不是一个字一个字读，而是先切成 token：常见的词是一整块，少见的词被切成几块。打比方：像乐高，常用的形状有现成的大块，不常见的形状就用小块拼。屏幕上的切分是示意，不同模型切法不同。重点讲 strawberry：英文单词 strawberry 在一些模型里被切成 str、aw、berry 三块，模型“看到”的是三块积木，而不是 10 个字母，所以它很难数清楚里面有几个 r。早年很多模型都答成 2 个，这也是实操任务 2 要验证的现象，新一点的模型可能已经答对了，那就追问它“逐个字母拆开再数”，比较两种问法的过程。中文也一样，一个常见词可能是一个 token，一个生僻字可能被拆成几块。落点：模型的世界是由 token 组成的，它的“看见”和我们的不一样。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>15 MIN</span><span>① TOKEN</span></div>
+    <h2 class="h-l">模型读的不是字，是“积木块”</h2>
+    <div class="g2 wide-l">
+      <div class="tok-ex">
+        <div class="lab"><span class="label">示意 · 一句话被切成 token</span>
+          <div class="chips" id="tokA"></div>
+          <div class="chips" id="tokB"></div>
+          <div class="chips" id="tokC"></div>
+          <p class="small">每种颜色是一个 token。不同模型切法不同，这里只是示意。</p>
+        </div>
+        <div class="card idea"><span class="tag">所以</span>
+          <p>模型“看到”的 strawberry 是 <b>str · aw · berry</b> 三块积木，而不是 10 个字母，所以它<b>很难数清楚里面有几个 r</b>。实操任务 2 我们会亲手验证。</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <b>像拼乐高</b>
+          <p>常用的形状有现成的大块（常见词 = 一个 token）；少见的形状就用几块小的拼（生僻词 = 几个 token）。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span>
+          <p>为什么模型会写诗，却经常数错一个单词里的字母？</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 向量 ============ -->
+<section class="slide" data-min="2" data-note="第二个概念：向量，也叫嵌入。每个 token 会被变成一串数字，可以理解成它在一张“意思地图”上的坐标。真实的地图有几千个维度，我们这里画成平面示意。意思相近的词坐标也靠近：猫、狗、兔子挨在一起，汽车、火车、自行车挨在一起。打比方：像一座城市，卖同类东西的店开在同一条街上。再讲一个让人惊讶的发现：2013 年谷歌的研究者发现，在这样的地图上，“国王”的坐标减去“男人”、再加上“女人”，结果最接近“女王”。也就是说，“男变女”这个关系在地图上是一个固定的方向。这说明模型确实把一部分“意思之间的关系”学进了坐标里。落点：向量让模型可以计算“意思”。这张地图在模块 3 还会用到：图片也会被放到同一张地图上。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>② 向量 / 嵌入</span></div>
+    <h2 class="h-l">每个词，在“意思地图”上都有坐标</h2>
+    <div class="g2 wide-l">
+      <div class="lab emb"><span class="label">示意 · 意思地图（真实的地图有几千个维度）</span>
+        <svg viewBox="0 0 620 330" role="img" aria-label="词语在二维平面上的位置，相近的词靠在一起">
+          <defs><marker id="arw" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ffc46b"/></marker></defs>
+          <g fill="none" stroke="rgba(220,228,255,.08)"><path d="M0 110 H620 M0 220 H620 M155 0 V330 M310 0 V330 M465 0 V330"/></g>
+          <ellipse cx="120" cy="90" rx="95" ry="58" fill="rgba(63,224,160,.08)" stroke="rgba(63,224,160,.35)"/>
+          <ellipse cx="495" cy="85" rx="105" ry="55" fill="rgba(91,140,255,.08)" stroke="rgba(91,140,255,.35)"/>
+          <ellipse cx="135" cy="255" rx="100" ry="52" fill="rgba(255,84,104,.07)" stroke="rgba(255,84,104,.3)"/>
+          <g fill="#eef0f6" font-size="17" font-weight="700">
+            <text x="70" y="80">猫</text><text x="125" y="70">狗</text><text x="100" y="118">兔子</text><text x="160" y="105">仓鼠</text>
+            <text x="430" y="78">汽车</text><text x="500" y="65">火车</text><text x="470" y="115">自行车</text><text x="545" y="105">地铁</text>
+            <text x="70" y="250">苹果</text><text x="130" y="275">香蕉</text><text x="165" y="240">草莓</text>
+          </g>
+          <g font-size="16" font-weight="700">
+            <circle cx="330" cy="215" r="5" fill="#9097ad"/><text x="300" y="240" fill="#9097ad">男人</text>
+            <circle cx="420" cy="175" r="5" fill="#9097ad"/><text x="428" y="172" fill="#9097ad">女人</text>
+            <circle cx="350" cy="295" r="5" fill="#eef0f6"/><text x="300" y="318" fill="#eef0f6">国王</text>
+            <circle cx="440" cy="255" r="6" fill="#ffc46b"/><text x="450" y="262" fill="#ffc46b">女王</text>
+          </g>
+          <g stroke="#ffc46b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arw)"><line x1="334" y1="213" x2="412" y2="179"/><line x1="354" y1="293" x2="432" y2="259"/></g>
+        </svg>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>像一座城市：卖同类东西的店开在同一条街上。<b>意思越接近，坐标越靠近。</b></p>
+        </div>
+        <div class="card story"><span class="tag">发现 · 谷歌 2013</span>
+          <p>在这张地图上，<b>国王 − 男人 + 女人 ≈ 女王</b>。“男变女”是地图上一个固定的方向，模型把词语之间的关系也学进了坐标。</p>
+        </div>
+        <p class="src">来源：Mikolov 等，word2vec，2013</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 注意力 ============ -->
+<section class="slide" data-min="2" data-note="第三个概念：注意力，这是 2017 年 Transformer 架构的核心，今天几乎所有大模型都基于它。用两句只差一个词的句子来讲。“小猫没有跳上桌子，因为它太累了”，这里的“它”指小猫；“小猫没有跳上桌子，因为它太高了”，这里的“它”指桌子。人一眼就懂，但机器怎么知道？注意力机制让模型在理解“它”的时候，回头去“看”句子里的每一个词，并给每个词打一个相关度分数：看到“累”，就更关注“小猫”；看到“高”，就更关注“桌子”。打比方：像侦探读小说，读到关键一句时，会翻回前面找线索，而且知道该翻哪几页。也可以提一下“苹果很甜”和“苹果发布了新手机”：同一个词，被上下文改变了意思。推荐视频：3Blue1Brown《注意力机制》有中文配音版，可以放其中 1 分钟的动画。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>③ 注意力</span></div>
+    <h2 class="h-l">“它”到底指谁？</h2>
+    <div class="versus">
+      <div class="sent">小猫没有跳上桌子，因为<em>它</em>太<i>累</i>了。<br><span class="small">→ “它” = 小猫</span></div>
+      <div class="sent">小猫没有跳上桌子，因为<em>它</em>太<i>高</i>了。<br><span class="small">→ “它” = 桌子</span></div>
+    </div>
+    <div class="g3">
+      <div class="card idea"><span class="tag">原理</span>
+        <p>理解“它”的时候，模型会回头<b>看句子里的每一个词</b>，并给每个词打一个相关度分数。看到“累”，更关注“小猫”；看到“高”，更关注“桌子”。这就是<b>注意力机制</b>（Transformer，2017）。</p>
+      </div>
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>像侦探读小说：读到关键一句时，会翻回前面找线索，而且<b>知道该翻哪几页</b>。</p>
+      </div>
+      <div class="slot sq" data-slot="attn3b1b"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 三个训练阶段 ============ -->
+<section class="slide" data-min="3" data-note="这一页讲一个聊天机器人是怎样被训练出来的，用“学徒厨师”贯穿三个阶段。按 → 逐列展开。第一阶段，预训练：让模型读海量文本，练习一件事：猜下一个 token。Karpathy 有个很好的比喻：预训练就像把互联网“压缩”成一个文件。他举的例子是一个 700 亿参数的开源模型：大约 10TB 文本，用 6000 块 GPU 训练 12 天，花费约 200 万美元，最后得到一个约 140GB 的参数文件。这时候的模型像一个读遍了天下菜谱的学徒：什么都见过，但你跟它说“帮我做道菜”，它可能接着写一段菜谱，因为它只会续写。第二阶段，指令微调：用大量“提问—优质回答”的示范来训练，像师傅手把手教：客人点什么，你就做什么。第三阶段，人类反馈强化学习：让模型对同一个问题给出几个回答，由人来排序，模型据此调整，越来越像人喜欢的样子，也更安全。像食客给几道菜打分，厨师据此改口味。落点：第一阶段学到知识，后两个阶段学到怎样当一个好助手。推荐视频：3Blue1Brown《大语言模型简要解释》，约 7 分钟，有中文字幕，适合课后看。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>④ 三个训练阶段</span></div>
+    <h2 class="h-l">一个聊天机器人是怎样“炼”成的</h2>
+    <div class="stage3">
+      <div class="step"><div class="card" style="--c:var(--b)"><span class="k">阶段 1 · 预训练</span>
+        <b>读遍互联网，练习猜下一个 token</b>
+        <p>例：一个 700 亿参数的开源模型，约 <b>10TB</b> 文本，<b>6000 块 GPU 训练 12 天</b>，最后压缩成一个约 <b>140GB</b> 的参数文件。</p>
+        <div class="chef">学徒读遍了天下菜谱。你说“做道菜”，它却接着写菜谱：<b>只会续写，不会听指令</b>。</div>
+      </div></div>
+      <div class="step"><div class="card" style="--c:var(--warm)"><span class="k">阶段 2 · 指令微调</span>
+        <b>用“提问—好回答”的示范来教</b>
+        <p>人工写出大量高质量的问答示范，让模型学会：<b>别人问什么，就回答什么</b>。</p>
+        <div class="chef">师傅手把手教：客人点什么，你就做什么。</div>
+      </div></div>
+      <div class="step"><div class="card" style="--c:var(--g)"><span class="k">阶段 3 · 人类反馈强化学习</span>
+        <b>人给几个回答排序，模型据此调整</b>
+        <p>同一个问题生成几个回答，由人评出好坏，模型往<b>更有帮助、更安全</b>的方向调整。</p>
+        <div class="chef">食客给几道菜打分，厨师据此改口味。</div>
+      </div></div>
+    </div>
+    <div class="g2">
+      <div class="punch">第 1 阶段学到“知识”，第 2、3 阶段学会“怎样当一个好助手”。<small>数据来源：Andrej Karpathy, Intro to Large Language Models, 2023（以 Llama 2 70B 为例）</small></div>
+      <div class="slot" data-slot="llm3b1b" style="aspect-ratio:16/6"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 温度 ============ -->
+<section class="slide" id="s-temp" data-min="2" data-note="这一页讲生成时发生了什么。模型每一步并不是直接“知道”下一个字，而是给出一张概率表：下一个字是“风”的可能性多大，是“天”的可能性多大……然后从里面抽一个。温度就是控制怎么抽的旋钮。现场演示：温度调到 0.2，点几次“抽一个”，几乎每次都是“春风”；调到 1.0，开始出现“春天”“春眠”；调到 2.0，各种字都出来了，偶尔会出现很怪的组合。打比方：点奶茶。低温就是永远点招牌，稳但没惊喜；高温就是闭着眼随便点，可能发现宝藏，也可能踩雷。所以同一个问题问三次，答案会不一样，这不是 bug，是抽样的结果。写严谨的内容用低温，头脑风暴用高温。很多 App 不让你调温度，但背后都有这个旋钮。注意：图里的概率是示意，不是真实模型的数字。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>⑤ 生成与温度</span></div>
+    <h2 class="h-l">每一步，都是从概率表里抽一个</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">原理</span>
+          <p>模型每一步输出的是<b>下一个 token 的概率表</b>，再从中抽取。<b>温度</b>控制怎么抽：低温更保守、稳定；高温更发散、更有创意，也更容易出错。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>点奶茶：<b>低温</b> = 永远点招牌，稳，但没惊喜；<b>高温</b> = 闭眼随便点，可能挖到宝，也可能踩雷。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span><p>同一个问题问三次，为什么答案不一样？</p></div>
+      </div>
+      <div class="lab">
+        <span class="label">互动 · “春”后面接什么（示意概率）</span>
+        <div class="bars" id="tempBars"></div>
+        <label class="row small">温度<input type="range" id="tempT" min="0.1" max="2.5" step="0.1" value="1" style="flex:1"><b id="tempV" class="warm">1.0</b></label>
+        <div class="row"><button class="btn primary" id="tempDraw" type="button">抽一个</button><button class="btn" id="tempDraw10" type="button">连抽 10 次</button><button class="btn" id="tempClear" type="button">清空</button></div>
+        <div class="out" id="tempOut"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 上下文窗口 ============ -->
+<section class="slide" data-min="1.5" data-note="这一页讲上下文窗口，用一部电影来打比方，这也是我们这门影像课的第一部“参考片”。克里斯托弗·诺兰 2000 年的《记忆碎片》：主角得了一种病，没办法形成新的记忆，每过一会儿就会忘记刚发生的事。他靠拍立得照片、随手写的纸条，甚至把重要的事纹在身上，来提醒自己“我是谁、我在做什么”。大模型也一样：它一次能“看到”的文字有上限，叫上下文窗口，就像主角眼前的那些纸条。这一轮对话里你说过的话，都在纸条上，它能用；关掉对话、开一个新的，纸条清空，它就不记得你了。有些 App 有“记忆”功能，相当于主角身上的纹身：把少量信息长期保存，每次自动放进窗口。对话太长，超出窗口，最早的内容就会被挤掉。实操任务 2 的第四个实验就是验证这一点。可选：放 30 秒电影里主角看拍立得照片的片段，注意选适合高中生的片段。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>⑥ 上下文窗口</span></div>
+    <h2 class="h-l">模型的记忆，像《记忆碎片》的主角</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">参考片 · 诺兰《记忆碎片》2000</span>
+          <p>主角无法形成新的记忆，每过一会儿就忘记刚发生的事。他靠<b>拍立得、纸条和身上的纹身</b>提醒自己“我是谁、在做什么”。</p>
+        </div>
+        <div class="card idea"><span class="tag">对应到模型</span>
+          <ul>
+            <li><b>上下文窗口</b> = 眼前的纸条：本轮对话说过的话，它都能用</li>
+            <li><b>新开对话</b> = 纸条清空：模型本身不记得你</li>
+            <li><b>记忆功能</b> = 纹身：少量信息被保存下来，每次自动放进窗口</li>
+            <li><b>对话太长</b> = 纸条放不下：最早的内容被挤掉</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slot" data-slot="memento"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 幻觉 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲幻觉，先讲一个真实事件。2023 年，美国纽约一位有 30 年经验的律师，在一起航空公司的诉讼里用 ChatGPT 查找判例，写进了提交给法院的文件。结果对方律师和法官都找不到这些案子：六个判例全是 AI 编的，连法官名字、案件编号都像模像样。律师说他问过 ChatGPT“这些案子是真的吗”，它回答“是真的”。最后法官对律师和他的律所罚款 5000 美元。为什么会这样？回到前面讲的：模型生成的是“看起来合理的下一个 token”，它在被训练时从来没有被要求“不知道就停下”。打比方：像一个考试遇到不会的题也一定要写满的学生，写得流畅、格式标准，但内容是编的。越冷门、越需要精确数字和出处的问题，越容易幻觉。还有一类推理模型，会先写一段思考过程再回答，数学和多步问题更强，但同样会出错。落点：AI 的回答是草稿，不是事实。事实、数字、引用一律二次核实。实操任务 2 我们会故意问一个不存在的东西，看它会不会编。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 大语言模型的内部</span><span>⑦ 幻觉</span></div>
+    <h2 class="h-l">一本正经地编造</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">真实事件 · 纽约 2023</span>
+          <b>六个判例，全是编的</b>
+          <p>一位有 30 年经验的律师用 ChatGPT 查判例，写进交给法院的文件。法官发现<b>六个判例根本不存在</b>，连案件编号都像模像样。律师曾追问“这些是真的吗”，AI 回答“是真的”。</p>
+          <p>结果：律师和律所被罚款 <b>5000 美元</b>。</p>
+          <p class="src">Mata v. Avianca, Inc., 美国纽约南区联邦法院，2023 年 6 月</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">为什么</span>
+          <p>模型生成的是<b>“看起来合理”的文字</b>，不是查证过的事实。越冷门、越需要精确数字和出处的问题，越容易出错。</p>
+          <p><b>推理模型</b>会先写一段思考过程再回答，数学和多步问题更强，但同样会出错。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>考试遇到不会的题，也一定要写满的学生：<b>格式标准、语气笃定，内容是编的。</b></p>
+        </div>
+        <div class="punch">AI 的回答是草稿，不是事实。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 图文对齐 ============ -->
+<section class="slide" data-min="5" data-note="进入模块 3，从文字到图像，一共 10 分钟。先讲图片怎么进模型：图片会被切成很多小方块，每块也被转成向量。关键问题是：怎么让图片的坐标和文字的坐标放到同一张地图上？2021 年 OpenAI 的 CLIP 用了一个“连连看”游戏：收集了约 4 亿组“图片 + 描述它的文字”，每次拿一批图和一批文字，让模型猜哪张图配哪句话。配对的（对角线）拉近，不配对的推远。打比方：像学外语时用的图卡，一面是图，一面是字，看多了，图和字就在脑子里连在一起了。训练完以后，“一只在草地上奔跑的狗”这句话的坐标，就和真正的这类照片的坐标靠在一起。这就是生图工具“听得懂”你提示词的基础。补充：图像本身是怎么从一片噪点里一点点画出来的，第 5 课讲扩散模型。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 从文字到图像</span><span>10 MIN</span></div>
+    <h2 class="h-l">让图片和文字，住进同一张地图</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">原理 · CLIP，OpenAI 2021</span>
+          <p>图片被切成小方块，也转成向量。用约 <b>4 亿组“图片 + 描述文字”</b>训练：每次拿一批图和一批话，让模型猜哪张配哪句，<b>配对的拉近，不配对的推远</b>。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>学外语的图卡：一面是图，一面是字。看得多了，<b>图和字就在脑子里连在一起了</b>。</p>
+        </div>
+        <div class="card ask"><span class="tag">预告</span><p>图片本身是怎样从一片噪点里“画”出来的？第 5 课讲扩散模型。</p></div>
+      </div>
+      <div class="lab match"><span class="label">示意 · 图文“连连看”：对角线 = 配对</span>
+        <svg viewBox="0 0 560 360" role="img" aria-label="四张图和四句描述组成的配对矩阵，对角线高亮">
+          <g font-size="14" fill="#9097ad" text-anchor="middle">
+            <text x="195" y="28">“草地上奔跑的狗”</text><text x="300" y="28">“雨夜的街道”</text><text x="405" y="28">“桌上的一杯咖啡”</text><text x="510" y="28">“海边的日落”</text>
+          </g>
+          <g font-size="30" text-anchor="middle">
+            <rect x="20" y="50" width="110" height="70" rx="10" fill="#1a2a1e"/><text x="75" y="96">🐕</text>
+            <rect x="20" y="125" width="110" height="70" rx="10" fill="#151a2e"/><text x="75" y="171">🌧️</text>
+            <rect x="20" y="200" width="110" height="70" rx="10" fill="#2a2018"/><text x="75" y="246">☕</text>
+            <rect x="20" y="275" width="110" height="70" rx="10" fill="#2e1c1a"/><text x="75" y="321">🌅</text>
+          </g>
+          <g id="mtx"></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 为什么摄影术语有效 ============ -->
+<section class="slide" data-min="5" data-note="这一页把模块 3 落到创作上：为什么写摄影术语比写“好看一点”更有效？用打车来打比方：上车跟司机说“带我去个好地方”，司机只能随便开；说“去人民路 88 号”，就能准确到达。在模型的地图上，“好看一点”指向的是一大片模糊的区域，里面什么图都有；“85 毫米镜头、浅景深、逆光”指向的是一小块很精确的区域，那里聚集着大量专业摄影作品，因为训练用的专业照片，描述里本来就常写着这些术语。所以你写的每一个具体的词，都是在地图上缩小范围、给模型指方向。但前提是：你得知道这些词是什么意思，知道你想要的画面长什么样。这就是为什么第 2、3 课要学摄影和视听语言。最后讲使用边界前，提醒一句：今天实操任务 3 先不讲任何技巧，凭直觉写，留下你的“起点”，下节课学完摄影再回来对比。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 从文字到图像</span><span>落到创作</span></div>
+    <h2 class="h-l">为什么“85mm、浅景深”比“好看一点”更有效？</h2>
+    <div class="g2 wide-l">
+      <div class="lab aim"><span class="label">示意 · 提示词在地图上圈出的范围</span>
+        <svg viewBox="0 0 600 320" role="img" aria-label="模糊提示词圈出大范围，具体提示词圈出小范围">
+          <g fill="rgba(238,240,246,.22)" id="dots"></g>
+          <circle cx="250" cy="165" r="135" fill="rgba(255,84,104,.06)" stroke="#ff5468" stroke-dasharray="6 5" stroke-width="2"/>
+          <text x="120" y="30" fill="#ff5468" font-size="16" font-weight="700">“好看一点” → 一大片，什么都有</text>
+          <circle cx="345" cy="205" r="30" fill="rgba(63,224,160,.18)" stroke="#3fe0a0" stroke-width="2.5"/>
+          <line x1="372" y1="220" x2="440" y2="262" stroke="#3fe0a0" stroke-width="1.5"/>
+          <text x="400" y="285" fill="#3fe0a0" font-size="15" font-weight="700">“85mm、浅景深、逆光”</text>
+          <text x="400" y="305" fill="#3fe0a0" font-size="13">→ 一小块，专业照片聚集处</text>
+        </svg>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>上车跟司机说“带我去个好地方”，他只能随便开；说“去人民路 88 号”，<b>才能准确到达</b>。</p>
+        </div>
+        <div class="card idea"><span class="tag">原理</span>
+          <p>训练用的专业照片，描述里本来就常写着这些术语。你写下的每一个具体的词，都是在地图上<b>缩小范围、指明方向</b>。</p>
+        </div>
+        <div class="punch">前提是：你得知道这些词的意思。<small>第 2、3 课学摄影和视听语言，就是在学这本“地图的门牌号”。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 使用边界 ============ -->
+<section class="slide" data-min="5" data-note="模块 4，使用边界，5 分钟。先讲一个真实事件：2023 年春天，三星半导体部门的工程师为了图方便，把公司的机密源代码、内部会议记录粘贴到 ChatGPT 里请它帮忙检查和整理，不到一个月发生了三起。这些内容一旦发出去，就存到了别人的服务器上，收不回来了。之后三星限制员工在公司设备上使用这类工具。落点：你输入给 AI 的内容，可能被平台保存。然后讲四条边界：第一，核查，刚才律师的故事，事实、数字、引用一律二次核实；第二，隐私，不输入身份证号、住址、电话，不上传别人的照片；第三，署名与诚信，在这门课里 AI 是协作者，判断和责任在你，作业里 AI 参与了什么要如实记录；第四，版权、肖像和 AI 标识的详细规则，第 10 课专门讲。讲完进入实操。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 4 · 使用边界</span><span>5 MIN</span></div>
+    <h2 class="h-l">发出去的内容，收不回来</h2>
+    <div class="g2 wide-r">
+      <div class="card story"><span class="tag">真实事件 · 2023 年春</span>
+        <b>三星工程师把机密代码贴进了聊天框</b>
+        <p>为了图方便，半导体部门的工程师把<b>机密源代码和内部会议记录</b>粘贴进 ChatGPT 请它检查、整理，不到一个月发生三起。内容存到了别人的服务器上，收不回来。</p>
+        <p>之后，三星限制员工在公司设备上使用生成式 AI。</p>
+      </div>
+      <div class="g2">
+        <div class="card idea"><span class="tag">① 核查</span><p>事实、数字、引用<b>一律二次核实</b>。想想那位律师。</p></div>
+        <div class="card idea"><span class="tag">② 隐私</span><p>不输入身份证号、住址、电话；<b>不上传别人的照片</b>。</p></div>
+        <div class="card idea"><span class="tag">③ 署名与诚信</span><p>AI 是协作者，<b>判断和责任在你</b>；作业里 AI 做了什么，如实记录。</p></div>
+        <div class="card idea"><span class="tag">④ 第 10 课详讲</span><p>版权、肖像权、AI 生成内容标识的具体规则。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，40 分钟，三个任务。先把工具和记录表发下去，确认每个人都能打开小模型训练器（就是本页之后的那一页，也可以单独发网页）、一个对话工具、一个生图工具。说明记录方式：每个任务都要在记录表里留下结果，下课前检查。分组不重要，今天每个人独立完成，可以和同桌讨论。">
+  <div class="inner">
+    <span class="num">实操 · 40 MIN</span>
+    <h2 class="h-xl">把今天讲的原理，<br>亲手验证一遍</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 15 分钟</span><b>训练一个“续写小模型”</b><p>验证：数据决定模型、温度改变输出。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 15 分钟</span><b>对话模型四项实验</b><p>验证：随机性、token、幻觉、上下文窗口。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 10 分钟</span><b>第一张图：留下基线</b><p>不讲技巧，凭直觉写，第 2 课和第 12 课回看。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool">小模型训练器 <i>课件内置 · 离线可用</i></span>
+      <span class="tool"><img src="../media/logos/kimi.png" alt="">Kimi</span>
+      <span class="tool"><img src="../media/logos/deepseek.png" alt="">DeepSeek</span>
+      <span class="tool"><img src="../media/logos/doubao.png" alt="">豆包</span>
+      <span class="tool"><img src="../media/logos/jimeng.png" alt="">即梦</span>
+      <span class="tool"><img src="../media/logos/libtv.png" alt="">LibTV</span>
+      <span class="tool">实验记录表 <i>飞书表格或纸质</i></span>
+    </div>
+    <p class="small">对话工具、生图工具各选学校批准的一个即可。</p>
+  </div>
+</section>
+
+<!-- ============ 17 任务 1：小模型训练器 ============ -->
+<section class="slide practice" id="s-trainer" data-min="15" data-note="任务 1，15 分钟。这个训练器是一个最简单的语言模型：它只统计“每个字后面跟着什么字、各出现多少次”，然后按这个概率一个字一个字往下接。原理和大模型一样都是“预测下一个”，只是大模型看的是前面几千个 token，它只看前一个字。步骤：1. 点“载入语料 A：唐诗”，再点“训练”。2. 在“查看”框输入“春”，看它后面最常跟哪些字、概率多少。3. 开头字填“春”，温度分别设 0.2、1.0、2.0，各点一次“生成 3 句”，把结果抄到记录表。4. 点“载入语料 B：校园”，重新训练，重复第 3 步。5. 在记录表写两条结论：换了语料，输出变了什么？温度变高，输出变了什么？巡视时引导学生发现：唐诗语料生成的东西像诗，校园语料生成的东西像日记，这就是“数据决定模型”；低温会反复出现同一句，高温会出现不通顺的句子。可以追问：它的句子为什么经常前言不搭后语？因为它只看前一个字，没有注意力。课件内置的是精简语料，老师可以粘贴更长的语料，效果会更好。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">15 分钟</span><span>工具：小模型训练器（本页）</span></div>
+    <h2 class="h-m">训练一个“续写小模型”：它只会统计“每个字后面跟着什么字”</h2>
+    <div class="g2 trainer">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>点“载入语料 A：唐诗”，再点“训练”。</b></div></li>
+          <li><div><b>在“查看”框输入“春”</b><span>，看它后面最常跟哪些字、概率多少。</span></div></li>
+          <li><div><b>开头字填“春”，温度依次设 0.2 / 1.0 / 2.0</b><span>，各点一次“生成 3 句”，结果抄进记录表。</span></div></li>
+          <li><div><b>换“语料 B：校园”，重新训练</b><span>，重复第 3 步。</span></div></li>
+          <li><div><b>写两条结论</b><span>：换语料后，输出变了什么？温度变高后，输出变了什么？</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>记录表里有 <b>2 组语料 × 3 种温度</b>的生成结果，以及<b>两条结论</b>。</div>
+      </div>
+      <div class="lab">
+        <span class="label">小模型训练器</span>
+        <div class="row"><button class="btn" id="trA" type="button">载入语料 A：唐诗</button><button class="btn" id="trB" type="button">载入语料 B：校园</button><button class="btn primary" id="trTrain" type="button">训练</button></div>
+        <textarea id="trCorpus" aria-label="训练语料" placeholder="粘贴训练语料，或点上面的按钮载入"></textarea>
+        <div class="small" id="trInfo">还没有训练。</div>
+        <div class="row small">查看 <input type="text" id="trQ" value="春" maxlength="1" aria-label="查看哪个字"> 后面最常跟的字：</div>
+        <div class="bars" id="trBars"></div>
+        <div class="row small">开头字 <input type="text" id="trStart" value="春" maxlength="1" aria-label="开头字">
+          温度 <input type="range" id="trT" min="0.1" max="2.5" step="0.1" value="1" style="flex:1"><b id="trTV" class="warm">1.0</b>
+          <button class="btn primary" id="trGen" type="button">生成 3 句</button></div>
+        <div class="gen-list" id="trOut"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 任务 2：四项实验 ============ -->
+<section class="slide practice" data-min="15" data-note="任务 2，15 分钟。所有学生用同一个对话工具（学校批准的那个），四个实验按顺序做，每个都要截图，并用一句话写出“现象 + 用今天哪个概念解释”。实验 1 随机性：开 3 个新对话，问同一个开放问题，名字一定不一样，对应概念是温度与抽样。实验 2 token：先直接问 strawberry 里有几个 r，再让它逐个字母拆开后再数。如果第一次就答对了，也不要紧，让学生观察两种问法的过程有什么不同，并解释为什么“拆开再数”更可靠。实验 3 幻觉：老师给的“2019 年国际 AI 电影金像奖”是不存在的奖项，观察它会不会编；再追问来源。如果模型直接说“查不到这个奖”，也是好结果，让学生记下来，说明有的模型在这方面做了改进；可以换一个更冷门的虚构问题再试。实验 4 上下文：同一个对话里先说喜欢的颜色，聊三轮别的再问，它记得；新开对话再问，它不记得，除非这个 App 开了记忆功能，那正好对应《记忆碎片》里的纹身。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">15 分钟</span><span>工具：Kimi / DeepSeek / 豆包（任选学校批准的一个）</span></div>
+    <h2 class="h-m">对话模型四项实验：每项截图，写一句“现象 + 用哪个概念解释”</h2>
+    <div class="g2">
+      <div class="card"><span class="tag" style="color:var(--b)">实验 1 · 随机性</span>
+        <p><b>开 3 个新对话</b>，问同一个问题：</p><p><span class="code">给一部 60 秒的校园短片起 5 个名字</span></p><p>对比三次结果有什么不同。</p></div>
+      <div class="card"><span class="tag" style="color:var(--b)">实验 2 · Token</span>
+        <p>先问：<span class="code">strawberry 这个单词里有几个字母 r？</span></p><p>再问：<span class="code">请把它逐个字母拆开，再数一遍</span></p><p>对比两次的过程和结果。</p></div>
+      <div class="card"><span class="tag" style="color:var(--b)">实验 3 · 幻觉</span>
+        <p>问：<span class="code">请介绍 2019 年“国际 AI 电影金像奖”的最佳影片</span>（这个奖不存在）</p><p>再追问：<span class="code">你确定吗？请给出来源</span></p></div>
+      <div class="card"><span class="tag" style="color:var(--b)">实验 4 · 上下文</span>
+        <p>说：<span class="code">我最喜欢的颜色是青色</span>，再聊 3 轮别的，然后问它你喜欢什么颜色。</p><p><b>新开一个对话</b>，再问一次。对比结果。</p></div>
+    </div>
+    <div class="done-box"><span class="label">完成标准</span>四项实验<b>各有截图</b>；每项一句话，例如：“三次起名都不同 → 因为每一步都是按概率抽样，受温度影响。”</div>
+  </div>
+</section>
+
+<!-- ============ 19 任务 3：基线图 ============ -->
+<section class="slide practice" data-min="9" data-note="任务 3，10 分钟（含收尾 1 分钟）。主题统一是“放学后的教室”。强调：今天不讲任何技巧，凭直觉写，写什么都可以，这张图是你的起点，越真实越好。生成 1 到 3 张，选 1 张存到个人文件夹，按格式命名。最后在记录表写一句：我想让这张图哪里变得更好？比如“我想让光线更像傍晚”“我想让画面更有故事感”。说不出专业词没关系，用自己的话写。告诉学生：第 2 课学完摄影，我们会用新学的词重新生成同一个主题；第 12 课结课时，再把这张图和你的作品放在一起看。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">10 分钟</span><span>工具：即梦 / LibTV（任选学校批准的一个）</span></div>
+    <h2 class="h-m">第一张图：凭直觉写，留下你的起点</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>主题统一：放学后的教室。</b><span>不用任何技巧，用你自己的话写提示词。</span></div></li>
+        <li><div><b>生成 1–3 张</b><span>，挑出你最喜欢的 1 张。</span></div></li>
+        <li><div><b>存入个人文件夹</b><span>，文件名：</span><span class="code">姓名_L01_基线</span></div></li>
+        <li><div><b>在记录表写一句</b><span>：我想让这张图哪里变得更好？（用自己的话，不需要专业词）</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">完成标准</span>1 张基线图 + 1 条改进意图。</div>
+        <div class="card"><b>这张图会回来两次</b><p><b>第 2 课</b>：学完摄影，用新学的词重新生成同一个主题，对比。<br><b>第 12 课</b>：和你的结课作品放在一起看。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 总结 ============ -->
+<section class="slide" data-min="10" data-note="最后 10 分钟。第一步，快速回收：四个问题各请一位同学回答，答不完整的请其他同学补充，老师不直接给答案。参考答案：训练是猜、对答案、算误差、拧旋钮，反复很多次；token 是模型读文字的基本单位，所以它数字母会出错；温度控制抽样，同一个问题答案会不同；幻觉是因为模型生成的是看起来合理的文字，不是查证过的事实。第二步，逐条念《课程 AI 使用规范》五条，每人在记录表或纸质版上签名，后面每节课都按这五条执行。第三步，布置课后任务：用手机拍 3 张你觉得好看的照片，带到第 2 课，下节课我们会一起分析它们为什么好看。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>10 MIN</span></div>
+    <h2 class="h-l">四个问题，请你来回答</h2>
+    <div class="g4">
+      <div class="q" style="--c:var(--b)"><span class="n">训练</span><b>模型是怎样“学会”的？</b></div>
+      <div class="q" style="--c:var(--warm)"><span class="n">TOKEN</span><b>为什么它会数错字母？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">温度</span><b>为什么同一个问题，每次答案不同？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">幻觉</span><b>为什么它会一本正经地编造？</b></div>
+    </div>
+    <div class="step">
+      <span class="label">课程 AI 使用规范 · 每人签名</span>
+      <div class="sign5">
+        <div style="--c:var(--b)"><b>隐私</b><p>不输入个人敏感信息，不上传他人照片。</p></div>
+        <div style="--c:var(--warm)"><b>核查</b><p>事实、数字、引用一律二次核实。</p></div>
+        <div style="--c:var(--g)"><b>署名</b><p>作品中 AI 做了什么，如实写明。</p></div>
+        <div style="--c:var(--r)"><b>诚信</b><p>判断和责任在人，不把 AI 的输出当作自己的思考。</p></div>
+        <div style="--c:#c58bff"><b>标识</b><p>发布 AI 生成的内容时，按规定加标识。</p></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务：用手机拍 3 张你觉得“好看”的照片，带到第 2 课。<small>下节课我们一起拆解：它们为什么好看。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  hans: { type: 'media', label: '聪明的汉斯 · 历史照片或短片', hint: '一张汉斯和主人的老照片即可，或 1 分钟科普短片', find: 'https://search.bilibili.com/all?keyword=%E8%81%AA%E6%98%8E%E7%9A%84%E6%B1%89%E6%96%AF', cred: 'Clever Hans · 1904' },
+  gd3b1b: { type: 'media', label: '3Blue1Brown · 梯度下降', hint: '神经网络系列第 2 集，中文配音版，课后推荐', find: 'https://search.bilibili.com/all?keyword=3Blue1Brown%20%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D', cred: '3Blue1Brown' },
+  attn3b1b: { type: 'media', label: '3Blue1Brown · 注意力机制', hint: '放其中 1 分钟动画', find: 'https://search.bilibili.com/all?keyword=3Blue1Brown%20%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6', cred: '3Blue1Brown' },
+  llm3b1b: { type: 'media', label: '3Blue1Brown · 大语言模型简要解释', hint: '约 7 分钟，课后推荐观看', find: 'https://search.bilibili.com/all?keyword=3Blue1Brown%20%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%20%E7%AE%80%E8%A6%81%E8%A7%A3%E9%87%8A', cred: '3Blue1Brown' },
+  memento: { type: 'media', label: '《记忆碎片》· 片段或剧照', hint: '30 秒：主角看拍立得照片、纸条的片段，注意选适合高中生的画面', find: 'https://search.bilibili.com/all?keyword=%E8%AE%B0%E5%BF%86%E7%A2%8E%E7%89%87%20%E6%8B%8D%E7%AB%8B%E5%BE%97', cred: 'Memento · Christopher Nolan · 2000' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+
+  /* ---------- token 示意 ---------- */
+  const COLORS = ['rgba(91,140,255,.28)', 'rgba(63,224,160,.25)', 'rgba(255,196,107,.28)', 'rgba(255,84,104,.25)', 'rgba(197,139,255,.28)'];
+  const chips = (el, parts) => { el.innerHTML = parts.map((p, i) => `<span style="background:${COLORS[i % COLORS.length]}">${p.replace(/ /g, '␣')}</span>`).join(''); };
+  chips($('#tokA'), ['str', 'aw', 'berry']);
+  chips($('#tokB'), ['I', ' love', ' making', ' short', ' films', '.']);
+  chips($('#tokC'), ['我', '喜欢', '拍', '短片', '，', '尤其', '是', '纪录', '片', '。']);
+
+  /* ---------- 下山实验 ---------- */
+  const f = x => (x - 6.3) ** 2 / 7 + 0.85 * Math.sin(1.7 * x) + 1.4;
+  const df = x => (f(x + 1e-4) - f(x - 1e-4)) / 2e-4;
+  const W = 600, H = 280, X0 = 0, X1 = 10;
+  let ymin = Infinity, ymax = -Infinity;
+  for (let x = X0; x <= X1; x += .02) { const y = f(x); ymin = Math.min(ymin, y); ymax = Math.max(ymax, y); }
+  const sx = x => 20 + (x - X0) / (X1 - X0) * (W - 40);
+  const sy = y => H - 24 - (y - ymin) / (ymax - ymin) * (H - 60);
+  const svg = $('#hillSvg');
+  let d = ''; for (let x = X0; x <= X1; x += .05) d += (d ? 'L' : 'M') + sx(x).toFixed(1) + ' ' + sy(f(x)).toFixed(1);
+  svg.innerHTML = `<path d="${d} L${W - 20} ${H} L20 ${H} Z" fill="rgba(91,140,255,.10)"/><path d="${d}" fill="none" stroke="#5b8cff" stroke-width="3"/>
+    <text x="24" y="22" fill="#9097ad" font-size="13" font-family="sans-serif">↑ 误差（山的高度）</text><text x="${W - 150}" y="${H - 6}" fill="#9097ad" font-size="13" font-family="sans-serif">旋钮的取值 →</text>
+    <g id="trail"></g><circle id="ball" r="10" fill="#ffc46b" stroke="#08090e" stroke-width="2"/>`;
+  let hx = .6, n = 0;
+  const lr = $('#hillLr');
+  const draw = () => {
+    const b = $('#ball'); b.setAttribute('cx', sx(hx)); b.setAttribute('cy', sy(f(hx)) - 10);
+    $('#hillN').textContent = n; $('#hillE').textContent = (f(hx) - ymin).toFixed(2);
+  };
+  const stepHill = () => {
+    const ox = hx; hx = Math.max(X0, Math.min(X1, hx - lr.value * df(hx))); n++;
+    $('#trail').insertAdjacentHTML('beforeend', `<line x1="${sx(ox)}" y1="${sy(f(ox)) - 10}" x2="${sx(hx)}" y2="${sy(f(hx)) - 10}" stroke="rgba(255,196,107,.55)" stroke-width="2" stroke-dasharray="4 3"/>`);
+    draw();
+  };
+  const reset = x => { hx = x; n = 0; $('#trail').innerHTML = ''; draw(); };
+  $('#hillStep').onclick = stepHill;
+  $('#hillRun').onclick = () => { let k = 0; const t = setInterval(() => { stepHill(); if (++k >= 10) clearInterval(t); }, 180); };
+  $('#hillResetL').onclick = () => reset(.6);
+  $('#hillResetR').onclick = () => reset(9.6);
+  lr.oninput = () => { $('#hillLrV').textContent = (+lr.value).toFixed(1); };
+  draw();
+
+  /* ---------- 温度示意 ---------- */
+  const NEXT = [['风', 30], ['天', 18], ['眠', 12], ['色', 10], ['江', 8], ['水', 7], ['雨', 6], ['山', 5], ['草', 4]];
+  const probs = (list, T) => { const w = list.map(([, c]) => Math.pow(c, 1 / T)); const s = w.reduce((a, b) => a + b, 0); return w.map(v => v / s); };
+  const sample = p => { let r = Math.random(), i = 0; for (; i < p.length - 1; i++) { r -= p[i]; if (r < 0) break; } return i; };
+  const renderBars = (el, list, p) => {
+    const mx = Math.max(...p);
+    el.innerHTML = list.map(([w], i) => `<div class="bar"><span class="w">${w}</span><span class="t"><i style="width:${(p[i] / mx * 100).toFixed(1)}%"></i></span><span class="p">${(p[i] * 100).toFixed(1)}%</span></div>`).join('');
+  };
+  const tT = $('#tempT');
+  const tUpd = () => { $('#tempV').textContent = (+tT.value).toFixed(1); renderBars($('#tempBars'), NEXT, probs(NEXT, +tT.value)); };
+  tT.oninput = tUpd; tUpd();
+  const draw1 = () => { const p = probs(NEXT, +tT.value); $('#tempOut').insertAdjacentHTML('beforeend', `<span style="margin-right:.8em">春${NEXT[sample(p)][0]}</span>`); };
+  $('#tempDraw').onclick = draw1;
+  $('#tempDraw10').onclick = () => { for (let i = 0; i < 10; i++) draw1(); };
+  $('#tempClear').onclick = () => { $('#tempOut').innerHTML = ''; };
+
+  /* ---------- 图文配对矩阵 ---------- */
+  let m = '';
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+    const on = r === c, x = 145 + c * 105, y = 52 + r * 75;
+    m += `<rect x="${x}" y="${y}" width="98" height="66" rx="8" fill="${on ? 'rgba(63,224,160,.28)' : 'rgba(255,84,104,.07)'}" stroke="${on ? '#3fe0a0' : 'rgba(220,228,255,.1)'}"/>`;
+    m += `<text x="${x + 49}" y="${y + 40}" text-anchor="middle" font-size="${on ? 17 : 14}" font-weight="700" fill="${on ? '#3fe0a0' : '#9097ad'}">${on ? '拉近 ✓' : '推远'}</text>`;
+  }
+  $('#mtx').innerHTML = m;
+
+  /* ---------- 提示词范围：背景散点 ---------- */
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  let dots = '';
+  for (let i = 0; i < 260; i++) dots += `<circle cx="${(rnd() * 580 + 10).toFixed(0)}" cy="${(rnd() * 300 + 10).toFixed(0)}" r="2.2"/>`;
+  for (let i = 0; i < 40; i++) { const a = rnd() * 6.28, r = rnd() * 26; dots += `<circle cx="${(345 + Math.cos(a) * r).toFixed(0)}" cy="${(205 + Math.sin(a) * r).toFixed(0)}" r="2.4" fill="#3fe0a0"/>`; }
+  $('#dots').innerHTML = dots;
+
+  /* ---------- 小模型训练器：字级二元模型 ---------- */
+  const CORPUS_A = `床前明月光，疑是地上霜。举头望明月，低头思故乡。
+春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。
+白日依山尽，黄河入海流。欲穷千里目，更上一层楼。
+千山鸟飞绝，万径人踪灭。孤舟蓑笠翁，独钓寒江雪。
+红豆生南国，春来发几枝。愿君多采撷，此物最相思。
+空山不见人，但闻人语响。返景入深林，复照青苔上。
+离离原上草，一岁一枯荣。野火烧不尽，春风吹又生。
+锄禾日当午，汗滴禾下土。谁知盘中餐，粒粒皆辛苦。
+两个黄鹂鸣翠柳，一行白鹭上青天。窗含西岭千秋雪，门泊东吴万里船。
+朝辞白帝彩云间，千里江陵一日还。两岸猿声啼不住，轻舟已过万重山。
+故人西辞黄鹤楼，烟花三月下扬州。孤帆远影碧空尽，唯见长江天际流。
+日照香炉生紫烟，遥看瀑布挂前川。飞流直下三千尺，疑是银河落九天。
+好雨知时节，当春乃发生。随风潜入夜，润物细无声。
+国破山河在，城春草木深。感时花溅泪，恨别鸟惊心。
+碧玉妆成一树高，万条垂下绿丝绦。不知细叶谁裁出，二月春风似剪刀。
+渭城朝雨浥轻尘，客舍青青柳色新。劝君更尽一杯酒，西出阳关无故人。
+独在异乡为异客，每逢佳节倍思亲。遥知兄弟登高处，遍插茱萸少一人。
+月落乌啼霜满天，江枫渔火对愁眠。姑苏城外寒山寺，夜半钟声到客船。
+清明时节雨纷纷，路上行人欲断魂。借问酒家何处有，牧童遥指杏花村。
+远上寒山石径斜，白云生处有人家。停车坐爱枫林晚，霜叶红于二月花。
+千里莺啼绿映红，水村山郭酒旗风。南朝四百八十寺，多少楼台烟雨中。
+迟日江山丽，春风花草香。泥融飞燕子，沙暖睡鸳鸯。
+江碧鸟逾白，山青花欲燃。今春看又过，何日是归年。
+天街小雨润如酥，草色遥看近却无。最是一年春好处，绝胜烟柳满皇都。
+竹外桃花三两枝，春江水暖鸭先知。
+春风又绿江南岸，明月何时照我还。
+等闲识得东风面，万紫千红总是春。`;
+  const CORPUS_B = `放学后的教室里只剩下我和窗外的夕阳。
+今天的数学课讲了函数，我终于听懂了。
+同桌借给我一支笔，笔上写着她的名字。
+下课铃一响，大家都冲向了食堂。
+春天的操场上，有人在跑步，有人在晒太阳。
+我们在社团里拍了一部三分钟的短片。
+图书馆的窗边是我最喜欢的位置。
+考试前一天晚上，宿舍的灯亮到很晚。
+春游那天下了雨，我们在大巴上唱了一路的歌。
+老师说，好的问题比好的答案更重要。
+体育课上我们打了一场篮球赛。
+晚自习的时候，走廊里很安静。
+我把今天的心情写进了日记本。
+运动会上，我们班拿了接力赛第一名。
+春天来了，校园里的樱花开了。
+我和朋友约好周末一起去看电影。
+食堂的红烧肉是全校最受欢迎的菜。
+社团招新那天，操场上全是海报和音乐。
+英语课上我们用英语演了一段短剧。
+毕业那天，我们在黑板上写满了名字。
+早上的第一节课总是让人想睡觉。
+我在美术课上画了一张窗外的天空。
+物理实验课上，小车终于跑出了一条直线。
+放学路上，我们讨论着明天的作业。
+周五的下午，大家都在期待周末。
+春天的风吹进教室，吹乱了桌上的试卷。
+我们在天台上看了一次很美的日落。
+音乐课上，全班一起唱了一首老歌。`;
+  let model = null;
+  const train = text => {
+    const chars = [...text.replace(/\r/g, '')];
+    const m = new Map(); let n = 0;
+    for (let i = 0; i < chars.length - 1; i++) {
+      const a = chars[i], b = chars[i + 1];
+      if (a === '\n' || b === '\n') continue;
+      if (!m.has(a)) m.set(a, new Map());
+      const mm = m.get(a); mm.set(b, (mm.get(b) || 0) + 1); n++;
+    }
+    return { m, n, vocab: new Set(chars.filter(c => c !== '\n')).size };
+  };
+  const nextList = c => model && model.m.get(c) ? [...model.m.get(c)].sort((a, b) => b[1] - a[1]) : [];
+  const showQ = () => {
+    const c = $('#trQ').value.trim(), list = nextList(c).slice(0, 6);
+    if (!model) { $('#trBars').innerHTML = '<p class="small">先训练。</p>'; return; }
+    if (!list.length) { $('#trBars').innerHTML = `<p class="small">语料里“${c || '?'}”后面没有出现过任何字。</p>`; return; }
+    const all = nextList(c).reduce((a, [, k]) => a + k, 0);
+    const mx = list[0][1];
+    $('#trBars').innerHTML = list.map(([w, k]) => `<div class="bar"><span class="w">${w}</span><span class="t"><i style="width:${(k / mx * 100).toFixed(1)}%"></i></span><span class="p">${(k / all * 100).toFixed(1)}%</span></div>`).join('');
+  };
+  const gen = (start, T) => {
+    let s = start, c = start;
+    for (let i = 0; i < 30; i++) {
+      const list = nextList(c); if (!list.length) break;
+      const p = probs(list, T); c = list[sample(p)][0]; s += c;
+      if ((c === '。' || c === '！' || c === '？') && s.length >= 8) break;
+    }
+    return s;
+  };
+  $('#trA').onclick = () => { $('#trCorpus').value = CORPUS_A; };
+  $('#trB').onclick = () => { $('#trCorpus').value = CORPUS_B; };
+  $('#trTrain').onclick = () => {
+    const t = $('#trCorpus').value.trim();
+    if (!t) { window.deckToast('先载入或粘贴语料'); return; }
+    model = train(t);
+    $('#trInfo').innerHTML = `训练完成：读了 <b class="warm">${t.replace(/\s/g, '').length}</b> 个字，认识 <b class="warm">${model.vocab}</b> 个不同的字，记下了 <b class="warm">${model.n}</b> 次“前一个字 → 后一个字”。`;
+    $('#trOut').innerHTML = ''; showQ();
+  };
+  $('#trQ').oninput = showQ;
+  const trT = $('#trT'); trT.oninput = () => { $('#trTV').textContent = (+trT.value).toFixed(1); };
+  $('#trGen').onclick = () => {
+    if (!model) { window.deckToast('先点“训练”'); return; }
+    const st = $('#trStart').value.trim() || '春', T = +trT.value;
+    for (let i = 0; i < 3; i++) $('#trOut').insertAdjacentHTML('afterbegin', `<div class="out"><span class="small" style="font-family:var(--mono);margin-right:8px">T=${T.toFixed(1)}</span>${gen(st, T)}</div>`);
+  };
+  showQ();
+})();
+</script>
+</body>

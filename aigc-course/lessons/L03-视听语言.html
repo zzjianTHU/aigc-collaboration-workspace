@@ -1,0 +1,943 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 03 课 · 视听语言</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：机位表、运镜表、库里肖夫拼接、180 度俯视图、镜头时长条、声音四层、声画实验、音乐旋钮、声音时间轴、六格分镜 */
+.grid8 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 900px) { .grid8 { grid-template-columns: repeat(4, 1fr); } }
+.grid8 > div { padding: 9px 11px; border-radius: 10px; background: var(--panel2); border-top: 3px solid var(--c, var(--b)); font-size: 13px; color: var(--muted); line-height: 1.45; min-width: 0; }
+.grid8 > div b { display: block; color: var(--fg); font-family: var(--display); font-size: 17px; line-height: 1.3; }
+.grid8 > div i { font-style: normal; color: var(--c, var(--b)); }
+.grid8 > div.try { background: rgba(255,196,107,.07); border: 1px dashed rgba(255,196,107,.5); border-top: 3px solid var(--warm); }
+.motive { display: inline-block; margin-top: 4px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; padding: 1px 6px; border-radius: 6px; background: rgba(255,255,255,.06); color: var(--fg); }
+svg text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+.fig svg { width: 100%; height: auto; display: block; }
+.frame2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.card .frame2 svg { max-height: 84px; }
+.frame2 svg { width: 100%; height: auto; display: block; border-radius: 10px; background: #05060a; border: 1px solid var(--line); }
+.kul { display: flex; flex-direction: column; gap: 10px; }
+.kul .row { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1.2fr; gap: 8px; align-items: center; }
+.kul svg { width: 100%; height: auto; display: block; border-radius: 8px; background: #05060a; border: 1px solid var(--line); }
+.kul .op { text-align: center; color: var(--muted); font-family: var(--mono); font-size: 18px; }
+.kul .read { font-family: var(--display); font-weight: 800; font-size: clamp(18px, 1.8vw, 24px); color: var(--c); line-height: 1.2; }
+.kul .read small { display: block; font-family: var(--body); font-weight: 500; font-size: 12px; color: var(--muted); }
+.asl { display: flex; flex-direction: column; gap: 8px; }
+.asl .r { display: grid; grid-template-columns: 9em 1fr; gap: 10px; align-items: center; font-size: 13.5px; color: var(--muted); }
+.asl .t { height: 26px; border-radius: 6px; background: var(--panel2); position: relative; overflow: hidden; }
+.asl .t i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--b), var(--g)); border-radius: 6px; }
+.asl .t span { position: absolute; left: 10px; top: 2px; font-family: var(--mono); font-size: 13px; color: #fff; font-weight: 600; }
+.mix-stage { position: relative; }
+.mix-stage svg { width: 100%; height: auto; display: block; border-radius: 10px; background: #05060a; border: 1px solid var(--line); }
+.mixbtns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.mixbtns .btn { justify-content: center; }
+.mixbtns .btn.on { background: var(--warm); color: #1a1408; border-color: var(--warm); }
+.mixread { padding: 8px 12px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); min-height: 3.6em; }
+.mixread b { font-family: var(--display); font-size: clamp(17px, 1.6vw, 21px); color: var(--fg); display: block; }
+.mixread span { font-size: 12.5px; color: var(--muted); }
+.knob > .seg { justify-self: start; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; background: var(--panel2); padding: 5px 11px; cursor: pointer; font-size: 13px; font-weight: 700; }
+.seg button.on { background: var(--warm); color: #1a1408; }
+.knob { display: grid; grid-template-columns: 4.6em 1fr; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.knob > b { color: var(--fg); font-size: 13px; }
+.moodout { font-family: var(--display); font-weight: 800; font-size: clamp(20px, 2vw, 26px); line-height: 1.3; padding: 8px 12px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); }
+.moodout small { display: block; font-family: var(--body); font-weight: 500; font-size: 12.5px; color: var(--muted); }
+.layer4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 900px) { .layer4 { grid-template-columns: repeat(4, 1fr); } }
+.layer4 div { padding: 10px 12px; border-radius: 10px; background: var(--panel2); border-top: 3px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.layer4 div b { display: block; color: var(--fg); font-family: var(--display); font-size: 18px; }
+.layer4 div em { font-style: normal; color: var(--c); font-size: 12px; font-family: var(--mono); }
+.sheet { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.sheet th, .sheet td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; vertical-align: top; }
+.sheet th { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--b); background: rgba(91,140,255,.08); font-weight: 600; }
+.sheet td { color: var(--muted); }
+.sheet td.ex { color: var(--fg); }
+.sb6 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+@media (min-width: 900px) { .sb6 { grid-template-columns: repeat(3, 1fr); } }
+.sb6 div { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 6px 8px; font-size: 11.5px; color: var(--muted); line-height: 1.45; min-width: 0; }
+.sb6 div .box { height: 34px; border-radius: 5px; background: repeating-linear-gradient(135deg, #10131d 0 8px, #131725 8px 16px); border: 1px dashed rgba(255,255,255,.12); margin-bottom: 4px; display: grid; place-items: center; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.sb6 div.ex { border-color: rgba(63,224,160,.45); }
+.sb6 div.ex b { color: var(--fg); font-weight: 500; }
+.chk { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.chk li { padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 14.5px; color: var(--muted); }
+.chk li::before { content: "□ "; color: var(--g); font-weight: 700; }
+.chk li b { color: var(--fg); }
+/* 投影仪常见的 1280×720：压缩图示高度 */
+@media (max-height: 800px) {
+  .fig svg { max-height: 34vh; }
+  .frame2 svg { max-height: 22vh; }
+  .mix-stage svg { max-height: 30vh; }
+  .grid8 > div { padding: 6px 9px; font-size: 12.5px; }
+  .grid8 > div b { font-size: 15.5px; }
+  .layer4 div { padding: 7px 10px; font-size: 12.5px; }
+  .kul svg { max-height: 12vh; }
+  .kul { gap: 6px; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .sb6 div .box { height: 22px; }
+  .card { padding: 12px 15px; }
+}
+</style>
+
+<body data-lesson="L03">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开门见山。开口：“上节课我们学会了看懂一张照片：景别、构图、光线。可电影不是一张一张照片，它会动，会剪，还有声音。今天讲电影的语法：镜头怎么拍、怎么接，声音怎么帮画面说话。”把三个问题念一遍，告诉学生下课前每人都要能回答。再预告实操：后半节课每个人要用剪映给同一组画面配三种声音，亲耳听到“声音能改写故事”。">
+  <div class="lesson-no" aria-hidden="true">03</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第一幕 · 看见与构思</span><span>LESSON 03 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">视听语言<br><span class="rgbword">画面与声音一起说话</span></h1>
+    <p class="lead">上节课看懂了一张照片。今天让画面<b>动起来、接起来、响起来</b>：学会电影的语法，再亲手证明声音能改写一个故事。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1 · 镜头</span><b>同一个人，仰拍推镜和俯拍拉镜，分别在说什么？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2 · 剪辑</span><b>对话场景里，摄影机为什么不能随便越过两人之间的连线？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3 · 声音</span><b>讲解信息时，背景音乐为什么反而要简单？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–13</b>镜头 · 机位与运动</span>
+      <span><b>13–25</b>剪辑 · 镜头如何连起来</span>
+      <span><b>25–40</b>声音 · 看不见的一半</span>
+      <span><b>40–82</b>实操 · 剪映配三种声音 / 拆解声音 / 情绪分镜</span>
+      <span><b>82–90</b>讲评</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 镜头是最小单位 ============ -->
+<section class="slide" data-min="1.5" data-note="模块 1，镜头，一共 13 分钟。先给定义：一个镜头，就是摄影机从开机到关机拍下的一段连续画面，中间没有剪断。剪辑就是把一个个镜头接起来。打比方：镜头是词，剪辑是造句，一场戏是一个段落，一部片子是一篇文章。今天前半节讲的，就是“选词”和“造句”的规矩。按 → 讲故事：2019 年萨姆·门德斯导演的战争片《1917》，整部片子被设计成看起来像一个不断的长镜头，摄影机一直跟着两个士兵走。实际上它是很多段长镜头拼起来的，剪辑点被藏在镜头扫过墙壁、黑暗、人物背影的那一瞬间。摄影师罗杰·迪金斯凭这部片子拿了奥斯卡最佳摄影。问学生：为什么导演要费这么大劲“假装没有剪辑”？引导出：为了让观众感觉自己一直跟在士兵身边，没有喘息的机会。落点：剪不剪、在哪里剪，本身就是表达。注意：这部片是战争片，有暴力画面，课上只放跟拍走路的片段。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 镜头</span><span>13 MIN</span><span>① 最小单位</span></div>
+    <h2 class="h-l">镜头，是影像的“词”</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card idea"><span class="tag">定义</span>
+          <b>一个镜头 = 开机到关机的一段连续画面</b>
+          <p>中间不剪断。剪辑，就是把一个个镜头接起来。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p><b>镜头是词，剪辑是造句</b>，一场戏是一段话，一部片子是一篇文章。今天学的，就是“选词”和“造句”的规矩。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">故事 · 《1917》2019</span>
+          <b>一部“看起来没有剪辑”的电影</b>
+          <p>导演萨姆·门德斯把整部片子设计成<b>像一个不断的长镜头</b>，摄影机一直跟着两名士兵走。其实是许多段长镜头拼起来的，剪辑点藏在扫过墙壁、黑暗的一瞬间。</p>
+          <p>想一想：导演为什么要费这么大劲“假装没剪”？</p>
+        </div>
+        <p class="src">摄影：罗杰·迪金斯，第 92 届奥斯卡最佳摄影</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 机位角度 ============ -->
+<section class="slide" data-min="3.5" data-note="这一页讲机位角度：摄影机放在哪儿、从什么角度看主体。先快速过一遍八个格子，每个只说一句心理效果。重点讲三组：仰拍和俯拍是一对，仰拍让主体显得高大、有力量，俯拍让主体显得弱小、被审视；鸟瞰是从正上方往下看，像上帝视角，有一种命运早就注定的感觉；倾斜构图就是把画面歪过来，让人觉得世界失衡了，常用在角色慌乱、喝醉、出事的时候。主观镜头是摄影机代替角色的眼睛，观众“成为”他；过肩镜头从一个人肩膀后面拍另一个人，用来拍对话，下个模块的 180 度规则会再用到。按 → 讲故事：1941 年奥逊·威尔斯的《公民凯恩》，摄影师格雷格·托兰德大量使用低机位仰拍主角凯恩，为了能从很低的角度往上拍，剧组给布景装上了天花板，那时候大多数摄影棚布景是不做天花板的，因为灯都挂在上面。有一场戏，摄影机甚至被放进地板挖出来的坑里往上拍。仰拍让凯恩显得像一座压在别人头上的大山。课前核实：地板挖坑的那场戏是凯恩竞选失败后和朋友利兰的对话。最后让学生试一试：用手机分别从下往上、从上往下拍同桌，看看同一个人的感觉有什么不同。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 镜头</span><span>② 机位角度</span></div>
+    <h2 class="h-l">摄影机放在哪，观众就站在哪</h2>
+    <div class="grid8">
+      <div style="--c:var(--b)"><b>平视</b>和眼睛一样高。<i>客观、平等</i></div>
+      <div style="--c:var(--warm)"><b>仰拍</b>从下往上拍。<i>主体显得强大</i></div>
+      <div style="--c:var(--r)"><b>俯拍</b>从上往下拍。<i>弱小、被审视</i></div>
+      <div style="--c:#c58bff"><b>鸟瞰</b>正上方垂直往下。<i>全知视角、宿命感</i></div>
+      <div style="--c:var(--r)"><b>倾斜构图</b>地平线歪了。<i>不安、失衡</i></div>
+      <div style="--c:var(--g)"><b>主观镜头</b>摄影机 = 角色的眼睛。<i>观众“成为”角色</i></div>
+      <div style="--c:var(--b)"><b>过肩镜头</b>越过一人肩膀拍另一人。<i>对话中的关系</i></div>
+      <div class="try"><b>试一试</b>用手机从下往上、再从上往下拍同桌，同一个人感觉一样吗？</div>
+    </div>
+    <div class="g2 wide-l">
+      <div class="step">
+        <div class="card story"><span class="tag">故事 · 《公民凯恩》1941</span>
+          <p>导演奥逊·威尔斯和摄影师格雷格·托兰德大量用<b>低机位仰拍</b>主角凯恩。为了拍得够低，他们给布景<b>装上了天花板</b>（当时的布景通常不做顶），有一场戏甚至在<b>地板上挖坑</b>放摄影机。凯恩像一座压在别人头上的山。</p>
+        </div>
+      </div>
+      <div class="slot" data-slot="kane" style="aspect-ratio:16/7"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 运镜 ============ -->
+<section class="slide" data-min="3.5" data-note="这一页讲运镜：镜头在拍的过程中怎么动。先把六种基础运动过一遍，边讲边用手比划，或者让一个学生拿手机现场演示：推是摄影机靠近主体，观众注意力被聚焦，情绪加强；拉正相反，远离主体，把环境揭示出来，或者让人抽离；摇是摄影机原地不动只转方向，像人转头，跟着视线扫视空间；移是整台摄影机平着移动，展示空间关系；跟是和角色一起走，带来代入感；升降是摄影机往上升或往下降，常用在片尾升起来，揭示规模，或者让情绪升华。再讲质感：手持会轻微晃动，真实、紧张，纪录片和动作片常用；稳定器让画面像飘着一样流畅，适合梦幻、优雅的场面。每个格子下面的小标签是这个运动最常见的动机。按 → 落到原则：运镜要有动机，要么跟随角色，要么表达情绪，要么揭示信息。打比方：运镜像说话时的手势，有内容的手势帮你表达，没理由地乱比划只会让人分心。提醒学生：以后用 AI 生成视频时，写“镜头缓慢推近”之前，先问自己为什么要推。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 镜头</span><span>③ 运镜</span></div>
+    <h2 class="h-l">镜头怎么动，情绪就怎么走</h2>
+    <div class="grid8">
+      <div style="--c:var(--warm)"><b>推</b>靠近主体：聚焦、情绪加强<br><span class="motive">表达情绪</span></div>
+      <div style="--c:var(--b)"><b>拉</b>远离主体：揭示环境、抽离<br><span class="motive">揭示信息</span></div>
+      <div style="--c:var(--g)"><b>摇</b>原地转方向：跟随视线、扫视空间<br><span class="motive">跟随视线</span></div>
+      <div style="--c:var(--g)"><b>移</b>整机平移：展示空间关系<br><span class="motive">揭示信息</span></div>
+      <div style="--c:var(--warm)"><b>跟</b>与角色同行：代入感<br><span class="motive">跟随角色</span></div>
+      <div style="--c:#c58bff"><b>升降</b>上升或下降：揭示规模、情绪升华<br><span class="motive">揭示 / 情绪</span></div>
+      <div style="--c:var(--r)"><b>手持</b>轻微晃动：真实、紧张<br><span class="motive">质感</span></div>
+      <div style="--c:var(--b)"><b>稳定器</b>像飘着走：流畅、梦幻<br><span class="motive">质感</span></div>
+    </div>
+    <div class="step"><div class="g2">
+      <div class="punch">运镜要有动机：跟随角色、表达情绪、揭示信息。<small>三样都不沾的运动，只会让画面变乱。</small></div>
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>运镜像说话时的<b>手势</b>：有内容的手势帮你表达，没理由地乱比划，只会让人分心。</p>
+      </div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 05 滑动变焦 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲一个最有名的运镜：滑动变焦，也叫希区柯克变焦。做法是摄影机一边往后退，一边把镜头的焦距往长推，两个动作抵消，主体在画面里大小不变，但背景会像被拉远或者吸过来一样变形。上节课讲过：透视由拍摄距离决定，焦段决定取景范围，这里就是两者同时变化。效果是眩晕，是“世界突然变了”的冲击感。按 → 讲两个故事。第一个，1958 年希区柯克的《迷魂记》，主角有恐高症，往钟楼楼梯井下面看的时候，楼梯井好像在伸长，观众跟着一起头晕。这个镜头通常归功于摄影师欧明·罗伯茨。第二个，学生更可能看过：1975 年斯皮尔伯格的《大白鲨》，警长布罗迪在海滩上突然意识到鲨鱼来了，背景往后一缩，他的脸却不动，那一刻的震惊就是用滑动变焦拍的。打比方：就像你听到一个坏消息时，周围的世界“嗡”的一下变远了，只剩你自己。课堂建议放《大白鲨》海滩这一个镜头，几秒钟就够。落点：特殊的运镜要用在关键的心理时刻，用多了就不灵了。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 镜头</span><span>④ 一个特殊的运镜</span></div>
+    <h2 class="h-l">滑动变焦：世界突然“嗡”的一下</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">怎么做</span>
+          <p>摄影机<b>一边后退，一边把焦距推长</b>。主体在画面里大小不变，背景却像被拉远或吸近。效果：<b>眩晕、认知冲击</b>。</p>
+        </div>
+        <div class="step">
+          <div class="card story"><span class="tag">故事 · 《迷魂记》1958 / 《大白鲨》1975</span>
+            <p>希区柯克让恐高的主角往钟楼楼梯井下看，<b>楼梯井像在伸长</b>，观众跟着头晕。17 年后，斯皮尔伯格让警长在海滩上<b>意识到鲨鱼来了</b>：脸不动，背景猛地一缩。</p>
+          </div>
+          <div class="card analogy"><span class="tag">打个比方</span>
+            <p>听到一个坏消息时，周围的世界<b>“嗡”的一下变远了</b>，只剩你自己。</p>
+          </div>
+        </div>
+      </div>
+      <div class="slot" data-slot="dollyzoom"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 模块 1 检查 ============ -->
+<section class="slide" data-min="2" data-note="模块 1 收尾，用一个问题检查：同一个人物，用仰拍加推镜，和俯拍加拉镜，分别传达什么？先别翻答案，让学生同桌讨论 30 秒，请两位同学说。然后按 → 逐列揭示。左边，仰拍 + 推：人物显得高大，镜头又在一步步逼近他，观众的注意力和情绪都集中到他身上，适合英雄登场、角色下定决心、反派施压。右边，俯拍 + 拉：人物本来就显得弱小，镜头还在离开他，周围的空间越来越大，他越来越小，适合孤独、失败、被世界抛下的时刻，很多电影的结尾就是这样升起来、拉出去。落点：机位决定观众怎么看他，运镜决定观众的情绪往哪走，两个加在一起才是一句完整的话。过渡：镜头讲完了，下面讲镜头和镜头怎样接起来。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 镜头</span><span>你能回答吗</span></div>
+    <h2 class="h-l">同一个人，两种拍法</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="frame2" aria-hidden="true">
+          <svg viewBox="0 0 200 130"><g stroke="rgba(220,228,255,.15)"><line x1="0" y1="130" x2="70" y2="0"/><line x1="200" y1="130" x2="130" y2="0"/></g>
+            <ellipse cx="100" cy="32" rx="13" ry="14" fill="#eef0f6"/><path d="M62 130 L76 52 Q100 42 124 52 L138 130 Z" fill="#eef0f6"/>
+            <g stroke="#ffc46b" stroke-width="2" fill="none"><path d="M12 12 l14 0 M12 12 l0 14"/><path d="M188 12 l-14 0 M188 12 l0 14"/><path d="M12 118 l14 0 M12 118 l0 -14"/><path d="M188 118 l-14 0 M188 118 l0 -14"/></g>
+            <text x="100" y="124" fill="#ffc46b" font-size="11" text-anchor="middle">仰拍 · 镜头推近 →←</text></svg>
+          <div class="card" style="border-top:3px solid var(--warm)"><b>仰拍 + 推</b><p>他显得<b>高大</b>，镜头又在<b>逼近</b>他。<br>英雄登场、下定决心、施压。</p></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="frame2" aria-hidden="true">
+          <svg viewBox="0 0 200 130"><g stroke="rgba(220,228,255,.12)"><path d="M0 40 H200 M0 80 H200 M50 0 V130 M100 0 V130 M150 0 V130"/></g>
+            <circle cx="100" cy="66" r="6" fill="#eef0f6"/><ellipse cx="100" cy="74" rx="6" ry="4" fill="#9097ad"/>
+            <g stroke="#5b8cff" stroke-width="2" fill="none"><path d="M70 40 l-14 -14 M130 40 l14 -14 M70 92 l-14 14 M130 92 l14 14"/></g>
+            <text x="100" y="124" fill="#5b8cff" font-size="11" text-anchor="middle">俯拍 · 镜头拉远 ←→</text></svg>
+          <div class="card" style="border-top:3px solid var(--b)"><b>俯拍 + 拉</b><p>他显得<b>弱小</b>，镜头还在<b>离开</b>他。<br>孤独、失败、被世界抛下。</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="punch step">机位决定观众“怎么看他”，运镜决定情绪“往哪走”。<small>两个加在一起，才是一句完整的话。</small></div>
+  </div>
+</section>
+
+<!-- ============ 07 库里肖夫效应 ============ -->
+<section class="slide" id="s-kul" data-min="3.5" data-note="模块 2，剪辑，一共 12 分钟。先讲一个 100 年前的实验。大约 1920 年前后，苏联导演、电影教育家列夫·库里肖夫做了一个实验：他找来演员莫兹尤欣一个没有表情的特写，分别接上三个不同的镜头：一碗汤、一口棺材、一个抱着玩具熊玩耍的小女孩，放给观众看。按 → 每一行揭示一组。观众看完纷纷称赞演员演得好：看汤的时候，他饿了；看棺材的时候，他很悲伤；看小女孩的时候，他很温柔。可实际上，三次用的是同一个镜头，他的脸一点没变。每揭示一行就先问学生：你觉得他现在是什么心情？落点：意义不只在镜头里面，更产生在镜头之间。观众会主动把两个镜头连起来，自己补出一个故事。这也是剪辑的力量。补充：希区柯克 1964 年在一次电视访谈里亲自演示过这个效应，同一个他眯眼微笑的镜头，接上母亲抱婴儿的画面，他是个慈祥的老人；换成另一个画面，观众就觉得他不怀好意。课前核实：库里肖夫原片已经失传，今天的说法主要来自他本人和学生普多夫金的回忆，具体年份和三个画面的版本说法不一；后来的心理学研究对效应强弱有争议，但多数复现实验都观察到了类似效果。如果时间允许，可以放一段库里肖夫效应的科普视频。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 剪辑</span><span>12 MIN</span><span>① 意义产生在镜头之间</span></div>
+    <h2 class="h-l">同一张脸，三种心情？</h2>
+    <div class="g2 wide-l">
+      <div class="kul">
+        <div class="row step"><svg class="kface" viewBox="0 0 160 100"></svg><span class="op">+</span><svg viewBox="0 0 160 100"><ellipse cx="80" cy="62" rx="52" ry="14" fill="#5a4a3a"/><path d="M28 58 Q80 100 132 58 Z" fill="#cfc6b8"/><ellipse cx="80" cy="58" rx="48" ry="10" fill="#c98a4b"/><g stroke="#9097ad" stroke-width="2" fill="none"><path d="M64 40 q-6 -8 0 -16 q6 -8 0 -16"/><path d="M80 38 q-6 -8 0 -16 q6 -8 0 -16"/><path d="M96 40 q-6 -8 0 -16 q6 -8 0 -16"/></g><text x="80" y="94" text-anchor="middle" fill="#9097ad" font-size="11">一碗汤</text></svg><span class="op">=</span><div class="read" style="--c:var(--warm)">他饿了<small>观众这样说</small></div></div>
+        <div class="row step"><svg class="kface" viewBox="0 0 160 100"></svg><span class="op">+</span><svg viewBox="0 0 160 100"><path d="M50 18 L110 18 L122 40 L106 86 L54 86 L38 40 Z" fill="#3a2f2a" stroke="#6b5a4e" stroke-width="2"/><path d="M80 34 V66 M68 46 H92" stroke="#9097ad" stroke-width="3"/><text x="80" y="98" text-anchor="middle" fill="#9097ad" font-size="11">一口棺材</text></svg><span class="op">=</span><div class="read" style="--c:var(--b)">他很悲伤<small>观众这样说</small></div></div>
+        <div class="row step"><svg class="kface" viewBox="0 0 160 100"></svg><span class="op">+</span><svg viewBox="0 0 160 100"><circle cx="62" cy="34" r="12" fill="#eef0f6"/><path d="M48 84 L52 52 Q62 46 72 52 L76 84 Z" fill="#ff8fa0"/><circle cx="104" cy="56" r="11" fill="#c98a4b"/><circle cx="96" cy="46" r="5" fill="#c98a4b"/><circle cx="112" cy="46" r="5" fill="#c98a4b"/><ellipse cx="104" cy="74" rx="13" ry="12" fill="#c98a4b"/><text x="80" y="98" text-anchor="middle" fill="#9097ad" font-size="11">玩玩具熊的小女孩</text></svg><span class="op">=</span><div class="read" style="--c:var(--g)">他很温柔<small>观众这样说</small></div></div>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">实验 · 苏联 约 1920</span>
+          <b>库里肖夫效应</b>
+          <p>导演列夫·库里肖夫把演员莫兹尤欣<b>同一个无表情的特写</b>，分别接在三个镜头前。观众称赞他演技细腻，可他的脸<b>一点没变</b>。</p>
+        </div>
+        <div class="punch">意义不只在镜头里，<br>更产生在镜头之间。<small>观众会主动把两个镜头连起来，自己补出故事。</small></div>
+        <div class="slot" data-slot="kuleshov" style="aspect-ratio:16/6"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 180 度轴线 ============ -->
+<section class="slide" data-min="3" data-note="这一页回答本课第二个问题：对话场景里，摄影机为什么不能随便越过两人之间的连线？先看左边俯视图：A 和 B 面对面说话，两人之间连一条线，叫轴线。摄影机只要都待在轴线的同一侧，也就是图中下方的半圆里，A 就永远在画面左边、看向右；B 永远在画面右边、看向左。按 → 第一步，看 1 号和 2 号机位拍出来的正反打：A 看右、B 看左，观众一下就明白两人在对视。第二步，如果把摄影机搬到轴线另一边的 3 号机位，A 突然跑到画面右边、也看向右边了，观众会觉得 A 转身了，或者两个人看向同一个方向，空间就乱了，这叫越轴。打比方：看足球转播，主摄像机都在同一侧看台，红队一直从左往右进攻；如果突然切到对面看台的机位，红队就变成从右往左攻，你会懵一下。所以转播里切对面机位时，常会标注“反向机位”。落点：180 度规则保护的是观众脑子里的空间地图。补充：规则可以打破，但要有理由，比如故意让观众感到混乱，或者先用一个移动镜头带着观众走过轴线。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 剪辑</span><span>② 180 度轴线</span></div>
+    <h2 class="h-l">为什么不能越过两人之间的线？</h2>
+    <div class="g2">
+      <div class="lab fig"><span class="label">俯视图 · 两人对话</span>
+        <svg viewBox="0 0 520 340" role="img" aria-label="两人对话俯视图：轴线下方是安全区，三个机位">
+          <path d="M60 130 A200 200 0 0 0 460 130 Z" fill="rgba(63,224,160,.08)" stroke="rgba(63,224,160,.35)" stroke-dasharray="5 4"/>
+          <line x1="20" y1="130" x2="500" y2="130" stroke="#ffc46b" stroke-width="2.5" stroke-dasharray="10 6"/>
+          <text x="400" y="120" fill="#ffc46b" font-size="14" font-weight="700">轴线</text>
+          <text x="205" y="318" fill="#3fe0a0" font-size="14">摄影机待在这一侧</text>
+          <circle cx="180" cy="130" r="22" fill="#ff5468"/><text x="180" y="136" fill="#fff" font-size="17" font-weight="700" text-anchor="middle">A</text><path d="M204 130 l14 0" stroke="#ff5468" stroke-width="3"/>
+          <circle cx="340" cy="130" r="22" fill="#5b8cff"/><text x="340" y="136" fill="#fff" font-size="17" font-weight="700" text-anchor="middle">B</text><path d="M316 130 l-14 0" stroke="#5b8cff" stroke-width="3"/>
+          <g fill="#eef0f6"><rect x="105" y="215" width="34" height="22" rx="4" transform="rotate(-35 122 226)"/><text x="98" y="268" font-size="13">机位 1</text>
+          <rect x="381" y="215" width="34" height="22" rx="4" transform="rotate(35 398 226)"/><text x="378" y="268" font-size="13">机位 2</text></g>
+          <g class="step" fill="#ff5468"><rect x="243" y="30" width="34" height="22" rx="4"/><text x="290" y="46" font-size="13" font-weight="700">机位 3 · 越轴 ✗</text></g>
+        </svg>
+      </div>
+      <div class="col">
+        <div class="step"><div class="card idea"><span class="tag">机位 1、2 · 正反打</span>
+          <div class="frame2" aria-hidden="true">
+            <svg viewBox="0 0 160 90"><circle cx="50" cy="40" r="16" fill="#ff5468"/><path d="M68 40 l14 0" stroke="#ff5468" stroke-width="3"/><text x="80" y="84" fill="#9097ad" font-size="11" text-anchor="middle">A 在左，看向右 →</text></svg>
+            <svg viewBox="0 0 160 90"><circle cx="110" cy="40" r="16" fill="#5b8cff"/><path d="M92 40 l-14 0" stroke="#5b8cff" stroke-width="3"/><text x="80" y="84" fill="#9097ad" font-size="11" text-anchor="middle">← B 在右，看向左</text></svg>
+          </div>
+          <p>观众一眼就懂：<b>两人在对视</b>。</p></div></div>
+        <div class="step"><div class="card" style="border-top:3px solid var(--r)"><span class="tag" style="color:var(--r)">机位 3 · 越轴</span>
+          <p>A 突然跑到画面<b>右边、也看向右</b>。观众会以为他转身了，或两人看着同一个方向：<b>空间乱了</b>。</p></div></div>
+        <div class="step"><div class="card analogy"><span class="tag">打个比方</span>
+          <p>足球转播的主机位都在同一侧看台。突然切到对面看台，红队就从“向右攻”变成“向左攻”，你会懵一下。</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 其他连续性规则 ============ -->
+<section class="slide" data-min="2" data-note="继续讲连续性剪辑的另外三条规则。它们的共同目的是：让观众感觉不到剪辑，注意力始终在故事上。第一条，30 度规则：相邻两个镜头，机位角度至少要变 30 度，或者景别要明显变化。如果只挪了一点点，看起来就像画面“跳了一下”，像视频卡顿。第二条，视线匹配：角色看向画外，下一个镜头就给出他看到的东西，观众自动理解“他在看这个”。这其实就是库里肖夫效应的日常用法。第三条，动作匹配剪辑：在动作进行到一半时切换镜头，比如一个人伸手推门，全景里手刚碰到门，切到近景时门正在被推开，观众的眼睛跟着动作走，就注意不到剪辑点。打比方：魔术师变魔术时，会用一个大动作吸引你的视线，真正的手法就藏在这个动作里。剪辑点藏在动作里也是一个道理。可以让学生下课后找一个自己喜欢的视频，暂停看看，剪辑点是不是常常落在动作中间。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 剪辑</span><span>③ 让观众感觉不到剪辑</span></div>
+    <h2 class="h-l">另外三条连续性规则</h2>
+    <div class="g3">
+      <div class="card idea"><span class="tag">30 度规则</span>
+        <b>机位至少变 30 度</b>
+        <p>相邻两个镜头只挪了一点点，看起来就像画面<b>“跳了一下”</b>，像视频卡顿。要么换角度，要么明显换景别。</p>
+      </div>
+      <div class="card idea"><span class="tag">视线匹配</span>
+        <b>他看哪，下一个镜头就给哪</b>
+        <p>角色看向画外，下一个镜头展示他看到的东西。观众自动理解成<b>“他在看这个”</b>：这就是库里肖夫效应的日常用法。</p>
+      </div>
+      <div class="card idea"><span class="tag">动作匹配剪辑</span>
+        <b>在动作进行中切</b>
+        <p>全景里手刚碰到门，切到近景时门正被推开。眼睛跟着动作走，<b>剪辑点被动作掩盖</b>。</p>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>魔术师会用一个大动作吸引你的视线，真正的手法就藏在这个动作里。<b>剪辑点藏在动作里，是同一个道理。</b></p>
+      </div>
+      <div class="punch">连续性规则的共同目的：<br>让观众只看故事，看不见剪辑。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 镜头时长与节奏 ============ -->
+<section class="slide" data-min="1.5" data-note="这一页讲节奏。一个镜头该多长？经验法则是：镜头时长约等于观众读完这个画面的信息所需的时间。信息多的画面，比如一个大场面全景，要给久一点；一个特写一眼就看完，可以短。打比方：像翻 PPT，字多的页要多停一会儿，只有一个大字的页一闪就过。再看数据：电影学者统计过不同年代电影的平均镜头时长，20 世纪 30 到 40 年代的好莱坞电影大约 9 到 10 秒一个镜头，今天的商业电影大多只有 2 到 4 秒。观众看得越来越快了。所以紧张的段落镜头短、切得快，抒情的段落镜头长、让情绪慢慢沉下来。课堂小活动（可选）：放一段 30 秒的动作片预告，让学生数有几个剪辑点，再放一段 30 秒的抒情片段对比。课前核实：数字参考电影学者大卫·波德维尔关于“强化的连续性”的研究，以及詹姆斯·卡廷等人 2011 年对好莱坞电影镜头时长的统计，不同统计口径的数字略有差异。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 剪辑</span><span>④ 镜头时长与节奏</span></div>
+    <h2 class="h-l">一个镜头，该停多久？</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card idea"><span class="tag">经验法则</span>
+          <p><b>镜头时长 ≈ 观众读完画面信息所需的时间。</b>大场面全景给久一点，一眼看完的特写可以短。</p>
+        </div>
+        <div class="lab"><span class="label">平均镜头时长（示意，单位：秒）</span>
+          <div class="asl">
+            <div class="r">1930–40 年代好莱坞<span class="t"><i style="width:95%"></i><span>约 9–10 秒</span></span></div>
+            <div class="r">当代商业电影<span class="t"><i style="width:30%"></i><span>多在 2–4 秒</span></span></div>
+          </div>
+          <p class="src">参考：David Bordwell, Intensified Continuity, 2002；Cutting 等, 2011</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>像翻 PPT：字多的页要多停一会儿，只有一个大字的页<b>一闪就过</b>。</p>
+        </div>
+        <div class="punch">紧张段落：镜头短，切得快。<br>抒情段落：镜头长，让情绪沉下来。</div>
+        <div class="card ask"><span class="tag">数一数</span><p>30 秒动作片预告里有几个剪辑点？换一段抒情片段呢？</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 转场 ============ -->
+<section class="slide" data-min="2" data-note="模块 2 最后一页，转场：两个镜头之间怎么过渡。硬切是最常用的，一个镜头结束、下一个直接开始，九成以上的剪辑都是硬切。叠化是前一个画面慢慢消失、后一个慢慢出现，两个画面重叠一会儿，通常表示时间流逝。匹配剪辑是把形状或动作相似的两个画面接在一起。按 → 讲电影史上最有名的匹配剪辑：1968 年库布里克的《2001 太空漫游》，一只远古的猿人第一次学会用骨头当工具，兴奋地把骨头抛向天空，骨头在空中旋转，下一个镜头直接切到太空中一艘形状相似的飞行器。一刀剪掉了几百万年的人类历史。跳切是同一个机位、把中间一段删掉，人物突然“跳”到下一个位置，制造急促、不安或者时间被压缩的感觉。1960 年戈达尔的《精疲力尽》大量使用跳切，当时被认为打破了规矩，今天短视频博主几乎人人都在用，把说话时的停顿全部剪掉。问学生：你刷到的短视频里，哪种转场最多？落点：转场不是装饰，每一种都在告诉观众时间和空间发生了什么变化。模块 2 结束，过渡到声音。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 剪辑</span><span>⑤ 转场</span></div>
+    <h2 class="h-l">两个镜头之间，时间发生了什么？</h2>
+    <div class="grid8" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div style="--c:var(--b)"><b>硬切</b>直接接下一个镜头。<i>最常用，几乎看不见</i></div>
+      <div style="--c:#c58bff"><b>叠化</b>前后两个画面重叠一会儿。<i>时间流逝</i></div>
+      <div style="--c:var(--warm)"><b>匹配剪辑</b>形状或动作相似的画面相接。<i>跨越时空</i></div>
+      <div style="--c:var(--r)"><b>跳切</b>同一机位删掉中间一段。<i>急促、时间被压缩</i></div>
+    </div>
+    <div class="step"><div class="g2 wide-l">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 《2001 太空漫游》1968</span>
+          <p>库布里克的电影里，猿人第一次学会用骨头当工具，兴奋地把骨头抛向天空。骨头在空中旋转，<b>下一个镜头切到太空中形状相似的飞行器</b>。一刀，剪掉了几百万年。</p>
+        </div>
+        <div class="card story"><span class="tag">故事 · 《精疲力尽》1960</span>
+          <p>戈达尔大量使用跳切，当时被认为“剪坏了”。今天，<b>短视频博主几乎人人在用</b>：把说话的停顿全剪掉。</p>
+        </div>
+      </div>
+      <div class="slot" data-slot="cut2001"></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ 12 大白鲨 ============ -->
+<section class="slide" data-min="2.5" data-note="模块 3，声音，一共 15 分钟。先讲一个故事。1975 年，斯皮尔伯格拍《大白鲨》，剧组造了一条机械鲨鱼，可是它一泡进海水就频繁出故障，很多场戏根本拍不了。斯皮尔伯格只好想办法：少让鲨鱼露面，用海面上漂着的木桶、水下的主观镜头，还有最关键的，音乐，来告诉观众“它来了”。作曲家约翰·威廉斯写了一段极其简单的主题：只有两个低音交替，一开始很慢，然后越来越快、越来越响。按 → 揭示结果：观众在整部电影的前半段几乎看不到鲨鱼，却怕得要命，因为每次那两个音响起，大家就知道它在附近。这段配乐拿了奥斯卡最佳原创配乐。斯皮尔伯格后来说，这部电影的成功有一半要归功于配乐。课前核实：斯皮尔伯格这句话的原话和出处。现场可以做一个小实验：不放画面，只放 15 秒《大白鲨》主题音乐，问学生感觉到了什么。落点：声音是电影看不见的一半，它能让观众怕一个根本没出现的东西。补充一个反例：1960 年希区柯克的《惊魂记》，浴室那场戏他原本想不配乐，作曲家伯纳德·赫尔曼坚持写了尖锐刺耳的弦乐，希区柯克听过后改变了主意，这段音乐成了电影史上最有名的配乐之一。课前核实这段轶事的细节；这场戏画面暴力，不在课上播放画面。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 声音</span><span>15 MIN</span><span>① 看不见的一半</span></div>
+    <h2 class="h-l">鲨鱼坏了，音乐顶上</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 《大白鲨》1975</span>
+          <p>斯皮尔伯格的机械鲨鱼<b>一泡海水就频繁出故障</b>，很多场戏拍不了。他只好少让鲨鱼露面，用漂着的木桶、水下视角，还有最关键的：<b>音乐</b>。</p>
+          <p>作曲家约翰·威廉斯写了一段极简的主题：<b>两个低音交替，越来越快、越来越响。</b></p>
+        </div>
+        <div class="step">
+          <div class="punch">观众几乎看不到鲨鱼，却怕得要命。<small>那两个音一响，大家就知道“它在附近”。这段配乐获得奥斯卡最佳原创配乐。</small></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="jaws"></div>
+        <div class="card ask"><span class="tag">闭上眼睛听 15 秒</span><p>不看画面，只听主题音乐：你感觉到了什么？</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 声音四层 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页讲声音的结构。电影里的声音可以分成四层：人声，包括对白和旁白；音乐；音效，比如关门、脚步、手机震动；环境声，比如街道的车流、教室里的电扇、雨声。打比方：把一场戏想成舞台演出，人声是演员的台词，音乐是灯光，负责整体情绪，音效是道具，环境声是布景，告诉你这是在哪里。按 → 讲第二组概念：画内声和画外声。画内声是故事里的角色能听到的声音，门响、街道声、角色说话；画外声是只有观众能听到的声音，配乐、旁白。有个经典笑话就玩这个：角色走在路上，背景响起紧张的音乐，他回头一看，原来是旁边的人在拉小提琴。画外声突然变成了画内声。再按 → 讲音效的故事：1977 年《星球大战》的光剑声，是音效设计师本·伯特把老式电影放映机马达的嗡嗡声，和麦克风靠近一台坏电视时录到的电流噪声混在一起做出来的。世界上并没有光剑，可每个人都“知道”它应该是这个声音。课前核实：光剑声的具体来源以本·伯特本人的访谈为准。落点：声音是一层一层“设计”出来的，不是现场录下来就完了。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 声音</span><span>② 声音的四层</span></div>
+    <h2 class="h-l">一场戏的声音，是一层层叠出来的</h2>
+    <div class="layer4">
+      <div style="--c:var(--warm)"><b>人声</b>对白、旁白<br><em>舞台上的台词</em></div>
+      <div style="--c:#c58bff"><b>音乐</b>配乐、歌曲<br><em>舞台上的灯光</em></div>
+      <div style="--c:var(--r)"><b>音效</b>关门、脚步、手机震动<br><em>舞台上的道具</em></div>
+      <div style="--c:var(--g)"><b>环境声</b>车流、雨声、教室电扇<br><em>舞台上的布景</em></div>
+    </div>
+    <div class="g2">
+      <div class="step"><div class="card idea"><span class="tag">画内声 vs 画外声</span>
+        <p><b>画内声</b>：角色也听得到，门响、街道声、说话声。<br><b>画外声</b>：只有观众听得到，配乐、旁白。</p>
+        <p>经典笑话：紧张的音乐响起，角色回头一看，原来是<b>旁边有人在拉小提琴</b>。画外声突然变成了画内声。</p>
+      </div></div>
+      <div class="step"><div class="card story"><span class="tag">故事 · 《星球大战》1977</span>
+        <p>世界上没有光剑。音效设计师本·伯特把<b>老式放映机马达的嗡嗡声</b>，和麦克风靠近一台坏电视录到的<b>电流噪声</b>混在一起，做出了光剑声。</p>
+        <p>今天每个人都“知道”光剑应该是这个声音。</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 声画关系 · 互动 ============ -->
+<section class="slide" id="s-mix" data-min="3" data-note="这一页讲声画关系，并做一个现场实验。先讲两个词：声画同步，是画面和声音说同一件事，欢快画面配欢快音乐，互相强化；声画对位，是画面和声音说相反的事，比如激烈的场面配上舒缓的音乐，制造反讽、疏离，或者让人更难受。现场演示右边的互动：画面始终是同一段，一个人走向一扇门，然后把门打开。先点“无声”放一遍，问学生：这是个什么故事？大家会说不出来。再依次点“紧张”“温暖”“荒诞”，每放完一遍就问：现在你觉得门后面是什么？他是什么心情？下面会显示用了哪些声音元素。注意先确认教室音箱已经打开，第一次点击时浏览器才会允许发声。落点：画面一帧没改，故事却变了三次。这就是今天实操任务 1 要你们亲手验证的事。如果有学生问对位的例子，可以举：很多电影在激烈的场面里放一首温柔的老歌，反而让人更难受。这里不举具体片名，避免放出不适合的画面。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 声音</span><span>③ 声画关系</span></div>
+    <h2 class="h-l">画面一帧不改，故事能变几次？</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">声画同步</span>
+          <p>画面和声音<b>说同一件事</b>：欢快画面 + 欢快音乐，互相强化。</p>
+        </div>
+        <div class="card idea"><span class="tag">声画对位</span>
+          <p>画面和声音<b>说相反的事</b>：激烈画面 + 舒缓音乐，制造反讽、疏离，或者让人更难受。</p>
+        </div>
+        <div class="card ask"><span class="tag">每放一遍，问自己</span><p>门后面是什么？他是什么心情？</p></div>
+      </div>
+      <div class="lab"><span class="label">互动 · 同一段画面，换四种声音（声音由浏览器实时合成，需打开音箱）</span>
+        <div class="mix-stage">
+          <svg id="mixSvg" viewBox="0 0 600 260" role="img" aria-label="走廊里一个人走向一扇门">
+            <defs><linearGradient id="mixLight" x1="0" x2="1"><stop offset="0" stop-color="#ffc46b" stop-opacity=".0"/><stop offset="1" stop-color="#ffc46b" stop-opacity=".55"/></linearGradient></defs>
+            <rect x="0" y="0" width="600" height="260" fill="#0b0d14"/>
+            <path d="M0 200 L600 200 L600 260 L0 260 Z" fill="#141826"/>
+            <g stroke="rgba(220,228,255,.08)"><path d="M0 215 H600 M0 235 H600"/></g>
+            <rect x="470" y="70" width="70" height="130" fill="#05060a" stroke="#3a4260" stroke-width="3"/>
+            <rect id="mixGlow" x="472" y="72" width="66" height="128" fill="url(#mixLight)" opacity="0"/>
+            <rect id="mixDoor" x="472" y="72" width="66" height="128" fill="#2a2f45"/>
+            <circle cx="528" cy="140" r="3.5" fill="#9097ad"/>
+            <rect x="474" y="198" width="62" height="2" fill="#ffc46b" opacity=".5"/>
+            <g id="mixMan" transform="translate(60 0)">
+              <circle cx="0" cy="112" r="13" fill="#eef0f6"/>
+              <path d="M-14 200 L-12 132 Q0 124 12 132 L14 200 Z" fill="#9097ad"/>
+              <path id="mixArm" d="M8 140 L22 172" stroke="#9097ad" stroke-width="7" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="mixbtns">
+          <button class="btn" type="button" data-mix="mute">无声</button>
+          <button class="btn" type="button" data-mix="tense">紧张</button>
+          <button class="btn" type="button" data-mix="warm">温暖</button>
+          <button class="btn" type="button" data-mix="silly">荒诞</button>
+        </div>
+        <div class="mixread" id="mixRead"><b>点一个按钮，画面和声音一起播放（约 9 秒）</b><span>先放“无声”，再依次换声音。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 音乐的情绪参数 · 互动 ============ -->
+<section class="slide" id="s-music" data-min="2.5" data-note="这一页拆开音乐，看它靠哪几个旋钮控制情绪。速度，用 BPM 表示，也就是每分钟多少拍，快则紧张兴奋，慢则沉静。调式，大调听起来更明亮，小调听起来更忧郁，注意这是倾向，不是绝对规律，也和听众的文化习惯有关。配器，钢琴更亲密，像在说心里话；弦乐更宏大，有电影感；合成器带科技感、未来感。强弱变化，越来越响会把情绪往上推。现场演示右边的互动，同一段旋律：先用默认值播放一遍；再只把大调换成小调，其他都不动，问学生感觉变了什么；然后把速度拉到 150，再拉到 60；最后换配器、打开渐强。每改一个旋钮，让学生先说感受，再看下面的描述是否一致。落点：情绪不是玄学，是可以一个参数一个参数调出来的。以后让 AI 生成音乐时，就用这些词写提示词：速度、大小调、配器、强弱，而不是只写“好听的背景音乐”。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 声音</span><span>④ 音乐的情绪参数</span></div>
+    <h2 class="h-l">音乐的四个旋钮</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card idea"><span class="tag">四个旋钮</span>
+          <ul>
+            <li><b>速度（BPM，每分钟拍数）</b>：快则紧张兴奋，慢则沉静</li>
+            <li><b>调式</b>：大调偏明亮，小调偏忧郁（是倾向，不是定律）</li>
+            <li><b>配器</b>：钢琴亲密，弦乐宏大，合成器科技感</li>
+            <li><b>强弱变化</b>：越来越响，情绪被往上推</li>
+          </ul>
+        </div>
+        <div class="punch">以后让 AI 写音乐，别只写“好听的背景音乐”。<small>写清楚：速度、大小调、配器、强弱。</small></div>
+      </div>
+      <div class="lab"><span class="label">互动 · 同一段旋律，拧旋钮（浏览器实时合成）</span>
+        <label class="knob">速度<span class="row"><input type="range" id="muBpm" min="50" max="180" step="5" value="90" style="flex:1" aria-label="速度"><b id="muBpmV" class="warm">90 BPM</b></span></label>
+        <div class="knob"><span>调式</span><span class="seg" id="muMode"><button type="button" data-v="major" class="on">大调</button><button type="button" data-v="minor">小调</button></span></div>
+        <div class="knob"><span>配器</span><span class="seg" id="muInst"><button type="button" data-v="piano" class="on">钢琴</button><button type="button" data-v="strings">弦乐</button><button type="button" data-v="synth">合成器</button></span></div>
+        <div class="knob"><span>强弱</span><span class="seg" id="muDyn"><button type="button" data-v="flat" class="on">保持</button><button type="button" data-v="cresc">渐强</button></span></div>
+        <div class="row"><button class="btn primary" id="muPlay" type="button">▶ 播放 4 小节</button><button class="btn" id="muStop" type="button">■ 停止</button></div>
+        <div class="moodout" id="muMood">–</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 J-cut L-cut + 静音 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲两个剪辑里处理声音的技巧，再讲静音。J-cut：下一个镜头的声音提前进入，画面还没切过去，你已经听到了。L-cut：上一个镜头的声音延续到下一个画面，画面切走了，声音还在。名字来自剪辑软件时间轴上的形状：音频比视频早开始，轨道像字母 J；晚结束，像字母 L。打比方：《红楼梦》里王熙凤出场，“未见其人，先闻其声”，这就是一个 J-cut。L-cut 最常见的用法是对话：A 还在说，画面已经切到 B 在听，我们看到了 B 的反应。两种做法都让转场更自然，不会“啪”一下断开。按 → 讲静音：在高潮前把所有声音抽空，反差会制造最强的注意力。打比方：课堂上老师突然停下不说话，全班反而立刻安静、都抬头看他。剪映里可以直接拖动音频片段的边缘做出 J-cut 和 L-cut，实操时可以试一试。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 声音</span><span>⑤ 声音的剪辑技巧</span></div>
+    <h2 class="h-l">声音可以先到，也可以晚走</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="lab fig"><span class="label">剪辑时间轴示意</span>
+          <svg viewBox="0 0 520 150" role="img" aria-label="J-cut 和 L-cut 的时间轴形状">
+            <text x="10" y="18" fill="#ffc46b" font-size="14" font-weight="700">J-cut：声音先到</text>
+            <rect x="10" y="28" width="150" height="22" rx="4" fill="rgba(91,140,255,.45)"/><text x="18" y="44" fill="#fff" font-size="12">画面 1</text>
+            <rect x="160" y="28" width="90" height="22" rx="4" fill="rgba(63,224,160,.45)"/><text x="168" y="44" fill="#fff" font-size="12">画面 2</text>
+            <rect x="110" y="56" width="140" height="18" rx="4" fill="rgba(63,224,160,.25)" stroke="#3fe0a0"/><text x="118" y="69" fill="#3fe0a0" font-size="11">画面 2 的声音</text>
+            <text x="270" y="18" fill="#ffc46b" font-size="14" font-weight="700">L-cut：声音晚走</text>
+            <rect x="270" y="28" width="130" height="22" rx="4" fill="rgba(91,140,255,.45)"/><text x="278" y="44" fill="#fff" font-size="12">画面 1</text>
+            <rect x="400" y="28" width="110" height="22" rx="4" fill="rgba(63,224,160,.45)"/><text x="408" y="44" fill="#fff" font-size="12">画面 2</text>
+            <rect x="270" y="56" width="180" height="18" rx="4" fill="rgba(91,140,255,.25)" stroke="#5b8cff"/><text x="278" y="69" fill="#8fb0ff" font-size="11">画面 1 的声音</text>
+            <text x="10" y="110" fill="#9097ad" font-size="12">音频比画面早开始，形状像 J</text>
+            <text x="270" y="110" fill="#9097ad" font-size="12">音频比画面晚结束，形状像 L</text>
+          </svg>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>王熙凤出场：<b>“未见其人，先闻其声”</b>，就是一个 J-cut。<br>A 还在说，画面已经切到 B 在听：就是一个 L-cut。</p>
+        </div>
+      </div>
+      <div class="step col">
+        <div class="card idea"><span class="tag">静音的力量</span>
+          <b>高潮前，把声音全部抽空</b>
+          <p>前面越吵，突然的安静越抓人。反差，制造最强的注意力。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>课堂上老师突然停下不说话，全班反而<b>立刻安静，都抬头看他</b>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 解说视频的声音结构 ============ -->
+<section class="slide" data-min="2.5" data-note="模块 3 最后一页，拆一个真实的视频类型：Johnny Harris 式的解说视频。Johnny Harris 是美国的记者和视频作者，以前在 Vox 做过“边境”系列，现在在 YouTube 上做地图加解说的长视频。这类视频的声音结构很有讲究，看左边的时间轴示意：人声几乎一直在说；背景音乐会随着论点切换，每换一个论点，音乐跟着换，相当于给耳朵分段；信息很密的时候，用节奏稳定、旋律简单的“思考型音乐”，不和人声抢注意力；地图缩放、文字弹出这些信息点，配上很短的音效，比如嗖的一声、点击声，提醒观众“这里重要”；关键结论前，留一小段静音。按 → 回答本课第三个问题：为什么讲解信息时，背景音乐反而要简单？引导学生说出：观众的注意力是有限的，人声在传递信息，音乐如果旋律复杂、有歌词、忽大忽小，就会和人声抢注意力，观众就听不进去了。简单的音乐只负责情绪和节奏，把舞台让给内容。打比方：在咖啡馆写作业，放纯音乐还行，放一首有歌词的新歌，你就忍不住跟着听歌词了。任务 2 就是用这个思路拆一段真实的视频。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 声音</span><span>⑥ 案例拆解</span></div>
+    <h2 class="h-l">解说视频的声音，藏着一张结构图</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="lab fig"><span class="label">示意 · Johnny Harris 式解说视频的声音时间轴（不是真实数据）</span>
+          <svg viewBox="0 0 560 190" role="img" aria-label="解说视频的四条声音轨道示意">
+            <g font-size="12" fill="#9097ad"><text x="0" y="40">人声</text><text x="0" y="80">BGM</text><text x="0" y="120">音效</text><text x="0" y="160">论点</text></g>
+            <rect x="50" y="28" width="410" height="16" rx="4" fill="rgba(255,196,107,.4)"/><rect x="490" y="28" width="66" height="16" rx="4" fill="rgba(255,196,107,.4)"/>
+            <rect x="50" y="68" width="150" height="16" rx="4" fill="rgba(91,140,255,.55)"/><text x="56" y="80" fill="#fff" font-size="11">音乐 A</text>
+            <rect x="204" y="68" width="140" height="16" rx="4" fill="rgba(197,139,255,.55)"/><text x="210" y="80" fill="#fff" font-size="11">音乐 B · 思考型</text>
+            <rect x="348" y="68" width="112" height="16" rx="4" fill="rgba(63,224,160,.5)"/><text x="354" y="80" fill="#fff" font-size="11">音乐 C</text>
+            <rect x="490" y="68" width="66" height="16" rx="4" fill="rgba(91,140,255,.55)"/>
+            <g fill="#ff5468"><circle cx="110" cy="116" r="5"/><circle cx="240" cy="116" r="5"/><circle cx="275" cy="116" r="5"/><circle cx="390" cy="116" r="5"/></g>
+            <text x="100" y="138" fill="#ff5468" font-size="10">嗖 · 地图缩放</text><text x="250" y="138" fill="#ff5468" font-size="10">点击 · 文字弹出</text>
+            <g stroke="#eef0f6" stroke-width="1.5" stroke-dasharray="3 3"><line x1="50" y1="150" x2="50" y2="170"/><line x1="202" y1="20" x2="202" y2="170"/><line x1="346" y1="20" x2="346" y2="170"/></g>
+            <g font-size="11" fill="#eef0f6"><text x="56" y="164">论点 1</text><text x="208" y="164">论点 2</text><text x="352" y="164">论点 3</text></g>
+            <rect x="462" y="20" width="26" height="150" fill="rgba(255,255,255,.06)"/><text x="475" y="186" fill="#ffc46b" font-size="11" text-anchor="middle">静音</text><text x="523" y="164" fill="#ffc46b" font-size="11" text-anchor="middle">结论</text>
+          </svg>
+        </div>
+        <div class="slot" data-slot="jharris" style="aspect-ratio:16/4"></div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">四个手法</span>
+          <ul>
+            <li><b>换论点，就换音乐</b>：给耳朵分段</li>
+            <li><b>信息密处用“思考型音乐”</b>：节奏稳、旋律简单</li>
+            <li><b>信息点配短音效</b>：嗖、点击，“这里重要”</li>
+            <li><b>关键结论前留静音</b></li>
+          </ul>
+        </div>
+        <div class="step">
+          <div class="card ask"><span class="tag">本课问题 3</span><p>讲解信息时，背景音乐为什么反而要简单？</p></div>
+          <div class="card analogy"><span class="tag">打个比方</span>
+            <p>写作业时放纯音乐还行；换成一首有歌词的新歌，你就<b>忍不住去听歌词</b>了。注意力只有一份。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，42 分钟，三个任务。这一分钟用来发素材包、确认每台电脑都能打开剪映专业版，计入任务 1 的 20 分钟。素材包里有：同一组 6 个无声镜头、3 段授权音乐（紧张、温暖、荒诞）、10 个音效。任务 1 每人独立完成；任务 2 每人独立填表；任务 3 三人一组。降级方案：如果电脑上没装剪映专业版或无法登录，改用剪映手机版，操作逻辑相同；如果电脑不够，两人共用一台，轮流操作，每人仍要导出自己的三个版本；如果素材包无法拷贝，老师投屏演示一遍，学生用手机拍 6 个 3 秒的镜头代替。">
+  <div class="inner">
+    <span class="num">实操 · 42 MIN</span>
+    <h2 class="h-xl">亲手证明：<br>声音能改写故事</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 20 分钟</span><b>同一画面，配三种声音</b><p>剪映入门：剪辑、配乐、音效、导出。每人独立。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 12 分钟</span><b>拆解一段解说视频的声音</b><p>先只听，再对照画面，填声音时间轴记录表。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 10 分钟</span><b>三版情绪分镜</b><p>同一个情节，只改镜头和声音。三人一组。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool"><img src="../media/logos/jianying.png" alt="">剪映专业版 <i>电脑</i></span>
+      <span class="tool">课程素材包 <i>6 个无声镜头 · 3 段音乐 · 10 个音效</i></span>
+      <span class="tool">解说视频片段 <i>授权 · 60 秒</i></span>
+      <span class="tool">声音时间轴记录表</span>
+      <span class="tool">6 格分镜模板</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 任务 1 ============ -->
+<section class="slide practice" data-min="19" data-note="任务 1，加上前面发素材的 1 分钟，共 20 分钟，每人独立完成。老师先投屏把第 1 到第 3 步完整演示一遍，大约 3 分钟，然后学生自己做。第 2 步注意：分割快捷键 Windows 是 Ctrl+B，Mac 是 Cmd+B；每个镜头修剪到 2 到 3 秒，6 个镜头加起来 15 秒左右。第 3 步：音乐拖到主轨道下方的音频轨，超出画面的部分要剪掉，再在结尾加 1 秒淡出，不然声音会戛然而止。第 4 步：音效要对准画面里的动作点，比如关门、放下杯子、转头的那一帧，可以逐帧检查。第 6 步：在首页的草稿上点更多，选复制草稿，复制两份，只换音乐和音效，不动画面。巡视时重点看三件事：音乐结尾有没有淡出；音效是否对准动作；三个版本的画面是不是完全一样。做得快的同学可以试试 J-cut：把下一个镜头的音效提前几帧。剪映按钮名称以当期版本为准，课前按实际界面更新步骤卡。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">20 分钟</span><span>工具：剪映专业版（电脑）+ 课程素材包</span></div>
+    <h2 class="h-m">剪映入门：同一组画面，配三种声音</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>打开剪映专业版 → 开始创作 → 导入素材包。</b></div></li>
+        <li><div><b>6 个镜头按编号拖到主轨道</b><span>，用分割工具把每个镜头修剪到 2–3 秒，总长约 15 秒。分割：</span><span class="code">Ctrl+B</span><span> / </span><span class="code">Cmd+B</span></div></li>
+        <li><div><b>把“紧张”音乐拖到音频轨</b><span>，结尾加淡出：选中音频 → 基础 → 淡出时长 1 秒。</span></div></li>
+        <li><div><b>在至少 2 个画面动作点上加音效</b><span>，对准动作发生的那一帧。</span></div></li>
+        <li><div><b>导出 1080p</b><span>，命名 </span><span class="code">姓名_L03_紧张</span></div></li>
+        <li><div><b>复制草稿两次</b><span>，分别换成“温暖”“荒诞”音乐并调整音效，再导出两版。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">完成标准</span><b>3 个 15 秒版本</b>：同一画面、不同声音。<br>文件名：<span class="code">姓名_L03_紧张</span> <span class="code">姓名_L03_温暖</span> <span class="code">姓名_L03_荒诞</span></div>
+        <div class="card"><b>老师会检查</b>
+          <ul>
+            <li>音乐结尾<b>有淡出</b>，不是戛然而止</li>
+            <li>音效<b>对准动作</b>，不早不晚</li>
+            <li>三个版本的<b>画面完全一样</b></li>
+          </ul>
+        </div>
+        <p class="small">做得快：试试把一个音效提前几帧，做出 J-cut。<br>没有电脑版剪映：用手机版，步骤相同。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 任务 2 ============ -->
+<section class="slide practice" data-min="12" data-note="任务 2，12 分钟，每人独立填表。播放授权的 60 秒解说视频片段，第一遍关掉投影或让学生闭上眼睛，只听不看，听的时候先在纸上随手记下“音乐变了”的大概时间。第二遍对照画面，按记录表填写：时间码、BGM 段落的起止、音效出现的位置和对应的画面、静音的位置。可以放第三遍给大家补漏。最后每人写一句结论：这段视频的音乐切换和什么同步？参考答案通常是：和论点或段落的切换同步，有时也和画面场景的切换同步。讲评时请一两位同学念结论。降级方案：如果拿不到授权的 Johnny Harris 片段，用同类的中文地图解说或科普视频片段，只要有清晰的配乐切换和音效即可。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">12 分钟</span><span>工具：60 秒解说视频片段 + 声音时间轴记录表</span></div>
+    <h2 class="h-m">拆解声音结构：先只听，再对照画面</h2>
+    <div class="g2">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>第一遍：只听不看。</b><span>听到“音乐变了”就随手记下大概时间。</span></div></li>
+          <li><div><b>第二遍：对照画面填表</b><span>：时间码、BGM 段落起止、音效位置与对应画面、静音位置。</span></div></li>
+          <li><div><b>写一句结论</b><span>：这段视频的音乐切换，和什么同步？</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>记录表覆盖完整 <b>60 秒</b>，标出所有 BGM 切换点和静音，并写出<b>一句结论</b>。</div>
+      </div>
+      <div class="lab"><span class="label">声音时间轴记录表 · 样例</span>
+        <table class="sheet">
+          <tr><th>时间码</th><th>BGM 段落</th><th>音效 · 对应画面</th><th>静音</th></tr>
+          <tr><td class="ex">00:00–00:14</td><td class="ex">音乐 A 开始</td><td class="ex">00:06 嗖 · 地图放大</td><td class="ex">–</td></tr>
+          <tr><td class="ex">00:14</td><td class="ex">换成音乐 B</td><td class="ex">00:15 点击 · 标题弹出</td><td class="ex">–</td></tr>
+          <tr><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+          <tr><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+        </table>
+        <p class="small">结论：这段视频的音乐切换和 ______ 同步。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 21 任务 3 ============ -->
+<section class="slide practice" data-min="10" data-note="任务 3，10 分钟，三人一组。情节统一为“一个人收到一条消息”，所有组都一样，方便对比。先画紧张版本的 6 格分镜，每格写清四样：景别、机位、运镜、声音，声音再分音乐、音效、环境、人声。不要求画得好看，火柴人就行，重点是文字。屏幕上的第 1 格是样例。画完紧张版，不改情节，只改镜头和声音，快速写出温暖版和荒诞版各 3 条变化要点。比如温暖版：第 3 格从仰拍改成平视；音乐从低频持续音换成钢琴；手机提示音从震动换成清脆的铃声。提醒学生把今天学的词用上：仰拍、推、过肩、J-cut、静音、声画对位。这套分镜第 4 课选题时可能用得上。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">10 分钟</span><span>工具：6 格分镜模板 · 三人一组</span></div>
+    <h2 class="h-m">三版情绪分镜：“一个人收到一条消息”</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>情节统一</b><span>：一个人收到一条消息。</span></div></li>
+          <li><div><b>画紧张版 6 格分镜</b><span>，每格写：景别、机位、运镜、声音（音乐 / 音效 / 环境 / 人声）。</span></div></li>
+          <li><div><b>只改镜头与声音，不改情节</b><span>：写出温暖版、荒诞版的变化要点，每版 3 条。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>1 套完整 6 格分镜 + 2 个版本的变化说明（各 3 条）。</div>
+      </div>
+      <div class="lab"><span class="label">6 格分镜模板 · 第 1 格是样例</span>
+        <div class="sb6">
+          <div class="ex"><div class="box">1</div><b>近景 · 平视 · 固定</b><br>音效：手机震动<br>环境：钟表滴答</div>
+          <div><div class="box">2</div>景别 · 机位 · 运镜<br>声音：</div>
+          <div><div class="box">3</div>景别 · 机位 · 运镜<br>声音：</div>
+          <div><div class="box">4</div>景别 · 机位 · 运镜<br>声音：</div>
+          <div><div class="box">5</div>景别 · 机位 · 运镜<br>声音：</div>
+          <div><div class="box">6</div>景别 · 机位 · 运镜<br>声音：</div>
+        </div>
+        <p class="small">温暖版例：第 3 格仰拍改平视；低频持续音换成钢琴；震动换成清脆铃声。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 22 讲评 ============ -->
+<section class="slide" data-min="5" data-note="讲评 5 分钟。抽 2 位同学，把他的三个版本连续播放，紧张、温暖、荒诞，顺序可以打乱，不告诉大家是哪一版。每放完一版，请全班说出这一版的情绪，再追问一句：是哪个声音元素让你这样觉得的？是音乐的速度、大小调、配器，还是某个音效、某处静音？引导学生用今天学的词来说。对比两位同学的作品：同样是紧张版，谁的更紧张，差在哪里？常见问题：音乐没有淡出、音效没对准动作、三版画面不一致，点出来但不批评。最后说明当堂产出要交的三样东西。">
+  <div class="inner">
+    <div class="tc"><span class="ch">讲评</span><span>8 MIN</span></div>
+    <h2 class="h-l">这一版是什么情绪？是哪个声音造成的？</h2>
+    <div class="g2">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>抽 2 位同学，连续播放三个版本</b><span>（顺序打乱，不报名字）。</span></div></li>
+          <li><div><b>全班说出每一版的情绪。</b></div></li>
+          <li><div><b>指出是哪个声音元素造成的</b><span>：速度？大小调？配器？某个音效？某处静音？</span></div></li>
+        </ol>
+        <div class="card ask"><span class="tag">这样说</span><p>“这一版让我觉得____，因为我听到了____。”</p></div>
+      </div>
+      <div class="col">
+        <span class="label">当堂产出 · 下课前提交</span>
+        <ul class="chk">
+          <li><b>3 个配乐版本</b>：紧张 / 温暖 / 荒诞，各 15 秒</li>
+          <li><b>声音时间轴记录表</b> + 一句结论</li>
+          <li><b>6 格分镜</b> + 两版变化说明（小组）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 23 总结 ============ -->
+<section class="slide" data-min="3" data-note="最后 3 分钟，回收开头的三个问题，每题请一位同学用一句话回答，老师不直接给答案。参考答案：第一，仰拍加推镜让人物显得强大、情绪逼近，俯拍加拉镜让人物显得弱小、孤独、被抛下。第二，越过轴线会让人物在画面里的左右位置和视线方向突然翻转，观众脑子里的空间地图就乱了。第三，观众的注意力有限，讲解时人声在传递信息，复杂的音乐会和人声抢注意力。然后布置课后任务：每人想 3 个 60 秒短片的点子，每个只写一句话；再带一个 3 分钟以内、你自己喜欢的短视频链接。下节课我们会一起拉片，也就是一个镜头一个镜头地拆解它，并开始选题。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>回收问题</span></div>
+    <h2 class="h-l">三个问题，请你来回答</h2>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">镜头</span><b>仰拍推镜和俯拍拉镜，分别在说什么？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">剪辑</span><b>摄影机为什么不能随便越过两人之间的连线？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">声音</span><b>讲解信息时，背景音乐为什么反而要简单？</b></div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务：想 3 个 60 秒短片点子（每个一句话），再带一个 ≤3 分钟、你喜欢的短视频链接。<small>第 4 课我们一起拉片：一个镜头一个镜头地拆它，然后开始选题。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  kane: { type: 'media', label: '《公民凯恩》· 低机位仰拍', hint: '一张凯恩的仰拍剧照，或 10 秒片段', find: 'https://search.bilibili.com/all?keyword=%E5%85%AC%E6%B0%91%E5%87%AF%E6%81%A9%20%E4%BB%B0%E6%8B%8D', cred: 'Citizen Kane · Orson Welles · 1941' },
+  dollyzoom: { type: 'media', label: '滑动变焦 ·《大白鲨》海滩镜头', hint: '只放警长在海滩上的那一个镜头，几秒钟即可；也可用《迷魂记》楼梯井镜头', find: 'https://search.bilibili.com/all?keyword=%E6%BB%91%E5%8A%A8%E5%8F%98%E7%84%A6%20%E5%A4%A7%E7%99%BD%E9%B2%A8%20%E8%BF%B7%E9%AD%82%E8%AE%B0', cred: 'Jaws · 1975 / Vertigo · 1958' },
+  kuleshov: { type: 'media', label: '库里肖夫效应 · 科普短片', hint: '1–2 分钟的科普视频，或希区柯克 1964 年的演示片段', find: 'https://search.bilibili.com/all?keyword=%E5%BA%93%E9%87%8C%E8%82%96%E5%A4%AB%E6%95%88%E5%BA%94', cred: 'Kuleshov effect' },
+  cut2001: { type: 'media', label: '《2001 太空漫游》· 骨头到飞行器', hint: '只放骨头抛起、切到太空的约 10 秒', find: 'https://search.bilibili.com/all?keyword=2001%E5%A4%AA%E7%A9%BA%E6%BC%AB%E6%B8%B8%20%E9%AA%A8%E5%A4%B4%20%E5%8C%B9%E9%85%8D%E5%89%AA%E8%BE%91', cred: '2001: A Space Odyssey · Stanley Kubrick · 1968' },
+  jaws: { type: 'media', label: '《大白鲨》主题音乐', hint: '只放 15 秒主题音乐，先不放画面；也可以放一张剧照配音乐', find: 'https://search.bilibili.com/all?keyword=%E5%A4%A7%E7%99%BD%E9%B2%A8%20%E4%B8%BB%E9%A2%98%E6%9B%B2%20John%20Williams', cred: 'Jaws · John Williams · 1975' },
+  jharris: { type: 'media', label: 'Johnny Harris 解说视频 · 片段', hint: '授权片段，约 60 秒，任务 2 也用这一段', find: 'https://search.bilibili.com/all?keyword=Johnny%20Harris%20%E8%A7%A3%E8%AF%B4', cred: 'Johnny Harris' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+
+  /* ---------- 库里肖夫：同一张脸 ---------- */
+  const FACE = `<rect x="0" y="0" width="160" height="100" fill="#11131a"/>
+    <ellipse cx="80" cy="54" rx="30" ry="36" fill="#b9b3aa"/>
+    <path d="M50 40 Q80 6 110 40 Q104 22 80 18 Q56 22 50 40 Z" fill="#3a3530"/>
+    <g fill="#2a2622"><ellipse cx="68" cy="50" rx="4" ry="3"/><ellipse cx="92" cy="50" rx="4" ry="3"/></g>
+    <path d="M62 43 H74 M86 43 H98" stroke="#5a524a" stroke-width="2"/>
+    <path d="M80 54 L77 66 H83" stroke="#8a8278" stroke-width="1.6" fill="none"/>
+    <path d="M71 76 H89" stroke="#6a5f56" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="80" y="97" text-anchor="middle" fill="#9097ad" font-size="11">同一个镜头</text>`;
+  document.querySelectorAll('.kface').forEach(el => { el.innerHTML = FACE; });
+
+  /* ---------- 音频：Web Audio 实时合成，离线可用 ---------- */
+  let ac = null, bus = null, noiseBuf = null;
+  const audio = () => {
+    if (!ac) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { window.deckToast('这个浏览器不支持网页音频'); return null; }
+      ac = new AC();
+      noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+      const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (ac.state === 'suspended') ac.resume();
+    return ac;
+  };
+  const newBus = () => {
+    stopBus();
+    bus = ac.createGain(); bus.gain.value = 0.9;
+    const comp = ac.createDynamicsCompressor(); bus.connect(comp).connect(ac.destination);
+    return bus;
+  };
+  function stopBus() {
+    if (!bus || !ac) return;
+    const b = bus; bus = null;
+    b.gain.cancelScheduledValues(ac.currentTime);
+    b.gain.setValueAtTime(b.gain.value, ac.currentTime);
+    b.gain.linearRampToValueAtTime(0, ac.currentTime + 0.08);
+    setTimeout(() => b.disconnect(), 200);
+  }
+  /* 一个音：type 波形，env 包络：'pluck' 快起慢衰；'pad' 慢起慢收 */
+  function note(out, t0, freq, dur, { type = 'sine', gain = 0.15, env = 'pluck', attack = 0.01, filter = 0, glideTo = 0, detune = 0 } = {}) {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t0); o.detune.value = detune;
+    if (glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    if (env === 'pluck') { g.gain.exponentialRampToValueAtTime(gain, t0 + attack); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); }
+    else { g.gain.linearRampToValueAtTime(gain, t0 + attack); g.gain.setValueAtTime(gain, t0 + Math.max(attack, dur - 0.25)); g.gain.linearRampToValueAtTime(0.0001, t0 + dur); }
+    let node = o;
+    if (filter) { const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = filter; o.connect(f); node = f; }
+    node.connect(g).connect(out);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+    return { o, g };
+  }
+  function noise(out, t0, dur, { gain = 0.2, type = 'highpass', freq = 1000 } = {}) {
+    const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+    s.buffer = noiseBuf; f.type = type; f.frequency.value = freq;
+    g.gain.setValueAtTime(gain, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(f).connect(g).connect(out); s.start(t0); s.stop(t0 + dur + 0.05);
+  }
+  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+
+  /* ---------- 互动 1：声画组合 ---------- */
+  const T_WALK = 6, T_REACH = 6.8, T_OPEN = 7.4, T_END = 9;
+  const MIX = {
+    mute: { read: '一个人走向一扇门。然后呢？', el: '没有声音：观众只能靠画面猜，故事是空的。' },
+    tense: { read: '门后有危险。他在害怕什么？', el: '低频持续音 + 越来越快的心跳 + 不和谐的高音 + 开门时一声重击' },
+    warm: { read: '门后是一个很久没见的人。', el: '大调和弦 + 慢速分解和弦 + 开门时清脆的铃声' },
+    silly: { read: '这是一场喜剧，他大概要出糗了。', el: '快速“嘭—嚓”的低音 + 卡通脚步声 + 开门时的滑哨和“啵”' },
+  };
+  const score = {
+    tense(out, t) {
+      const drone = ac.createGain(); drone.gain.setValueAtTime(0.0001, t); drone.gain.linearRampToValueAtTime(0.16, t + 2); drone.gain.setValueAtTime(0.16, t + T_OPEN); drone.gain.linearRampToValueAtTime(0.0001, t + T_OPEN + 0.05);
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 260; lp.connect(drone).connect(out);
+      [55, 58.3].forEach(f => { const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(t); o.stop(t + T_OPEN + 0.1); });
+      let bt = t + 0.4, gap = 0.95;
+      while (bt < t + T_OPEN - 0.2) { note(out, bt, 75, 0.18, { gain: 0.5, glideTo: 40 }); note(out, bt + 0.17, 70, 0.16, { gain: 0.3, glideTo: 40 }); bt += gap; gap = Math.max(0.42, gap * 0.9); }
+      const hi = ac.createGain(); hi.gain.setValueAtTime(0.0001, t + 2.5); hi.gain.linearRampToValueAtTime(0.05, t + T_OPEN - 0.1); hi.gain.linearRampToValueAtTime(0.0001, t + T_OPEN);
+      const trem = ac.createOscillator(), tg = ac.createGain(); trem.frequency.value = 11; tg.gain.value = 0.5; trem.connect(tg);
+      const hg = ac.createGain(); hg.gain.value = 0.5; tg.connect(hg.gain); hg.connect(hi).connect(out);
+      [988, 1047].forEach(f => { const o = ac.createOscillator(); o.type = 'triangle'; o.frequency.value = f; o.connect(hg); o.start(t + 2.5); o.stop(t + T_OPEN + 0.1); });
+      trem.start(t + 2.5); trem.stop(t + T_OPEN + 0.1);
+      noise(out, t + T_OPEN, 0.6, { gain: 0.5, type: 'lowpass', freq: 2500 });
+      note(out, t + T_OPEN, 90, 1.4, { gain: 0.7, glideTo: 30 });
+      [233, 247, 262].forEach(f => note(out, t + T_OPEN, f, 1.3, { type: 'sawtooth', gain: 0.05, filter: 1800 }));
+    },
+    warm(out, t) {
+      const chords = [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]];
+      chords.forEach((c, i) => {
+        const t0 = t + i * 1.85;
+        c.forEach(m => note(out, t0, hz(m), 2.1, { type: 'triangle', gain: 0.05, env: 'pad', attack: 0.6 }));
+        [0, 1, 2, 1].forEach((k, j) => note(out, t0 + j * 0.46, hz(c[k] + 24), 1.1, { gain: 0.09 }));
+      });
+      [72, 76, 79, 84].forEach((m, i) => note(out, t + T_OPEN + i * 0.09, hz(m), 2.2, { gain: 0.1 }));
+      [48, 52, 55, 60].forEach(m => note(out, t + T_OPEN, hz(m), 1.6, { type: 'triangle', gain: 0.05, env: 'pad', attack: 0.2 }));
+    },
+    silly(out, t) {
+      const beat = 0.4, bass = [43, 38];
+      for (let i = 0; t + i * beat < t + T_OPEN - 0.1; i++) {
+        const tb = t + i * beat;
+        if (i % 2 === 0) note(out, tb, hz(bass[(i / 2) % 2]), 0.22, { type: 'square', gain: 0.12, filter: 600 });
+        else [67, 71, 74].forEach(m => note(out, tb, hz(m), 0.1, { type: 'square', gain: 0.025, filter: 2500 }));
+      }
+      for (let s = 0.3; s < T_WALK; s += 0.5) note(out, t + s, 900, 0.14, { gain: 0.12, glideTo: 260 });
+      note(out, t + T_REACH, 400, 0.6, { gain: 0.1, glideTo: 1500, env: 'pad', attack: 0.05 });
+      note(out, t + T_OPEN, 1500, 0.08, { gain: 0.2, glideTo: 500 });
+      noise(out, t + T_OPEN, 0.05, { gain: 0.4, type: 'bandpass', freq: 2000 });
+      [60, 64, 67, 72].forEach((m, i) => note(out, t + T_OPEN + 0.25 + i * 0.12, hz(m), 0.12, { type: 'square', gain: 0.05, filter: 3000 }));
+    },
+  };
+  const man = $('#mixMan'), arm = $('#mixArm'), door = $('#mixDoor'), glow = $('#mixGlow');
+  let raf = 0;
+  const pose = s => {
+    const walk = Math.min(s, T_WALK) / T_WALK;
+    const x = 60 + walk * 370, bob = s < T_WALK ? Math.abs(Math.sin(s * Math.PI * 2)) * -4 : 0;
+    man.setAttribute('transform', `translate(${x.toFixed(1)} ${bob.toFixed(1)})`);
+    const reach = Math.max(0, Math.min(1, (s - T_WALK) / (T_REACH - T_WALK)));
+    arm.setAttribute('d', `M8 140 L${(22 + reach * 22).toFixed(1)} ${(172 - reach * 34).toFixed(1)}`);
+    const open = Math.max(0, Math.min(1, (s - T_OPEN) / 0.5));
+    door.setAttribute('width', (66 * (1 - open * 0.85)).toFixed(1));
+    glow.setAttribute('opacity', open.toFixed(2));
+  };
+  pose(0);
+  const playMix = kind => {
+    cancelAnimationFrame(raf);
+    document.querySelectorAll('[data-mix]').forEach(b => b.classList.toggle('on', b.dataset.mix === kind));
+    $('#mixRead').innerHTML = `<b>${MIX[kind].read}</b><span>${MIX[kind].el}</span>`;
+    let t0 = performance.now() / 1000;
+    if (kind !== 'mute') { if (!audio()) return; const out = newBus(); const t = ac.currentTime + 0.05; score[kind](out, t); t0 += 0.05; }
+    else stopBus();
+    const tick = () => { const s = performance.now() / 1000 - t0; pose(Math.max(0, s)); if (s < T_END) raf = requestAnimationFrame(tick); };
+    tick();
+  };
+  document.querySelectorAll('[data-mix]').forEach(b => b.addEventListener('click', () => playMix(b.dataset.mix)));
+
+  /* ---------- 互动 2：音乐的四个旋钮 ---------- */
+  const mu = { bpm: 90, mode: 'major', inst: 'piano', dyn: 'flat' };
+  const seg = (id, k) => $(id).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    mu[k] = b.dataset.v; $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); moodText();
+  });
+  seg('#muMode', 'mode'); seg('#muInst', 'inst'); seg('#muDyn', 'dyn');
+  const bpmIn = $('#muBpm');
+  bpmIn.addEventListener('input', () => { mu.bpm = +bpmIn.value; $('#muBpmV').textContent = mu.bpm + ' BPM'; moodText(); });
+  function moodText() {
+    const fast = mu.bpm >= 120, slow = mu.bpm < 85, maj = mu.mode === 'major';
+    const base = fast ? (maj ? '兴奋、欢快' : '紧张、急迫') : slow ? (maj ? '温暖、平静' : '忧伤、沉重') : (maj ? '轻松、明亮' : '不安、悬疑');
+    const inst = { piano: '钢琴：亲密，像在说心里话', strings: '弦乐：宏大，有电影感', synth: '合成器：科技感、未来感' }[mu.inst];
+    $('#muMood').innerHTML = `听起来更像：${base}${mu.dyn === 'cresc' ? '，情绪在往上推' : ''}<small>${mu.bpm} BPM · ${maj ? '大调' : '小调'} · ${inst}${mu.dyn === 'cresc' ? ' · 渐强' : ''}。这是常见倾向，不是定律。</small>`;
+  }
+  moodText();
+  /* C 大调 I–IV–V–I；小调把三音、六音、七音降半音，根音走向不变 */
+  const PROG = [[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]];
+  const minorize = m => { const pc = ((m % 12) + 12) % 12; return [4, 9, 11].includes(pc) ? m - 1 : m; };
+  const playMusic = () => {
+    if (!audio()) return;
+    const out = newBus(), t = ac.currentTime + 0.05, e = 60 / mu.bpm / 2;
+    PROG.forEach((ch, bar) => {
+      const c = mu.mode === 'minor' ? ch.map(minorize) : ch;
+      const pattern = [c[0], c[1], c[2], c[0] + 12, c[2], c[1], c[0], c[1]];
+      pattern.forEach((m, i) => {
+        const tn = t + (bar * 8 + i) * e;
+        const k = mu.dyn === 'cresc' ? 0.25 + 0.75 * ((bar * 8 + i) / 31) : 0.7;
+        if (mu.inst === 'piano') { note(out, tn, hz(m), Math.max(0.6, e * 4), { type: 'triangle', gain: 0.16 * k }); note(out, tn, hz(m + 12), Math.max(0.4, e * 2), { gain: 0.04 * k }); }
+        else if (mu.inst === 'strings') { note(out, tn, hz(m), e * 1.6, { type: 'sawtooth', gain: 0.05 * k, env: 'pad', attack: Math.min(0.12, e * 0.6), filter: 1600 }); note(out, tn, hz(m), e * 1.6, { type: 'sawtooth', gain: 0.04 * k, env: 'pad', attack: Math.min(0.12, e * 0.6), filter: 1600, detune: 9 }); }
+        else { note(out, tn, hz(m + 12), e * 0.9, { type: 'square', gain: 0.05 * k, filter: 3200 }); note(out, tn, hz(m + 12), e * 0.9, { type: 'sawtooth', gain: 0.03 * k, filter: 3200, detune: -12 }); }
+      });
+      const tb = t + bar * 8 * e, kb = mu.dyn === 'cresc' ? 0.25 + 0.75 * (bar / 3) : 0.7;
+      const bassType = mu.inst === 'synth' ? 'square' : mu.inst === 'strings' ? 'sawtooth' : 'triangle';
+      note(out, tb, hz(c[0] - 24), e * 7.6, { type: bassType, gain: 0.14 * kb, env: 'pad', attack: 0.02, filter: 500 });
+    });
+  };
+  $('#muPlay').addEventListener('click', playMusic);
+  $('#muStop').addEventListener('click', stopBus);
+
+  /* 翻页时停掉声音 */
+  const obs = new MutationObserver(() => {
+    const act = document.querySelector('.slide.active');
+    if (act && act.id !== 's-mix' && act.id !== 's-music') { stopBus(); }
+  });
+  document.querySelectorAll('.slide').forEach(s => obs.observe(s, { attributes: true, attributeFilter: ['class'] }));
+})();
+</script>
+</body>

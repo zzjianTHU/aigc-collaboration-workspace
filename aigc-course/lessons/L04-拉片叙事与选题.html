@@ -1,0 +1,789 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 04 课 · 拉片、叙事与选题</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：三遍法、拉片表、打点器、抽帧模拟、60 秒结构条、logline 公式、分场剧本 */
+.pass3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .pass3 { grid-template-columns: repeat(3, 1fr); } }
+.pass3 .card { border-top: 3px solid var(--c); }
+.pass3 .k { font-family: var(--mono); font-size: 11px; color: var(--c); letter-spacing: .12em; }
+.pass3 .rec { padding: 7px 10px; border-radius: 8px; background: var(--panel2); font-size: 13px; color: var(--fg); }
+.tblwrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); }
+.ltbl { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+.ltbl th, .ltbl td { padding: 7px 9px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ltbl th { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--panel2); white-space: nowrap; }
+.ltbl td { color: var(--fg); }
+.ltbl .hl { background: rgba(255,196,107,.1); color: var(--warm); }
+.ltbl td.hl { color: var(--fg); }
+.ltbl .bad { color: var(--r); }
+.ltbl .ok { color: var(--g); }
+.fields { display: flex; flex-wrap: wrap; gap: 6px; }
+.fields span { padding: 4px 9px; border-radius: 8px; background: var(--panel2); font-size: 13px; color: var(--muted); }
+.fields span b { color: var(--fg); }
+.fields span.key { background: rgba(255,196,107,.14); color: var(--warm); }
+.counter .slot { aspect-ratio: 16 / 7; }
+.cbar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; background: #05060a; border: 1px solid var(--line); }
+.cbar i { display: flex; align-items: center; justify-content: center; font-style: normal; font-family: var(--mono); font-size: 11px; color: #07130e; border-right: 2px solid #05060a; min-width: 2px; overflow: hidden; }
+.cstat { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.cstat b { color: var(--warm); font-size: 15px; }
+.kbd { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line); background: var(--panel2); color: var(--fg); }
+.sampler svg { width: 100%; height: auto; display: block; background: #05060a; border-radius: 10px; border: 1px solid var(--line); }
+.sampler text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+.sampler .btn.on { background: var(--warm); color: #1a1408; border-color: var(--warm); }
+.sampler .miss { font-size: 13px; color: var(--muted); min-height: 1.6em; }
+.sampler .miss b { color: var(--r); }
+.err4 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .err4 { grid-template-columns: repeat(4, 1fr); } }
+.err4 .card { border-top: 3px solid var(--r); padding: 13px 14px; }
+.err4 .card > b { font-size: clamp(16px, 1.4vw, 19px); }
+.err4 .why { padding: 7px 9px; border-radius: 8px; background: rgba(63,224,160,.07); border-left: 3px solid var(--g); font-size: 13px; color: var(--fg); line-height: 1.55; }
+.core4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 900px) { .core4 { grid-template-columns: repeat(4, 1fr); } }
+.core4 div { padding: 9px 11px; border-radius: 10px; background: var(--panel2); border-top: 3px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.core4 div b { display: block; font-family: var(--display); font-size: 18px; color: var(--c); }
+.struct { display: grid; grid-template-columns: 1fr; gap: 6px; }
+@media (min-width: 900px) { .struct { grid-template-columns: 5fr 15fr 25fr 15fr; gap: 4px; } }
+.struct > div { padding: 10px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--c); min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.struct .t { font-family: var(--mono); font-size: 12px; color: var(--c); }
+.struct b { font-family: var(--display); font-size: 17px; line-height: 1.2; }
+.struct p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.struct .sp { font-size: 13px; color: var(--fg); padding: 5px 8px; border-radius: 7px; background: rgba(91,140,255,.1); }
+.struct .ex { font-size: 12.5px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 5px; }
+@media (min-width: 900px) { .struct > div:first-child { padding: 10px 8px; } .struct > div:first-child b { font-size: 15px; } }
+.formula { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--display); font-weight: 800; font-size: clamp(17px, 1.7vw, 22px); line-height: 1.5; }
+.formula span { padding: 2px 10px; border-radius: 8px; border: 1px solid var(--c); color: var(--c); background: rgba(255,255,255,.03); }
+.lex { font-size: 14px; color: var(--muted); line-height: 1.65; padding: 9px 12px; border-radius: 10px; background: #05060a; border: 1px solid var(--line); }
+.lex b { font-weight: 700; }
+.lex .a { color: var(--b); } .lex .g { color: var(--warm); } .lex .o { color: var(--r); } .lex .c { color: var(--g); }
+.script { font-family: var(--mono); font-size: 13px; line-height: 1.7; padding: 12px 14px; border-radius: 12px; background: #05060a; border: 1px solid var(--line); color: var(--fg); }
+.script .sh { color: var(--warm); font-weight: 600; }
+.script .ac { color: var(--fg); }
+.script .vo { color: var(--g); padding-left: 2em; }
+.script .cm { color: var(--muted); font-size: 11.5px; }
+.xo { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+.xo span { padding: 6px 10px; border-radius: 8px; background: var(--panel2); color: var(--muted); }
+.xo span.x { color: var(--r); background: rgba(255,84,104,.08); }
+.xo span.o { color: var(--g); background: rgba(63,224,160,.08); }
+.canlist { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .canlist { grid-template-columns: 1fr 1fr; } }
+.canlist .card ul { gap: 5px; }
+.canlist .yes { border-top: 3px solid var(--g); } .canlist .yes .tag { color: var(--g); }
+.canlist .no { border-top: 3px solid var(--r); } .canlist .no .tag { color: var(--r); }
+.lim3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.lim3 div { padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--warm); text-align: center; }
+.lim3 b { display: block; font-family: var(--display); font-size: clamp(26px, 2.8vw, 38px); line-height: 1.1; color: var(--warm); }
+.lim3 span { font-size: 13px; color: var(--muted); }
+.redline { display: grid; grid-template-columns: 1fr; gap: 6px; }
+@media (min-width: 900px) { .redline { grid-template-columns: 1fr 1fr; } }
+.redline span { padding: 7px 10px; border-radius: 8px; background: rgba(255,84,104,.08); color: var(--fg); font-size: 13.5px; border-left: 3px solid var(--r); }
+.roles3 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.roles3 div { padding: 9px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.roles3 div b { color: var(--fg); font-size: 15px; margin-right: 6px; }
+.bible4 { display: grid; grid-template-columns: 1fr; gap: 6px; counter-reset: bb; }
+.bible4 div { counter-increment: bb; padding: 7px 10px 7px 38px; position: relative; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.bible4 div::before { content: counter(bb); position: absolute; left: 10px; top: 7px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--warm); color: #1a1408; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+.bible4 div b { color: var(--fg); }
+.bible4 div.later { opacity: .55; }
+.bible4 div.later::before { background: var(--panel2); color: var(--muted); }
+.prompt-box { position: relative; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; padding: 12px 14px; border-radius: 12px; background: #05060a; border: 1px solid var(--line); color: var(--warm); }
+.gate4 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 900px) { .gate4 { grid-template-columns: repeat(4, 1fr); } }
+.gate4 div { padding: 10px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--g); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.gate4 div b { display: block; color: var(--fg); font-size: 15px; }
+/* 投影仪常见的 1280×720：压缩 */
+@media (max-height: 800px) {
+  .counter .slot { aspect-ratio: 16 / 5.2; }
+  .card { padding: 12px 14px; gap: 6px; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.55; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .script { font-size: 12px; line-height: 1.6; padding: 9px 12px; }
+  .ltbl th, .ltbl td { padding: 5px 8px; }
+  .err4 .card { padding: 10px 12px; }
+  .inner { gap: 16px; }
+}
+</style>
+
+<body data-lesson="L04">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开门见山。开口：“前三节课我们学会了看画面、看镜头、听声音，今天要做一件事：把别人的片子拆开，看懂它为什么好看；再用同样的眼光，开始搭我们自己的故事。今天下课前，每个组都要有一个立得住的选题，这就是关卡 1 的起点。”把三个问题念一遍，告诉学生下课前每人都要能回答。提醒学生把上节课布置的短视频（自己喜欢的一段，手机里能打开）准备好，后面实操要用。">
+  <div class="lesson-no" aria-hidden="true">04</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第一幕 · 看见与构思</span><span>LESSON 04 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">拉片、叙事与选题<br><span class="rgbword">关卡 1 启动</span></h1>
+    <p class="lead">先学会<b>把一部片子拆开看</b>，再检查 AI 看片会在哪里看错；最后组队，写出你们 60 秒短片的<b>第一句话</b>。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>怎样把一段视频“拆开”，看懂它的手法？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>AI 看视频时，为什么会看错？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>60 秒，能讲好一个什么样的故事？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–35</b>知识讲解 · 拉片 / AI 看片 / 叙事 / 选题</span>
+      <span><b>35–82</b>实操 · 手工拉片 / AI 纠错 / 组队立项</span>
+      <span><b>82–90</b>提案 · 关卡 1 启动</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 什么是拉片 ============ -->
+<section class="slide" data-min="2" data-note="模块 1，拉片方法，10 分钟。先讲一个导演的故事。按 → 分两步。第一步：2014 年，拍过《十一罗汉》的导演史蒂文·索德伯格在自己的网站上放出了一个特别版本的《夺宝奇兵》（1981 年，斯皮尔伯格导演）：他把颜色去掉，把原来的对白和音效也去掉，只配上一段音乐。他说，请你看这部电影时只想一件事：演员和摄影机是怎样调度的，每个镜头为什么放在那里。（课前核实：索德伯格 2014 年 9 月发布于其网站 Extension 765，配乐的具体来源以原帖为准。）问学生：一个大导演，为什么要把一部老电影拆成这样看？引导：去掉颜色和声音，你就不会被故事带着走，只剩下手法。第二步讲“拉片”这个词：胶片时代，剪辑师在剪辑台上把胶片来回拉着一格一格看，所以叫拉片（课前核实：此说法为国内电影教学常见解释）。今天你们不需要剪辑台，手机暂停键就行。落点：看电影是享受，拉片是学手艺：你要从“被故事带着走”变成“看清它是怎么带你走的”。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 拉片方法</span><span>10 MIN</span></div>
+    <h2 class="h-l">一位导演，把别人的电影“拆”成了黑白默片</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="step">
+          <div class="card story"><span class="tag">故事 · 索德伯格 2014</span>
+            <b>只看调度的《夺宝奇兵》</b>
+            <p>导演史蒂文·索德伯格把 1981 年的《夺宝奇兵》<b>去掉颜色、去掉原声</b>，只配一段音乐，放到自己的网站上。</p>
+            <p>他请观众只想一件事：<b>演员和摄影机怎样调度</b>，每个镜头为什么放在那里。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="card idea"><span class="tag">名字的由来</span>
+            <p>胶片时代，剪辑师在剪辑台上<b>把胶片来回拉着、一格一格地看</b>，所以叫“拉片”。今天，你的暂停键就是剪辑台。</p>
+          </div>
+          <div class="punch">看电影是享受，拉片是学手艺。<small>从“被故事带着走”，变成“看清它是怎样带你走的”。</small></div>
+        </div>
+      </div>
+      <div class="slot" data-slot="raiders"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 三遍法 ============ -->
+<section class="slide" data-min="3" data-note="这一页讲三遍法。先用看球赛打比方：第一遍你是球迷，看比分、看进球，激动就完了；第二遍看集锦回放，开始发现是哪次换人、哪次失误让比赛拐了弯；第三遍你是教练，逐帧暂停，看每个球员站在哪、怎么跑位。拉片也一样。按 → 逐列展开。第一遍完整观看，不暂停、不记手法，只记两样：最打动你的一刻，一个词形容整体感受。强调：第一遍一定不能省，因为第一次看的感受只有一次，一旦开始分析，你就再也不能像普通观众那样看它了。后面所有分析都要回答一个问题：它是怎样让我产生这个感受的？第二遍分段看，标出结构转折：哪几秒故事拐了弯，情绪在哪里变了。第三遍逐镜头暂停，在每个剪辑点停下来，填拉片表。问学生：为什么不一上来就逐镜头暂停？落点：先感受，再找结构，最后看手法；顺序反了，你会只见树木不见森林。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 拉片方法</span><span>① 三遍法</span></div>
+    <h2 class="h-l">同一段视频，看三遍，每遍只做一件事</h2>
+    <div class="pass3">
+      <div class="step"><div class="card" style="--c:var(--b)"><span class="k">第一遍 · 完整看</span>
+        <b>只记感受</b>
+        <p>不暂停，不分析。像普通观众一样看完。</p>
+        <div class="rec">记下：最打动你的<b>一刻</b> + 形容整体感受的<b>一个词</b></div>
+      </div></div>
+      <div class="step"><div class="card" style="--c:var(--warm)"><span class="k">第二遍 · 分段看</span>
+        <b>找结构转折</b>
+        <p>故事在哪几秒“拐了弯”？情绪在哪里变了？</p>
+        <div class="rec">记下：每个转折点的<b>时间码</b>和<b>发生了什么</b></div>
+      </div></div>
+      <div class="step"><div class="card" style="--c:var(--g)"><span class="k">第三遍 · 逐镜头暂停</span>
+        <b>记手法</b>
+        <p>在每一个剪辑点停下来，看这个镜头怎么拍、怎么接。</p>
+        <div class="rec">记下：<b>拉片表</b>的每一个字段（下一页）</div>
+      </div></div>
+    </div>
+    <div class="g2">
+      <div class="card analogy"><span class="tag">打个比方 · 看球赛</span>
+        <p>第一遍是<b>球迷</b>，看比分和进球；第二遍看<b>回放</b>，找哪次换人让比赛拐了弯；第三遍是<b>教练</b>，逐帧看每个人怎么跑位。</p>
+      </div>
+      <div class="card ask"><span class="tag">想一想</span>
+        <p>为什么第一遍不能省？为什么不一上来就逐镜头暂停？</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 拉片表字段 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲拉片表。十个字段，前面九个是“量出来”的：镜号、起止时间、时长、景别、机位、运镜、画面内容、声音、转场，第 2、3 课学过的词都用得上。声音一栏要分四类写：音乐、音效、人声、环境声，没有就写“无”，因为没有声音本身也是一种选择。最后一个字段“叙事作用”最难，也最重要：这个镜头让观众知道了什么，或者感受到了什么。打比方：拉片表像体检单，身高体重血压谁都能量，最后那行“诊断”才见功夫。教学生一个检验方法：假设删掉这个镜头，观众会少知道什么、少感受到什么？答得出来，叙事作用就填对了；答不出来，说明你还没看懂这个镜头，或者这个镜头确实可有可无。表里这一行是示例，不对应某部真实作品。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 拉片方法</span><span>② 拉片表</span></div>
+    <h2 class="h-l">拉片表：每个镜头一行，十个字段</h2>
+    <div class="tblwrap">
+      <table class="ltbl">
+        <thead><tr><th>镜号</th><th>起止</th><th>时长</th><th>景别</th><th>机位</th><th>运镜</th><th>画面内容</th><th>声音（乐/效/人/环境）</th><th>转场</th><th class="hl">叙事作用</th></tr></thead>
+        <tbody>
+          <tr><td>3</td><td>00:05.2–00:07.0</td><td>1.8 秒</td><td>特写</td><td>俯拍</td><td>固定</td><td>一只手按停闹钟</td><td>乐：无 · 效：铃声戛然而止 · 环境：窗外鸟叫</td><td>硬切</td><td class="hl">她早就醒了，一直在等这一刻</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">↑ 示例行（虚构），只演示每一格写到什么程度。</p>
+    <div class="g2">
+      <div class="card analogy"><span class="tag">打个比方 · 体检单</span>
+        <p>前九格像身高、体重、血压，<b>量出来</b>就行；最后一格“叙事作用”是医生的<b>诊断</b>，最见功夫。</p>
+      </div>
+      <div class="card ask"><span class="tag">检验叙事作用的办法</span>
+        <p>假如删掉这个镜头，观众会<b>少知道什么、少感受到什么</b>？答得出来，才算填对。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 统计视角 + 打点器 ============ -->
+<section class="slide" id="s-count" data-min="2.5" data-note="这一页做两件事：讲统计视角，并现场示范拆解前 15 秒。先讲三个数：镜头总数、平均镜头时长（总时长除以镜头数）、各景别占比。数字能读出节奏策略：平均镜头越短，节奏越快、越紧张；特写越多，越贴近人物情绪。讲一个真实的研究：电影学者大卫·波德维尔 2002 年发表《强化的连续性》，统计发现好莱坞电影的镜头越来越短：1930 到 1960 年代，多数电影平均每个镜头 8 到 11 秒；到 2000 年前后，很多电影只有 3 到 4 秒（课前核实：Bordwell, Intensified Continuity, Film Quarterly 2002 中的具体数字）。反过来，萨姆·门德斯的《1917》（2019）被设计成看起来像一个镜头拍到底。两个极端，都是有意的选择。然后现场示范：在右边放入示范视频（推荐陈可辛 2018 年的短片《三分钟》开头，或教师示范项目片），点“开始”，视频从头播放，每看到一次剪辑就按 C 键或点“剪！”，15 秒自动停止，下面会算出镜头数和平均镜头时长。让全班一起喊“剪”，再对照老师的结果。之后逐镜暂停，用上一页的表拆 2 到 3 个镜头，重点讲叙事作用。没放视频时，打点器按真实时间计时，也可以边看投屏边点。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 拉片方法</span><span>③ 统计视角 · 示范</span></div>
+    <h2 class="h-l">数一数，就能读出节奏</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">三个数</span>
+          <ul>
+            <li><b>镜头总数</b></li>
+            <li><b>平均镜头时长</b> = 总时长 ÷ 镜头数：越短，节奏越快</li>
+            <li><b>各景别占比</b>：特写越多，越贴近人物情绪</li>
+          </ul>
+        </div>
+        <div class="card story"><span class="tag">研究 · 波德维尔 2002</span>
+          <p>好莱坞电影的镜头越来越短：1930–60 年代，平均每个镜头约 <b>8–11 秒</b>；2000 年前后，很多电影只有 <b>3–4 秒</b>。</p>
+          <p>反过来，《1917》（2019）被设计成看起来<b>一镜到底</b>。两种极端，都是有意的选择。</p>
+          <p class="src">Bordwell, “Intensified Continuity”, Film Quarterly, 2002</p>
+        </div>
+      </div>
+      <div class="lab counter">
+        <span class="label">互动 · 剪辑点打点器（前 15 秒）</span>
+        <div class="slot" data-slot="demo15"></div>
+        <div class="row">
+          <button class="btn primary" id="cntStart" type="button">开始</button>
+          <button class="btn" id="cntCut" type="button">剪！<span class="kbd">C</span></button>
+          <button class="btn" id="cntStop" type="button">停止</button>
+          <button class="btn" id="cntReset" type="button">清空</button>
+        </div>
+        <div class="cbar" id="cntBar"></div>
+        <div class="cstat" id="cntStat">点“开始”，每看到一次剪辑，就按 C 或点“剪！”</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 AI 抽帧 ============ -->
+<section class="slide" id="s-sample" data-min="4.5" data-note="模块 2，AI 怎样看视频，8 分钟。先回扣第 1 课：模型读图片，要先把图片切块变成 token。一段 60 秒、每秒 30 帧的视频是 1800 张图，全部读进去太贵，所以多数视频理解模型不是逐帧看，而是按间隔抽帧，比如每秒抽 1 帧，再把这些画面和字幕、语音转成的文字放在一起理解。这不是猜测：谷歌 Gemini 的开发文档就写明，视频默认按每秒 1 帧抽样（课前核实：以 Gemini API 视频理解文档当期说法为准；其他工具的抽帧方式多数不公开）。打比方：隔一秒睁一次眼看球赛，比分你知道，可进球那一脚可能正好闭着眼。然后操作右边的模拟：这是一段 15 秒、10 个镜头的虚构片段，中间有一串不到 1 秒的快切。1. 选每秒 1 帧，看哪些镜头被抽到、哪些被漏掉，AI 数出来的镜头数比真实的少。2. 点“换个起点抽”，漏掉的镜头会变，说明结果有运气成分。3. 调到每秒 4 帧，几乎都抽到了，但代价是要读的画面变成 4 倍。4. 调到每 2 秒 1 帧，漏得更多。落点：AI 看到的是一串照片，不是一段视频。快切越多，它漏得越多。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · AI 怎样“看”视频</span><span>8 MIN</span></div>
+    <h2 class="h-l">AI 看视频：隔一会儿，睁一次眼</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">原理</span>
+          <p>多数视频理解模型<b>不逐帧看</b>，而是<b>按间隔抽帧</b>（例如每秒 1 帧），再把这些画面和<b>字幕、语音转写的文字</b>放在一起理解。</p>
+          <p>原因很简单：60 秒、每秒 30 帧就是 1800 张图，全读进去太贵。</p>
+          <p class="src">例：Gemini API 文档写明视频默认按每秒 1 帧抽样</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>隔一秒睁一次眼看球赛：比分你知道，<b>进球的那一脚，可能正好闭着眼</b>。</p>
+        </div>
+      </div>
+      <div class="lab sampler">
+        <span class="label">互动 · 抽帧模拟（虚构的 15 秒片段，10 个镜头）</span>
+        <svg id="smpSvg" viewBox="0 0 640 196" role="img" aria-label="15 秒片段的镜头时间轴和抽帧位置"></svg>
+        <div class="row">
+          <span class="small">抽帧频率</span>
+          <button class="btn" type="button" data-fps="0.5">每 2 秒 1 帧</button>
+          <button class="btn on" type="button" data-fps="1">每秒 1 帧</button>
+          <button class="btn" type="button" data-fps="4">每秒 4 帧</button>
+          <button class="btn" id="smpShift" type="button">换个起点抽</button>
+        </div>
+        <div class="cstat" id="smpStat"></div>
+        <div class="miss" id="smpMiss"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 典型错误 ============ -->
+<section class="slide" data-min="3.5" data-note="这一页讲 AI 拉片的四种典型错误，每一种都能用抽帧解释。按 → 先展开四张卡。第一，镜头数偏少：刚才模拟里看到了，快切被漏掉。第二，运镜混淆。推镜是摄影机真的往前走，变焦是摄影机不动、镜头放大。打比方：你走近一棵树，树和后面山的距离关系会变，近的变大得快、远的变大得慢；用望远镜看，整幅画一起放大。只看前后两帧，AI 看到的都是“画面变大了”，很难分清。同理，移是摄影机横着走，摇是摄影机原地转头。可以顺带讲希区柯克 1958 年《迷魂记》里著名的“眩晕镜头”：一边往后拉、一边变焦推近，人物大小不变，背景却像被拉长了，这正是靠推和变焦的差别做出来的。第三，声音分析薄弱：很多工具只拿到画面和语音转写的文字，音乐和音效常常是凭画面“猜”的，看到下雨就说有雨声。第四，叙事解读说得通，但可能不是作者的意思：像语文阅读理解里“作者为什么写窗帘是蓝色的”，它能编出一套很顺的理由。再按 → 出结论。落点：AI 适合做第一遍粗分析、统计和归纳，人负责核查镜头语言、判断叙事。这正是实操任务 2 要做的。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · AI 怎样“看”视频</span><span>为什么会看错</span></div>
+    <h2 class="h-l">AI 拉片的四种典型错误</h2>
+    <div class="step">
+      <div class="err4">
+        <div class="card"><span class="tag" style="color:var(--r)">错误 1</span><b>镜头数偏少</b>
+          <p>一串不到 1 秒的快切，被整段漏掉。</p>
+          <div class="why">抽帧的间隔，比镜头还长</div></div>
+        <div class="card"><span class="tag" style="color:var(--r)">错误 2</span><b>推镜 / 变焦、移 / 摇 分不清</b>
+          <p>走近一棵树，树和远山的距离关系会变；用望远镜看，<b>整幅画一起放大</b>。</p>
+          <div class="why">只看到前后两帧“画面变大了”</div></div>
+        <div class="card"><span class="tag" style="color:var(--r)">错误 3</span><b>声音分析薄弱</b>
+          <p>看到下雨，就说“有雨声”；配乐和音效常常是<b>凭画面猜</b>的。</p>
+          <div class="why">很多工具只拿到画面 + 语音转写的文字</div></div>
+        <div class="card"><span class="tag" style="color:var(--r)">错误 4</span><b>解读“说得通”，但不是作者的意思</b>
+          <p>像阅读理解“作者为什么写窗帘是蓝色的”，它总能编出一套顺的理由。</p>
+          <div class="why">它生成的是“看起来合理”的文字（第 1 课）</div></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="punch">AI 做第一遍：粗分析、统计、归纳。人做终审：核查镜头语言，判断叙事。<small>实操任务 2：用你自己的拉片表，抓出 AI 的错。</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 只讲一个时刻 ============ -->
+<section class="slide" data-min="3" data-note="模块 3，60 秒短片的叙事，12 分钟，这是今天最重要的模块。先立一条原则：60 秒容不下一个完整的人生，只能讲一个时刻：一个变化、一个发现或一个选择。然后讲故事核心四要素：角色、欲望（他想要什么）、阻碍、变化。用皮克斯的短片《鹬》（Piper，2016，第 89 届奥斯卡最佳动画短片）来拆：一只刚学觅食的小鹬鸟，想自己在沙滩上找到吃的，这是欲望；第一次去就被海浪打翻，从此害怕海水，这是阻碍；后来它跟着寄居蟹钻进沙里，在浪打过来时睁开眼，看见了浪下的世界和食物，不再害怕，这是变化。整部片几乎没有一句台词。可以放 1 分钟片段。然后按 → 问学生：如果没有海浪，会怎样？小鹬走过去吃了一顿，片子结束，没有故事。落点：没有阻碍就没有故事。你们提点子时，先问自己：我的角色想要什么，什么拦着他？">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 60 秒短片的叙事</span><span>12 MIN</span><span>① 故事核心</span></div>
+    <h2 class="h-l">60 秒，只讲一个时刻</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="card idea"><span class="tag">原则</span>
+          <p>60 秒容不下一个完整的人生，只能讲<b>一个变化、一个发现，或一个选择</b>。</p>
+        </div>
+        <div class="core4">
+          <div style="--c:var(--b)"><b>角色</b>谁？</div>
+          <div style="--c:var(--warm)"><b>欲望</b>他想要什么？</div>
+          <div style="--c:var(--r)"><b>阻碍</b>什么拦着他？</div>
+          <div style="--c:var(--g)"><b>变化</b>最后什么不一样了？</div>
+        </div>
+        <div class="card story"><span class="tag">拆一部片 · 皮克斯《鹬》2016</span>
+          <p><b>角色</b>：刚学觅食的小鹬鸟 · <b>欲望</b>：自己在沙滩上找到吃的 · <b>阻碍</b>：被海浪打翻，从此怕水 · <b>变化</b>：跟着寄居蟹在浪下睁开眼，看见了食物，不再害怕。</p>
+          <p class="src">Piper，导演 Alan Barillaro，第 89 届奥斯卡最佳动画短片；几乎没有台词</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="piper"></div>
+        <div class="step">
+          <div class="card ask"><span class="tag">想一想</span><p>如果没有海浪，这个故事会怎样？</p></div>
+          <div class="punch">没有阻碍，就没有故事。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 60 秒结构 ============ -->
+<section class="slide" data-min="3" data-note="这一页讲 60 秒的结构。上面四段的宽度就是真实时长比例：钩子只有 5 秒，最长的是中间 25 秒的阻碍升级和转折。逐段讲：0 到 5 秒是钩子，一个反常的画面、一个问题或一个冲突，让人不想划走；5 到 20 秒建立角色和处境，观众要知道他是谁、平时怎样；20 到 45 秒阻碍升级，出现转折；45 到 60 秒给结局或余味，一个画面胜过一句台词。再介绍一个好用的工具：故事脊柱。2011 年皮克斯的故事艺术家艾玛·科茨在网上分享了她在皮克斯学到的 22 条讲故事法则，其中第 4 条就是这个填空：从前有……，每天……，直到有一天……，因为这样……，因为这样……，直到最后……。它最早来自即兴戏剧老师肯·亚当斯（课前核实：Emma Coats 2011 年的推文合集与 Kenn Adams 的 story spine）。蓝色小字就是故事脊柱放进 60 秒的位置。注意钩子可以提前“剧透”转折里的一个画面。最下面一行是一个示例点子《粉笔画》，后面讲 logline 和剧本时会一直用它。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 60 秒短片的叙事</span><span>② 结构</span></div>
+    <h2 class="h-l">60 秒的四段结构</h2>
+    <div class="struct">
+      <div style="--c:var(--r)"><span class="t">0–5″</span><b>钩子</b><p>反常画面 / 问题 / 冲突</p><span class="sp">直到有一天…（先露一角）</span><span class="ex">黑夜的教室，一道红色扫描光停在黑板一角</span></div>
+      <div style="--c:var(--b)"><span class="t">5–20″</span><b>建立角色与处境</b><p>他是谁？平时怎样？</p><span class="sp">从前有……每天……</span><span class="ex">一台旧清洁机器人，每晚擦黑板、扫地；门口堆着新机器的箱子</span></div>
+      <div style="--c:var(--warm)"><span class="t">20–45″</span><b>阻碍升级，出现转折</b><p>想要的东西被拦住，越来越难</p><span class="sp">直到有一天……因为这样……因为这样……</span><span class="ex">黑板角落有学生画的它；程序要求擦掉一切，擦板臂举起又放下</span></div>
+      <div style="--c:var(--g)"><span class="t">45–60″</span><b>结局或余味</b><p>一个画面胜过一句台词</p><span class="sp">直到最后……</span><span class="ex">清晨，黑板干净，只剩那幅画；它停在墙角，已经关机</span></div>
+    </div>
+    <div class="g2">
+      <div class="card story"><span class="tag">工具 · 皮克斯的“故事脊柱”</span>
+        <p>2011 年，皮克斯故事艺术家艾玛·科茨分享的“22 条讲故事法则”第 4 条：<b>从前有___。每天___。直到有一天___。因为这样___。因为这样___。直到最后___。</b></p>
+        <p class="src">Emma Coats, Pixar story rules #4 (2011)；源自即兴戏剧老师 Kenn Adams 的 story spine</p>
+      </div>
+      <div class="card analogy"><span class="tag">打个比方</span>
+        <p>像一首歌：<b>前奏</b>抓耳朵，<b>主歌</b>交代，<b>副歌</b>推到最高，<b>尾奏</b>留余音。60 秒短片也是先抓住、再推高、最后留一口气。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 展示而非告知 ============ -->
+<section class="slide" data-min="3" data-note="这一页讲两条写作原则。第一条，展示而非告知：用画面和动作表达情绪，而不是让角色说“我很难过”。最好的例子是皮克斯《飞屋环游记》（2009）开场那段四分钟左右、几乎没有对白的“婚后生活”：卡尔和艾莉结婚、修房子、一起存钱去南美的天堂瀑布，存钱罐一次次被生活打碎，换轮胎、看病、修房子；卡尔每天给自己打领带，领带从年轻到年老；最后艾莉去世。没有一句“我爱你”“我很遗憾”，全场观众都哭了。如果放片段，放到存钱罐被打碎那里即可。第二条，契诃夫之枪：俄国作家契诃夫 1889 年在一封信里说，如果台上放了一支上了膛的枪，它就一定要响，否则就不该放（课前核实：契诃夫致拉扎列夫-格鲁津斯基的信，常见引述有几个版本）。意思是：每一个元素都要有用，前面埋下，后面兑现。60 秒只有 8 到 12 个镜头，更是一个都不能浪费。看示例《粉笔画》：钩子里那幅画，就是要在结尾“响”的枪。最后让学生试一下：把“我好难过”改成一个画面。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 60 秒短片的叙事</span><span>③ 两条原则</span></div>
+    <h2 class="h-l">用画面说话，埋下的都要响</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card story"><span class="tag">展示而非告知 · 《飞屋环游记》2009</span>
+          <p>开场约四分钟的“婚后生活”，<b>几乎没有一句对白</b>：一起存钱去天堂瀑布，存钱罐一次次被生活打碎；领带从年轻打到年老。没人说“我爱你”，全场都哭了。</p>
+        </div>
+        <div class="xo">
+          <span class="x">✗ 她说：“我好难过。”</span>
+          <span class="o">✓ 她把生日蛋糕上的蜡烛，一根一根拔掉。</span>
+        </div>
+        <div class="card ask"><span class="tag">试一试</span><p>把“他很紧张”改成一个镜头能拍到的画面。</p></div>
+      </div>
+      <div class="col">
+        <div class="slot" data-slot="up" style="aspect-ratio:16/7"></div>
+        <div class="card story"><span class="tag">契诃夫之枪 · 1889</span>
+          <p>作家契诃夫在信里说：如果台上放着一支上了膛的枪，<b>它就一定要响</b>，否则就别放。</p>
+          <p>60 秒只有 8–12 个镜头：<b>前面埋下的，后面要兑现</b>。《粉笔画》开头那幅画，就是结尾要“响”的枪。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 Logline 与分场剧本 ============ -->
+<section class="slide" data-min="3" data-note="这一页给两个写作格式，实操任务 3 直接要用。先讲 logline，就是一句话梗概，电影行业用它来回答“你的片子讲什么”。公式：当【角色】想要【目标】时，遇到【阻碍】，他必须【行动或选择】。四个颜色对应上一页讲的故事核心。念两个例子：《鹬》，和我们的示例《粉笔画》。提醒：logline 里一定要有阻碍，一定要有一个动作或选择，否则只是一个设定，不是一个故事。再讲分场剧本格式：场景标题写场号、内景还是外景、地点、时间；动作描述只写镜头能拍到的东西；对白或旁白单独一行。重点讲“只写镜头能拍到的”：“它很怀念过去”拍不出来，“它的扫描光在那幅画上停了三秒”拍得出来。这条规矩以后还有一个好处：镜头能拍到的描述，就是之后写给 AI 的提示词。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 60 秒短片的叙事</span><span>④ 两个格式</span></div>
+    <h2 class="h-l">一句话 logline + 分场剧本</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="formula">当<span style="--c:var(--b)">角色</span>想要<span style="--c:var(--warm)">目标</span>时，遇到<span style="--c:var(--r)">阻碍</span>，他必须<span style="--c:var(--g)">行动 / 选择</span></div>
+        <div class="lex">《鹬》：当一只<b class="a">刚学觅食的小鹬鸟</b>想要<b class="g">自己找到吃的</b>时，<b class="o">海浪把它打翻、让它怕水</b>，它必须<b class="c">学会在浪下睁开眼</b>。</div>
+        <div class="lex">示例《粉笔画》：当一台<b class="a">即将被替换的清洁机器人</b>想<b class="g">留下学生为它画的粉笔画</b>时，<b class="o">它的程序要求擦掉一切</b>，它必须在<b class="c">完成任务和留下记忆之间做选择</b>。</div>
+        <div class="xo">
+          <span class="x">✗ 动作描述：它很怀念过去。（拍不出来）</span>
+          <span class="o">✓ 它的扫描光在那幅画上停了三秒。（拍得出来，也是之后的提示词）</span>
+        </div>
+      </div>
+      <div class="col">
+        <span class="label">分场剧本格式 · 示例</span>
+        <div class="script">
+          <div class="sh">场 1　内景　教室　夜</div>
+          <div class="ac">黑暗中，一道红色扫描光扫过课桌，停在黑板右下角。</div>
+          <div class="ac">那里有一幅粉笔画：一台小机器人，头顶画着一颗心。</div>
+          <div class="cm">— 场景标题：场号 + 内/外景 + 地点 + 时间</div>
+          <div class="sh">场 2　内景　教室　夜（稍后）</div>
+          <div class="ac">机器人举起擦板臂，停住，又放下。</div>
+          <div class="vo">广播（画外）：设备更换将于明早七点进行。</div>
+          <div class="cm">— 对白 / 旁白单独一行；动作只写镜头能拍到的</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 AI 擅长 / 不擅长 ============ -->
+<section class="slide" data-min="3" data-note="模块 4，为 AI 制作而选题，5 分钟。点子好不好，还要看能不能用当下的 AI 做出来。先看两栏：AI 视频比较擅长的是氛围和环境、单人主体、慢速动作、奇观和超现实画面、风格化画面；比较不擅长的是多人复杂互动、精确的手和物体操作、可读的文字、长对白和口型、需要跨镜头精确衔接的连续动作。讲一个真实的例子：2023 年 3 月，网上疯传一段 AI 生成的“威尔·史密斯吃意大利面”视频，面条和手和脸糊成一团，成了 AI 视频的著名笑话；后来每出一个新的视频模型，就有人拿它重新测一遍；2024 年威尔·史密斯本人还拍了一段视频调侃它。问学生：这段视频暴露了 AI 的哪几个弱点？答案：手和物体的精确操作、吃东西这种连续动作。再追问：放在我们课上，这段视频还有什么问题？它用了真人明星的脸，踩了红线，下一页讲。最后打个比方：AI 视频像做梦，氛围很对，细节经不起看。有意思的是，练习清醒梦的人常用“看自己的手”“读一行字”来检查自己是不是在做梦，因为梦里的手和字最不稳定（这是一个比方，不是科学结论）。左下角的媒体位放教师示范项目里的一个成功镜头和一个失败镜头做对比。工具能力变化很快，这两栏以开课前实测为准。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 4 · 为 AI 制作而选题</span><span>5 MIN</span></div>
+    <h2 class="h-l">选 AI 拍得好的故事</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+      <div class="canlist">
+        <div class="card yes"><span class="tag">当前较擅长</span>
+          <ul><li>氛围与环境</li><li>单人主体</li><li>慢速动作</li><li>奇观、超现实画面</li><li>风格化画面</li></ul>
+        </div>
+        <div class="card no"><span class="tag">当前较不擅长</span>
+          <ul><li>多人复杂互动</li><li>精确的手部与物体操作</li><li>可读的文字</li><li>长对白、口型</li><li>跨镜头精确衔接的连续动作</li></ul>
+        </div>
+      </div>
+      <div class="slot" data-slot="okfail" style="aspect-ratio:16/5"></div>
+      </div>
+      <div class="col">
+        <div class="card story"><span class="tag">真实事件 · 2023 年 3 月</span>
+          <b>“威尔·史密斯吃意大利面”</b>
+          <p>一段 AI 生成的视频疯传网络：面条、手和脸糊成一团，成了 AI 视频的著名笑话，此后新模型常被拿它“重测”。</p>
+          <p>放在我们课上，它还<b>踩了红线</b>：用了真人明星的脸。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>AI 视频像做梦：<b>氛围很对，细节经不起看</b>。梦里的手数不清、字读不出，AI 也一样。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 三限与红线 ============ -->
+<section class="slide" data-min="2" data-note="这一页给硬约束。60 秒三限：角色不超过 2 个（含主角），场景不超过 3 个，镜头 8 到 12 个、单镜 3 到 8 秒。为什么要限？打比方：坐飞机只能带一个登机箱，装不下就得挑；每多一个角色，就要多保证一个人在每个镜头里长得一样，工作量翻倍，四节 AI Studio 课做不完。再讲红线：不用真实明星或同学的肖像和声音（除非本人书面同意且学校批准）、不模仿受保护的 IP 角色、不用未授权音乐、不做以假乱真的新闻画面。详细规则第 10 课讲。最后看示例《粉笔画》的一次自查修改：原本黑板上写的是一行字“谢谢你”，对照 AI 不擅长清单，可读文字是弱点，所以改成一幅粉笔画，故事一点没变，反而更像“展示而非告知”。选题鼓励但不强制面向“用 AI 讲述一个关于未来的问题”，比如人与 AI 的关系、孤独、城市，便于以后自愿投稿。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 4 · 为 AI 制作而选题</span><span>三限与红线</span></div>
+    <h2 class="h-l">60 秒三限，四条红线</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="lim3">
+          <div><b>≤ 2</b><span>角色（含主角）</span></div>
+          <div><b>≤ 3</b><span>场景</span></div>
+          <div><b>8–12</b><span>镜头 · 单镜 3–8 秒</span></div>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 登机箱</span>
+          <p>只能带一个登机箱，装不下就得挑。每多一个角色，就要多保证一个人<b>在每个镜头里长得一样</b>。</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="redline">
+          <span>不用真实明星 / 同学的肖像与声音</span>
+          <span>不模仿受保护的 IP 角色</span>
+          <span>不用未授权的音乐</span>
+          <span>不做以假乱真的“新闻”画面</span>
+        </div>
+        <div class="card idea"><span class="tag">自查示例 · 《粉笔画》</span>
+          <p>原本黑板上写着一行字“谢谢你”→ 对照清单：<b>AI 写不好字</b> → 改成一幅<b>粉笔画</b>。故事没变，反而更“展示而非告知”。</p>
+        </div>
+        <p class="small">自由选题；鼓励（不强制）“用 AI 讲述一个关于未来的问题”。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，共 47 分钟，三个任务。先确认每人手机里有一段自己带来的短视频（15 秒以上，最好有剪辑，不要选一镜到底的），没有的用教师准备的备用片。把飞书表格的拉片表模板、飞书文档的剧本模板和创作圣经模板链接发到群里。对话工具用学校批准的那一个，确认它支持上传视频。任务 1、2 个人完成，任务 3 组队。教师巡场，每组至少巡到两次。">
+  <div class="inner">
+    <span class="num">实操 · 47 MIN</span>
+    <h2 class="h-xl">先拆别人的，<br>再立自己的</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 15 分钟 · 个人</span><b>手工拉片</b><p>三遍法拆自己带来的视频前 15 秒，填满拉片表。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 10 分钟 · 个人</span><b>AI 拉片与纠错</b><p>让 AI 拉同一段，逐项比对，红笔改错。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 21 分钟 · 小组</span><b>组队与立项</b><p>组队定岗，写 logline、梗概、分场剧本、创作圣经前 4 项。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool">飞书表格 <i>拉片表模板</i></span>
+      <span class="tool"><img src="../media/logos/kimi.png" alt="">Kimi</span>
+      <span class="tool"><img src="../media/logos/doubao.png" alt="">豆包</span>
+      <span class="tool">WorkBuddy</span>
+      <span class="tool">飞书文档 <i>剧本模板 · 创作圣经模板</i></span>
+    </div>
+    <p class="small">对话工具三选一，须支持视频理解，用学校批准的那一个。没有飞书的，用学校批准的在线表格 / 文档。</p>
+  </div>
+</section>
+
+<!-- ============ 15 任务 1 手工拉片 ============ -->
+<section class="slide practice" data-min="15" data-note="任务 1，15 分钟，个人完成。三遍法看自己带来的视频前 15 秒：第一遍完整看一次，在表格顶端写下最打动你的一刻和一个词；第二遍标出转折点的时间码；第三遍逐个剪辑点暂停，一个镜头一行，十个字段全部填满。时长精确到 0.1 秒就好，手机播放器拖不准的，可以用课件第 5 页的打点器辅助。最后在表格底部写三个统计：镜头总数、平均镜头时长、景别占比（数一数特写、近景、中景、全景、远景各几个）。巡场重点：一看声音栏是不是分成了四类，没有声音也要写“无”；二看叙事作用是不是写成了画面内容的重复，比如“一个人在走路”，要追问：这个镜头让你知道或感受到了什么？三看有没有学生选了一镜到底的视频，及时换片。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">15 分钟 · 个人</span><span>工具：飞书表格 · 拉片表模板</span></div>
+    <h2 class="h-m">手工拉片：用三遍法拆自己带来的视频，前 15 秒</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>第一遍：完整看。</b><span>表格顶端写下“最打动我的一刻”+“一个词”。</span></div></li>
+        <li><div><b>第二遍：标转折。</b><span>写下故事或情绪拐弯的时间码。</span></div></li>
+        <li><div><b>第三遍：逐镜暂停。</b><span>一个镜头一行，十个字段全填：镜号、起止、时长、景别、机位、运镜、画面、声音（乐/效/人/环境）、转场、叙事作用。</span></div></li>
+        <li><div><b>底部写三个统计</b><span>：镜头总数、平均镜头时长（15 ÷ 镜头数）、各景别各几个。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">完成标准</span>前 15 秒的<b>每个镜头一行、十格全填</b>；声音栏分四类写（没有就写“无”）；底部有<b>三个统计数字</b>。</div>
+        <div class="card"><b>容易写错的两格</b>
+          <p><b>叙事作用</b>不是画面复述。✗“一个人在走路” ✓“让我们知道他迟到了”。</p>
+          <p><b>时长</b>拖不准？回到第 5 页用打点器辅助。</p>
+        </div>
+        <p class="small">没带视频或选到一镜到底的片子：用教师备用片。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 任务 2 AI 纠错 ============ -->
+<section class="slide practice" id="s-ai" data-min="10" data-note="任务 2，10 分钟，个人完成。把同一段视频上传到对话工具，使用教师预置的拉片 Skill，或者复制本页的拉片提示词。提示词里特意加了一句“看不清或不确定请标注不确定，不要猜”，这是在用第 1 课学过的办法减少幻觉。拿到结果后，只看前 15 秒的部分，和自己的拉片表逐项比对。用红色标出 AI 的错误，在旁边写正确内容，再写出错原因，原因要回扣模块 2 的四种错误：漏镜头是抽帧间隔太长，运镜错是只看到前后两帧，声音错是凭画面猜，叙事错是说得通但不是作者意思。也要提醒：如果你和 AI 不一样，先回去再看一遍，有时候错的是自己。完成标准是至少找到并改正 2 处。降级方案：视频理解工具不可用或上传失败时，发教师预先导出的 AI 拉片结果，学生直接拿它和自己的表比对。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">10 分钟 · 个人</span><span>工具：Kimi / 豆包 / WorkBuddy（选支持视频理解的一个）</span></div>
+    <h2 class="h-m">AI 拉片与纠错：让 AI 拉同一段，抓出它的错</h2>
+    <div class="g2">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>上传同一段视频</b><span>，用教师预置的“拉片 Skill”，或复制下面的提示词。</span></div></li>
+          <li><div><b>只看前 15 秒的部分</b><span>，和你的拉片表逐项比对。</span></div></li>
+          <li><div><b>红色标出错误</b><span>，旁边写正确内容 + 出错原因（回扣四种错误）。</span></div></li>
+        </ol>
+        <div class="prompt-box" id="lapianPrompt">你是一位电影剪辑老师。请逐镜头拉片分析这段视频的前 15 秒，用表格输出：镜号、起止时间、时长、景别、机位、运镜、画面内容、声音（音乐/音效/人声/环境）、转场、叙事作用。最后统计镜头总数、平均镜头时长、各景别占比。看不清或不确定的地方请标注“不确定”，不要猜。</div>
+        <div class="row"><button class="btn" id="copyPrompt" type="button">复制提示词</button></div>
+      </div>
+      <div class="col">
+        <span class="label">纠错记录 · 示例格式</span>
+        <div class="tblwrap">
+          <table class="ltbl" style="min-width:0">
+            <thead><tr><th>字段</th><th>AI 说</th><th>实际</th><th>为什么错</th></tr></thead>
+            <tbody>
+              <tr><td>镜头数</td><td class="bad">5 个</td><td class="ok">8 个</td><td>0:09 的三个快切被漏掉：抽帧间隔太长</td></tr>
+              <tr><td>镜 2 运镜</td><td class="bad">推镜</td><td class="ok">变焦</td><td>背景和人物一起放大，没有远近变化</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>至少找到并改正 <b>2 处</b> AI 错误，每处写清<b>正确内容</b>和<b>出错原因</b>。</div>
+        <p class="small">先怀疑自己：和 AI 不一样时，回去再看一遍。工具不可用时，用教师预先导出的 AI 拉片结果。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 任务 3a 组队 ============ -->
+<section class="slide practice" data-min="7" data-note="任务 3 第一段，组队，7 分钟。每人在共享文档里贴 3 个点子，每个点子一句话，按“谁 + 想要什么 + 什么拦着他”写。给 2 分钟。教师快速浏览，按主题聚类，比如“人与 AI”“孤独”“校园”“城市”，把点子相近的三个人分到一组，当场念名单。组好后，三人确定岗位：导演/编剧负责故事、分镜、最终取舍和路演主讲；视觉总监负责角色、场景、风格一致性和生成执行；剪辑与声音/制片负责剪辑、声音设计、额度与版本管理和生产日志。岗位第 9 课后可以轮换精修任务，但日志要记下每个人的实际贡献。最后组内用三个问题筛点子：60 秒能讲完一个时刻吗？AI 擅长吗？在三限之内吗？选定 1 个，按公式写 logline。巡场时盯住 logline 里有没有阻碍。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3 · 上</span><span class="timechip">7 分钟 · 小组</span><span>工具：飞书文档 · 共享点子墙</span></div>
+    <h2 class="h-m">组队：贴点子 → 聚类分组 → 定岗位 → 选一个，写 logline</h2>
+    <div class="g2">
+      <ol class="steps">
+        <li><div><b>每人贴 3 个点子</b><span>（2 分钟）：一句话写清“谁 + 想要什么 + 什么拦着他”。</span></div></li>
+        <li><div><b>教师按主题聚类</b><span>，三人一组，当场公布名单。</span></div></li>
+        <li><div><b>定岗位</b><span>（右侧三选一，每人一个）。</span></div></li>
+        <li><div><b>三问筛点子，选定 1 个</b><span>：60 秒能讲完一个时刻吗？AI 擅长吗？在三限内吗？</span></div></li>
+        <li><div><b>按公式写 logline</b><span>：当【角色】想要【目标】时，遇到【阻碍】，他必须【行动/选择】。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="roles3">
+          <div style="--c:var(--b)"><b>导演 / 编剧</b>故事、分镜、最终取舍、路演主讲</div>
+          <div style="--c:var(--warm)"><b>视觉总监</b>角色、场景、风格一致性、生成执行</div>
+          <div style="--c:var(--g)"><b>剪辑与声音 / 制片</b>剪辑、声音设计、额度与版本管理、生产日志</div>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>组员名单 + 每人岗位 + <b>1 句 logline</b>（四个要素齐全，<b>必须有阻碍</b>）。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 任务 3b 立项 ============ -->
+<section class="slide practice" data-min="14" data-note="任务 3 第二段，立项，14 分钟。按顺序写四样东西。第一，100 字梗概，并在梗概里用括号标出时间段：钩子 0 到 5 秒、建立 5 到 20 秒、转折 20 到 45 秒、结局 45 到 60 秒。第二，分场剧本，150 到 250 字，不超过 3 场，用剧本模板的格式，动作只写镜头能拍到的。第三，创作圣经前 4 项：一句话梗概和目标观众（目标观众要具体，比如“和我们同龄、刚住校的高一学生”，不要写“所有人”）；情绪关键词和起承转合各占几秒；3 到 6 张参考图，每张写清参考它的哪一点（色彩、构图、光线、角色）；色彩、画幅、构图与声音方向。参考图可以是电影截图、照片或第 2、3 课的作业，只作参考，不放进成片。第四，对照三限和 AI 擅长/不擅长清单自查，有问题当场改，像《粉笔画》把字改成画那样。分工建议：导演写梗概和剧本，视觉总监找参考图、定色彩画幅，制片写节奏和声音方向、负责自查。巡场时第二次到每组，重点看剧本里有没有拍不出来的句子、有没有超过三限。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3 · 下</span><span class="timechip">14 分钟 · 小组</span><span>工具：飞书文档 · 剧本模板 + 创作圣经模板</span></div>
+    <h2 class="h-m">立项：梗概 → 分场剧本 → 创作圣经前 4 项 → 自查</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>100 字梗概</b><span>，用括号标出时间段：钩子 0–5″ / 建立 5–20″ / 转折 20–45″ / 结局 45–60″。</span></div></li>
+          <li><div><b>分场剧本 150–250 字，≤ 3 场</b><span>：场景标题 + 动作（只写拍得到的）+ 对白/旁白。</span></div></li>
+          <li><div><b>创作圣经前 4 项</b><span>（右侧）。</span></div></li>
+          <li><div><b>自查</b><span>：角色 ≤ 2、场景 ≤ 3、镜头 8–12；有没有用到 AI 不擅长的东西？有就当场改。</span></div></li>
+        </ol>
+        <div class="done-box"><span class="label">完成标准</span>文档里有 <b>logline、100 字梗概（标了时间段）、分场剧本、创作圣经前 4 项</b>，并逐条写了自查结果。</div>
+      </div>
+      <div class="col">
+        <span class="label">创作圣经 · 今天先写前 4 项</span>
+        <div class="bible4">
+          <div><b>logline 与目标观众</b>：观众要具体，不写“所有人”</div>
+          <div><b>情绪关键词与节奏</b>：起承转合各占几秒</div>
+          <div><b>参考图 3–6 张</b>：每张写清参考点（色彩/构图/光线/角色）</div>
+          <div><b>色彩、画幅、构图与声音方向</b></div>
+          <div class="later">角色设定与场景约束</div>
+          <div class="later">镜头连续性规则</div>
+          <div class="later">禁止出现的素材与元素</div>
+          <div class="later">分工、额度预算与版本规则</div>
+        </div>
+        <p class="small">灰色 4 项是课后任务（关卡 1）。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 提案 ============ -->
+<section class="slide" data-min="6" data-note="提案环节，6 分钟。每组 1 分钟，按右边的顺序说：一句 logline，再用四句话说结构，钩子、建立、转折、结局各一句，最后说目标观众。严格计时，到 1 分钟就停。每组讲完，教师当场只给一条最重要的修改意见，并指出合规问题，比如用了真人明星、模仿了某个动漫角色、用了某首流行歌。反馈要具体，指向哪一句、哪一场。其他组听的时候做一件事：听完能不能用一句话复述出主线？复述不出来，说明故事还不清楚。组多讲不完的，剩下的组把 logline 贴到共享文档，教师课后统一写反馈。左边是关卡 1 的四条通过标准，第 5 课开场就按这四条反馈。">
+  <div class="inner">
+    <div class="tc"><span class="ch">提案 · 关卡 1 启动</span><span>8 MIN</span></div>
+    <h2 class="h-l">每组 1 分钟，说清你们的故事</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <span class="label">关卡 1 · 创意提案 · 通过标准</span>
+        <div class="gate4" style="grid-template-columns:1fr 1fr">
+          <div><b>故事清楚</b>别人听完能复述主线</div>
+          <div><b>符合 60 秒三限</b>角色 ≤2 · 场景 ≤3 · 镜头 8–12</div>
+          <div><b>目标观众明确</b>不是“所有人”</div>
+          <div><b>素材合规</b>不用未经允许的真人、声音或受保护角色</div>
+        </div>
+      </div>
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>一句 logline</b></div></li>
+          <li><div><b>四句结构</b><span>：钩子 / 建立 / 转折 / 结局，各一句</span></div></li>
+          <li><div><b>目标观众</b><span>：拍给谁看？</span></div></li>
+        </ol>
+        <div class="card ask"><span class="tag">听的组</span><p>听完，你能用一句话复述它的主线吗？</p></div>
+        <p class="small">教师当场给 1 条修改意见 + 指出合规问题。讲不完的组，课后书面反馈。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 总结 ============ -->
+<section class="slide" data-min="2" data-note="最后 2 分钟。第一步，快速回收三个问题，各请一位同学一句话回答：三遍法是先感受、再找结构、最后逐镜看手法；AI 看错是因为按间隔抽帧，只看到一串照片，声音常靠猜，叙事说得通不等于对；60 秒只讲一个时刻，要有角色、欲望、阻碍、变化。第二步，布置关卡 1：组内补全创作圣经的全部 8 项，第 5 课前提交，教师课前审阅并写反馈卡，第 5 课开场反馈；没通过的拿到一张最小修订单，改完再进下一步，不是挂科。第三步，课末小结：每人在记录表写下今天学会的一个概念和卡住的一个问题。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>关卡 1</span></div>
+    <h2 class="h-l">三个问题，请你来回答</h2>
+    <div class="g3">
+      <div class="q" style="--c:var(--b)"><span class="n">拉片</span><b>三遍法，每一遍只做哪件事？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">AI 看片</span><b>AI 拉片为什么会漏镜头、认错运镜？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">叙事</span><b>60 秒故事的四个要素是什么？</b></div>
+    </div>
+    <div class="step">
+      <div class="punch">课后任务（关卡 1）：组内补全创作圣经全部 8 项，第 5 课前提交。<small>教师课前审阅并写反馈卡，第 5 课开场反馈；没通过的拿到一张“最小修订单”，修完再进入下一步。</small></div>
+    </div>
+    <div class="step">
+      <p class="small">课末小结：在记录表写下“今天学会的一个概念 + 卡住的一个问题”。</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  raiders: { type: 'media', label: '索德伯格 · 黑白无声版《夺宝奇兵》', hint: '放 30 秒片段或截图，对比原版彩色有声的同一场', find: 'https://search.bilibili.com/all?keyword=%E7%B4%A2%E5%BE%B7%E4%BC%AF%E6%A0%BC%20%E5%A4%BA%E5%AE%9D%E5%A5%87%E5%85%B5%20%E9%BB%91%E7%99%BD', cred: 'Raiders of the Lost Ark · Soderbergh staging version · 2014' },
+  demo15: { type: 'media', label: '示范拉片 · 前 15 秒', hint: '推荐：陈可辛《三分钟》（2018）开头，或教师示范项目片。放入视频后，打点器会跟着视频计时', find: 'https://search.bilibili.com/all?keyword=%E9%99%88%E5%8F%AF%E8%BE%9B%20%E4%B8%89%E5%88%86%E9%92%9F%20%E7%9F%AD%E7%89%87', cred: '示范片' },
+  piper: { type: 'media', label: '皮克斯《鹬》Piper · 1 分钟片段', hint: '放小鹬第一次被海浪打翻的一段即可', find: 'https://search.bilibili.com/all?keyword=%E7%9A%AE%E5%85%8B%E6%96%AF%20%E9%B9%AC%20Piper', cred: 'Piper · Pixar · 2016' },
+  okfail: { type: 'media', label: '示范项目 · 一个成功镜头 vs 一个失败镜头', hint: '从教师示范片的生产日志里各挑一个：氛围单人镜头 vs 手部操作或多人镜头；没有示范片时可找公开的 AI 视频翻车片段', find: 'https://search.bilibili.com/all?keyword=AI%E8%A7%86%E9%A2%91%20%E7%BF%BB%E8%BD%A6%20%E6%89%8B%E9%83%A8', cred: '教师示范项目' },
+  up: { type: 'media', label: '《飞屋环游记》· 婚后生活段落', hint: '放到存钱罐被打碎的部分即可（约 1–2 分钟）', find: 'https://search.bilibili.com/all?keyword=%E9%A3%9E%E5%B1%8B%E7%8E%AF%E6%B8%B8%E8%AE%B0%20%E5%BC%80%E5%9C%BA%20%E5%A9%9A%E5%90%8E%E7%94%9F%E6%B4%BB', cred: 'Up · Pixar · 2009' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const PAL = ['#5b8cff', '#3fe0a0', '#ffc46b', '#ff5468', '#c58bff'];
+
+  /* ---------- 剪辑点打点器 ---------- */
+  const LIMIT = 15;
+  let running = false, t0 = 0, cuts = [], endT = 0, timer = null, vid = null;
+  const now = () => vid ? vid.currentTime : (performance.now() - t0) / 1000;
+  const renderCount = () => {
+    const end = running ? Math.min(now(), LIMIT) : endT;
+    const pts = [0, ...cuts.filter(c => c < end), end];
+    const bar = $('#cntBar');
+    if (end <= 0) { bar.innerHTML = ''; return; }
+    bar.innerHTML = pts.slice(1).map((p, i) => { const d = p - pts[i]; return `<i style="flex:${d.toFixed(3)};background:${PAL[i % PAL.length]}">${d >= .8 ? d.toFixed(1) : ''}</i>`; }).join('');
+    const n = pts.length - 1;
+    $('#cntStat').innerHTML = `${running ? '计时中' : '结果'} · 已过 <b>${end.toFixed(1)}</b> 秒 · 镜头数 <b>${n}</b> · 平均镜头时长 <b>${(end / n).toFixed(1)}</b> 秒`;
+  };
+  const stopCount = () => {
+    if (!running) return;
+    endT = Math.min(now(), LIMIT); running = false; clearInterval(timer);
+    if (vid) vid.pause();
+    renderCount();
+  };
+  const cut = () => { if (!running) return; const t = now(); if (t > 0.15 && t < LIMIT) { cuts.push(t); renderCount(); } };
+  $('#cntStart').onclick = () => {
+    cuts = []; endT = 0;
+    vid = document.querySelector('#s-count .slot video');
+    if (vid) { vid.currentTime = 0; vid.play().catch(() => {}); } else t0 = performance.now();
+    running = true; clearInterval(timer);
+    timer = setInterval(() => { if (now() >= LIMIT) stopCount(); else renderCount(); }, 100);
+    renderCount();
+  };
+  $('#cntCut').onclick = cut;
+  $('#cntStop').onclick = stopCount;
+  $('#cntReset').onclick = () => { stopCount(); cuts = []; endT = 0; $('#cntBar').innerHTML = ''; $('#cntStat').textContent = '点“开始”，每看到一次剪辑，就按 C 或点“剪！”'; };
+  addEventListener('keydown', e => {
+    if (e.target.matches('input, textarea, select')) return;
+    if ((e.key === 'c' || e.key === 'C') && $('#s-count').classList.contains('active')) { e.preventDefault(); cut(); }
+  });
+
+  /* ---------- 抽帧模拟 ---------- */
+  const SHOTS = [
+    [3.2, '远景 · 城市清晨'], [2.1, '中景 · 女孩跑出门'], [0.6, '特写 · 鞋带散开'], [0.5, '特写 · 手表'], [0.7, '近景 · 喘气'],
+    [2.4, '全景 · 公交车开走'], [1.0, '特写 · 握紧的拳头'], [0.4, '特写 · 车窗里的脸'], [1.8, '中景 · 她转身'], [2.3, '远景 · 走向另一条路']
+  ];
+  const TOTAL = SHOTS.reduce((a, [d]) => a + d, 0);
+  const starts = []; SHOTS.reduce((a, [d]) => (starts.push(a), a + d), 0);
+  const shotAt = t => { for (let i = SHOTS.length - 1; i >= 0; i--) if (t >= starts[i]) return i; return 0; };
+  const SW = 640, X0 = 20, X1 = 620, sx = t => X0 + t / TOTAL * (X1 - X0);
+  let fps = 1, phase = 0.3;
+  const drawSample = () => {
+    const step = 1 / fps, samples = [];
+    for (let t = phase * step; t < TOTAL; t += step) samples.push(t);
+    const hit = new Set(samples.map(shotAt));
+    const seen = []; samples.forEach(t => { const i = shotAt(t); if (seen[seen.length - 1] !== i) seen.push(i); });
+    let g = `<text x="${X0}" y="18" fill="#9097ad" font-size="12">真实的 10 个镜头（宽度 = 时长）</text>`;
+    SHOTS.forEach(([d], i) => {
+      const x = sx(starts[i]), w = sx(starts[i] + d) - x, on = hit.has(i);
+      g += `<rect x="${(x + 1).toFixed(1)}" y="28" width="${(w - 2).toFixed(1)}" height="52" rx="5" fill="${PAL[i % PAL.length]}" opacity="${on ? .85 : .18}"/>`;
+      g += `<text x="${(x + w / 2).toFixed(1)}" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="${on ? '#07130e' : '#ff5468'}">${on ? i + 1 : '漏'}</text>`;
+    });
+    for (let s = 0; s <= 15; s += 5) g += `<text x="${sx(s).toFixed(1)}" y="98" text-anchor="middle" fill="#9097ad" font-size="11">${s}″</text>`;
+    samples.forEach(t => { const x = sx(t).toFixed(1); g += `<line x1="${x}" y1="24" x2="${x}" y2="86" stroke="#eef0f6" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="${x}" cy="24" r="3.5" fill="#eef0f6"/>`; });
+    g += `<text x="${X0}" y="124" fill="#9097ad" font-size="12">AI 拿到的是一串照片，它以为的镜头：</text>`;
+    const bw = Math.min(56, (X1 - X0) / Math.max(seen.length, 1) - 4);
+    seen.forEach((i, k) => {
+      const x = X0 + k * (bw + 4);
+      g += `<rect x="${x}" y="134" width="${bw}" height="40" rx="5" fill="${PAL[i % PAL.length]}" opacity=".85"/><text x="${x + bw / 2}" y="159" text-anchor="middle" font-size="13" font-weight="700" fill="#07130e">${i + 1}</text>`;
+    });
+    $('#smpSvg').innerHTML = g;
+    const missed = SHOTS.map(([, n], i) => hit.has(i) ? null : `${i + 1} ${n}`).filter(Boolean);
+    $('#smpStat').innerHTML = `抽了 <b>${samples.length}</b> 帧 · AI 数出 <b>${seen.length}</b> 个镜头（真实 10 个）· 它估算的平均镜头时长 <b>${(TOTAL / seen.length).toFixed(1)}</b> 秒（真实 1.5 秒）`;
+    $('#smpMiss').innerHTML = missed.length ? `漏掉：<b>${missed.join('；')}</b>` : '这次 10 个镜头都抽到了，但要读的画面也多了。';
+  };
+  document.querySelectorAll('#s-sample [data-fps]').forEach(b => b.addEventListener('click', () => {
+    fps = +b.dataset.fps;
+    document.querySelectorAll('#s-sample [data-fps]').forEach(x => x.classList.toggle('on', x === b));
+    drawSample();
+  }));
+  $('#smpShift').onclick = () => { phase = (phase + 0.37) % 1; drawSample(); };
+  drawSample();
+
+  /* ---------- 复制拉片提示词 ---------- */
+  $('#copyPrompt').onclick = () => {
+    const t = $('#lapianPrompt').textContent.trim();
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => window.deckToast('已复制提示词')).catch(() => window.deckToast('复制失败，请手动选中复制'));
+  };
+})();
+</script>
+</body>
+</html>

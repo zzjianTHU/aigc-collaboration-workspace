@@ -1,0 +1,929 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>第 08 课 · 剪辑与声音设计</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/deck.css">
+<style>
+/* 本课专用：剪辑点规则、六法则条形、节奏曲线、卡点实验、J/L 剪辑图、声音地图、混音台、字幕示意、反馈表 */
+.cut3 { display: flex; flex-direction: column; gap: 10px; }
+.cut3 .card { border-left: 3px solid var(--c); padding: 12px 16px; }
+.cut3 .card .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--c); }
+.six { display: flex; flex-direction: column; gap: 6px; }
+.six div { display: grid; grid-template-columns: 7.2em 1fr 2.8em; gap: 8px; align-items: center; font-size: 13.5px; color: var(--muted); }
+.six div b { color: var(--fg); font-weight: 700; }
+.six div i { display: block; height: 14px; border-radius: 4px; background: linear-gradient(90deg, var(--warm), var(--r)); }
+.six div span:last-child { font-family: var(--mono); font-size: 12px; text-align: right; }
+.six div.low i { background: #3a4260; }
+.svgbox svg { width: 100%; height: auto; display: block; }
+.svgbox text { font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+.beat .bt-screen { position: relative; height: 92px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bc, #1a2340); border: 1px solid var(--line); transition: background .08s; overflow: hidden; }
+.beat .bt-screen b { font-family: var(--display); font-size: 26px; line-height: 1.1; }
+.beat .bt-screen span { font-size: 13px; color: rgba(238,240,246,.8); }
+.beat .bt-screen.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.18); animation: btf .18s ease-out forwards; }
+@keyframes btf { to { opacity: 0; } }
+.beat svg { width: 100%; height: auto; display: block; background: #05060a; border-radius: 10px; border: 1px solid var(--line); }
+.beat svg text { font-family: var(--mono); }
+.seg .btn.on { background: var(--b); border-color: var(--b); color: #fff; }
+.stat { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.stat b { color: var(--warm); }
+.fx3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 900px) { .fx3 { grid-template-columns: repeat(3, 1fr); } }
+.fx3 .card { border-top: 3px solid var(--c); }
+.fx3 .card .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--c); }
+.tbl-wrap { align-self: start; overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
+.smap { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 620px; }
+.smap th, .smap td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.45; }
+.smap th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--muted); background: var(--panel2); font-weight: 600; }
+.smap td { color: var(--muted); background: var(--panel); }
+.smap td:first-child { font-family: var(--mono); color: var(--fg); white-space: nowrap; }
+.smap td b { color: var(--fg); }
+.smap .v { color: var(--warm); } .smap .m { color: var(--b); } .smap .f { color: var(--r); } .smap .a { color: var(--g); }
+.mixer .mx { display: grid; grid-template-columns: 4.6em 1fr 4.4em; gap: 10px; align-items: center; font-size: 14px; }
+.mixer .mx .nm { font-weight: 700; color: var(--c); }
+.mixer .mx b { font-family: var(--mono); font-size: 12.5px; color: var(--fg); text-align: right; font-weight: 600; }
+.mixer .mx.master { padding-top: 6px; border-top: 1px dashed var(--line); }
+.meter { height: 14px; border-radius: 5px; background: var(--panel2); overflow: hidden; position: relative; }
+.meter i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--g), var(--warm) 80%); transition: width .06s linear; }
+.meter.hot i { background: var(--r); }
+.meter::after { content: ""; position: absolute; top: 0; bottom: 0; left: 88.9%; width: 2px; background: rgba(255,84,104,.8); }
+.checks { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
+.checks span { padding: 4px 10px; border-radius: 8px; background: var(--panel2); color: var(--muted); }
+.checks span.ok { color: var(--g); background: rgba(63,224,160,.08); }
+.checks span.bad { color: var(--r); background: rgba(255,84,104,.08); }
+.sent { font-family: var(--display); font-size: clamp(18px, 1.8vw, 24px); line-height: 1.6; padding: 10px 14px; border-radius: 12px; background: #05060a; border: 1px solid var(--line); }
+.sent em { font-style: normal; color: var(--warm); border-bottom: 2px solid var(--warm); }
+.sent rt { font-family: var(--mono); font-size: 11px; color: var(--g); }
+.sent .pz { color: var(--r); font-family: var(--mono); font-size: .7em; padding: 0 3px; }
+.subf { position: relative; container-type: inline-size; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.subf.bad { background: linear-gradient(180deg, #6a87b8 0%, #c9d8ea 62%, #f2efe6 100%); }
+.subf.good { background: linear-gradient(180deg, #6a87b8 0%, #c9d8ea 62%, #f2efe6 100%); }
+.subf .safe { position: absolute; inset: 7% 8%; border: 1.5px dashed rgba(8,9,14,.45); border-radius: 4px; }
+.subf .who { position: absolute; left: 50%; top: 22%; width: 22%; height: 62%; transform: translateX(-50%); background: #2b3247; border-radius: 40% 40% 8px 8px; }
+.subf .cap { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-weight: 700; color: #fff; }
+.subf.bad .cap { bottom: 1.5%; font-size: 3.6cqw; }
+.subf.good .cap { bottom: 10%; font-size: 5cqw; text-shadow: 0 0 2px #000, 0 0 2px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; }
+.subf .mark { position: absolute; left: 8px; top: 6px; font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: rgba(8,9,14,.75); }
+.subf.bad .mark { color: var(--r); } .subf.good .mark { color: var(--g); }
+.fb { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .fb { grid-template-columns: 1fr 1fr; } }
+.fbi { display: flex; flex-direction: column; gap: 6px; }
+.fbi div { padding: 8px 12px; border-radius: 10px; background: var(--panel2); font-size: 14px; color: var(--muted); }
+.fbi div b { color: var(--fg); }
+.fbi div.x { background: rgba(255,84,104,.07); border-left: 3px solid var(--r); }
+.fbi div.o { background: rgba(63,224,160,.07); border-left: 3px solid var(--g); }
+.fbi .arrow { font-family: var(--mono); color: var(--warm); margin: 0 4px; }
+.role3 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .role3 { grid-template-columns: repeat(3, 1fr); } }
+.role3 .card { border-top: 3px solid var(--c); padding: 12px 14px; gap: 6px; }
+.role3 .card .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--c); }
+.role3 ol { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 3px; }
+.role3 li { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.role3 li b { color: var(--fg); }
+.rev { display: flex; flex-direction: column; gap: 6px; }
+.rev div { display: grid; grid-template-columns: 4.2em 1fr; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--c); font-size: 14px; color: var(--muted); }
+.rev div .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--c); }
+.rev div b { color: var(--fg); }
+.flow3 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 900px) { .flow3 { grid-template-columns: repeat(3, 1fr); } }
+.flow3 .card { border-top: 3px solid var(--c); }
+.flow3 .card .k { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--c); }
+/* 投影仪常见的 1280×720：压缩卡片、图示与互动区的高度 */
+@media (max-height: 800px) {
+  .card { padding: 11px 14px; gap: 6px; }
+  .card p, .card li { font-size: 13.5px; line-height: 1.55; }
+  .cut3 .card { padding: 9px 14px; }
+  .six div { font-size: 12.5px; }
+  .six div i { height: 11px; }
+  .beat .bt-screen { height: 64px; }
+  .beat .bt-screen b { font-size: 21px; }
+  .svgbox svg { max-height: 30vh; }
+  #s-jl .slot { aspect-ratio: 16 / 6; }
+  #s-foley .slot { aspect-ratio: 16 / 7; }
+  .smap th, .smap td { padding: 5px 9px; font-size: 12.5px; }
+  .mixer { gap: 7px; }
+  .mixer .mx { font-size: 13px; }
+  .checks span { padding: 2px 10px; font-size: 12.5px; }
+  .steps li { padding: 7px 10px; font-size: 14px; }
+  .role3 li { font-size: 12.5px; }
+  .fbi div { padding: 6px 10px; font-size: 13px; }
+  .rev div { padding: 6px 10px; font-size: 13px; }
+  .sent { font-size: 19px; padding: 8px 12px; }
+}
+</style>
+
+<body data-lesson="L08">
+<div class="deck" id="deck">
+
+<!-- ============ 01 标题 ============ -->
+<section class="slide title" data-min="0.5" data-note="开门见山。开口：“第 7 课我们把每个镜头都生成出来了，但现在它们还只是一堆散落的素材。今天要把它们剪成一部有声音、有字幕、能放给别人看的片子。下课前 20 分钟，全班一起看各组的粗剪。”把三个问题念一遍，告诉学生下课前每人都要能回答。再强调今天是关卡 2b，当堂要交四样东西：带声音的粗剪、声音地图、同伴反馈表、修改清单。节奏很紧：讲 30 分钟，做 40 分钟，放映 20 分钟，讲解部分不拖堂。">
+  <div class="lesson-no" aria-hidden="true">08</div>
+  <div class="inner">
+    <div class="tc"><span class="rec">REC</span><span class="ch">第二幕 · AI Studio</span><span>LESSON 08 / 12</span><span>90 MIN</span></div>
+    <h1 class="h-xl">剪辑与声音设计<br><span class="rgbword">完成粗剪与中期放映</span></h1>
+    <p class="lead">镜头已经生成好了，今天把它们<b>剪成一部有声音、有字幕的片子</b>，并在下课前第一次放给观众看。这是<b>关卡 2b</b>。</p>
+    <div class="qlist">
+      <div class="q" style="--c:var(--b)"><span class="n">问题 1</span><b>什么时候，该切到下一个镜头？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">问题 2</span><b>四层声音叠在一起，怎样才不打架？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">问题 3</span><b>怎样从观众那里，拿到真正有用的反馈？</b></div>
+    </div>
+    <div class="agenda">
+      <span><b>00–30</b>知识讲解 · 剪辑节奏 / 声音与混音 / 字幕 / 反馈</span>
+      <span><b>30–70</b>实操 · 画面粗剪 → 声音 → 字幕与导出</span>
+      <span><b>70–90</b>中期放映 · 修改清单</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 开场故事：眨眼 ============ -->
+<section class="slide" data-min="1.5" data-note="用一个剪辑师的故事开场。先介绍人：沃尔特·默奇，好莱坞最有名的剪辑师和声音设计师之一，剪过《对话》《现代启示录》，凭 1996 年的《英国病人》同时拿到奥斯卡最佳剪辑和最佳音响，据说是第一个在同一部片子上拿下这两个奖的人，剪辑和声音今天正好是我们这节课的两半。按 → 分两步。第一步：1974 年他在剪《对话》时注意到，主演吉恩·哈克曼眨眼的时刻，常常就落在他自己决定下剪刀的那一帧附近。第二步：后来他读到导演约翰·休斯顿的一段话，大意是：你看房间那头的台灯，再看回我，你会不自觉地眨一下眼，这就是剪辑。默奇在《眨眼之间》这本书里总结：眨眼往往标志着一个念头结束；好的剪辑点，就是观众一个念头刚结束、准备接收下一个的地方。问学生：你们刷视频的时候，什么时候会觉得“该换了”？落点：剪辑不是随手切，是跟着观众的注意力切。课前核实：哈克曼眨眼和休斯顿台灯的说法都出自 Walter Murch《In the Blink of an Eye》（1995 年初版，2001 年第二版，中文版书名《眨眼之间》），讲时用转述，不要说成原话；“第一个同时获两奖”的说法请再核对一次。">
+  <div class="inner">
+    <div class="tc"><span class="ch">开场故事</span><span>模块 1 · 剪辑节奏</span></div>
+    <h2 class="h-l">一次眨眼，就是一次剪辑</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="step">
+          <div class="card story"><span class="tag">故事 · 剪辑师默奇 1974</span>
+            <b>演员眨眼的地方，正是他想切的地方</b>
+            <p>沃尔特·默奇剪电影《对话》时发现：主演<b>眨眼的时刻</b>，常常就落在他决定下剪刀的那一帧附近。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="card story"><span class="tag">导演休斯顿的说法</span>
+            <p>你看房间那头的台灯，再看回我，你会不自觉地<b>眨一下眼</b>。这就是剪辑：一个念头结束，下一个开始。</p>
+          </div>
+          <div class="punch">好的剪辑点 = 观众一个念头刚结束的地方<small>出自默奇《眨眼之间》（In the Blink of an Eye），转述</small></div>
+        </div>
+      </div>
+      <div class="slot" data-slot="murch"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 剪辑点 + 六法则 ============ -->
+<section class="slide" data-min="2.5" data-note="先回扣一句：第 3 课的库里肖夫效应告诉我们，意义产生在镜头之间。今天往下问一层：具体切在哪一帧？按 → 分两步。第一步，左边三条剪辑点：一，在动作进行中切，比如手刚推开门就切到门外，下一个镜头把动作接住，观众注意力跟着动作走，根本注意不到这一刀，这就是第 3 课的动作匹配剪辑；二，在视线落点后切，角色看向窗外，等观众的眼睛也跟着看过去，再切到窗外的画面；三，在情绪达到最高点之后稍晚一点切，人物哭或者笑到最高点时别急着切，多留半秒，让观众接住这份情绪。第二步，右边默奇的“六法则”：他给一个理想的剪辑点列了六条标准，并给了权重：情绪 51%，故事 23%，节奏 10%，视线追踪 7%，画面上的左右方向也就是轴线 5%，三维空间的连续 4%。注意：第 3 课学的 180 度轴线只占 5%。他的意思是：六条做不到全部满足时，从下往上牺牲；只要情绪和故事对了，观众会原谅一点位置上的小跳动；反过来，衔接完美但情绪不对，就是一个坏剪辑。说明一下，这些百分比是他的经验之谈，不是测量出来的数据。问学生：一个版本动作接得很顺但情绪没到位，另一个情绪到位但人物位置有点跳，你选哪个？落点：情绪优先。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 剪辑节奏</span><span>10 MIN</span><span>① 剪辑点</span></div>
+    <h2 class="h-l">剪刀落在哪一帧？</h2>
+    <div class="g2">
+      <div class="step">
+        <div class="cut3">
+          <div class="card" style="--c:var(--b)"><span class="k">① 在动作进行中切</span><p>手刚推开门，切到门外。<b>动作被下一个镜头接住</b>，观众注意不到这一刀。</p></div>
+          <div class="card" style="--c:var(--g)"><span class="k">② 在视线落点后切</span><p>角色看向窗外，<b>等观众也看过去</b>，再切到窗外的画面。</p></div>
+          <div class="card" style="--c:var(--r)"><span class="k">③ 在情绪最高点之后，稍晚一点切</span><p>哭或笑到顶点时别急着切，<b>多留半秒</b>，让观众接住这份情绪。</p></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="card story"><span class="tag">默奇的“六法则” · 《眨眼之间》</span>
+          <p>一个理想的剪辑点要满足六条，他给了权重：</p>
+          <div class="six">
+            <div><b>情绪</b><i style="width:100%"></i><span>51%</span></div>
+            <div><b>故事</b><i style="width:45%"></i><span>23%</span></div>
+            <div><b>节奏</b><i style="width:20%"></i><span>10%</span></div>
+            <div class="low"><b>视线追踪</b><i style="width:14%"></i><span>7%</span></div>
+            <div class="low"><b>轴线 / 方向</b><i style="width:10%"></i><span>5%</span></div>
+            <div class="low"><b>空间连续</b><i style="width:8%"></i><span>4%</span></div>
+          </div>
+        </div>
+        <div class="punch">做不到全满足时，从下往上牺牲。<small>第 3 课的 180 度轴线只占 5%：情绪对了，观众会原谅小跳动。</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 镜头时长与节奏曲线 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲两件事：一个镜头该多长，整部片子的节奏怎么排。先讲镜头时长：一个镜头的信息被观众读完就该切。第 3 课讲过平均镜头时长，今天落到你们自己的片子上：AI 生成 5 秒，往往只用最好的 2 到 4 秒。打比方：讲笑话，包袱一响就收，你再解释一遍就不好笑了。好镜头也不要久留，宁可让观众意犹未尽。再讲右边的节奏曲线，用过山车来讲：一上车先来一个小俯冲，马上抓住你，这是开头 3 到 5 秒；然后一个坡比一个坡快，这是中段逐步加快；冲向最高点之前，车会慢慢爬坡，咔哒咔哒，甚至一片安静，这就是高潮前放慢或静音，回扣第 3 课讲过的静音的力量；冲下去是高潮；最后缓缓进站，留出呼吸。60 秒短片也是这样：前 3 到 5 秒必须抓住人；结尾别戛然而止，留 2 到 3 秒。问学生：你们组的片子高潮在第几秒？高潮之前有没有留一段爬坡？">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 剪辑节奏</span><span>② 镜头时长与节奏曲线</span></div>
+    <h2 class="h-l">镜头多长？节奏怎么排？</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">镜头时长</span>
+          <p>一个镜头的信息<b>被观众读完就该切</b>。AI 生成 5 秒，往往只用最好的 <b>2–4 秒</b>。好镜头也别久留，宁可意犹未尽。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 讲笑话</span>
+          <p>包袱一响就收。<b>你再解释一遍，就不好笑了。</b></p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 过山车</span>
+          <p>先一个小俯冲抓住你，一坡比一坡快；冲顶前<b>慢慢爬坡、一片安静</b>；冲下去是高潮；最后缓缓进站。</p>
+        </div>
+      </div>
+      <div class="lab svgbox"><span class="label">示意 · 60 秒短片的节奏曲线</span>
+        <svg id="curveSvg" viewBox="0 0 600 250" role="img" aria-label="节奏曲线：开头快速抓注意力，中段逐步加快，高潮前放慢或静音，结尾留呼吸"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 音乐卡点：互动 ============ -->
+<section class="slide" id="s-beat" data-min="2" data-note="这一页讲音乐卡点，先讲公式：60 除以 BPM 等于每拍几秒。120 BPM 就是每拍 0.5 秒，每 2 拍切一次就是 1 秒一个镜头，每 4 拍切一次就是 2 秒一个镜头。然后现场演示右边的卡点实验，打开声音：1. 速度 120，选“每 1 拍切”，点播放：每半秒换一个镜头，问学生感觉怎样，一般会说像 MV 快剪、很累、什么都没看清。2. 选“每 4 拍切”：2 秒一镜，稳了，但有点机械。3. 选“只在转折卡点”：大部分镜头按内容需要的长度切，不管拍子，只有黄色那一刀，也就是剧情转折的那一刀，落在重拍上，问学生这一下是不是最有力。4. 把速度拉到 80，看每拍秒数怎么变。再讲左边的故事：早期迪士尼动画里，角色每个动作都和音乐严丝合缝，比如 1928 年的《汽船威利》，后来行内就把这种动作和音乐一一对齐的做法叫“米老鼠式配乐”。动画里很好玩，用在真人短片里每个镜头都卡点，就像动画片，很快让人疲劳。落点：不必每个镜头都卡点，关键转折卡点最有效。实操时剪映的自动踩点功能会帮你标出节拍。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 剪辑节奏</span><span>③ 音乐卡点</span></div>
+    <h2 class="h-l">卡点：不是每一刀都要踩在拍子上</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">公式</span>
+          <p><span class="code">60 ÷ BPM = 每拍秒数</span></p>
+          <p>120 BPM → 每拍 <b>0.5 秒</b>：每 2 拍切 = 1 秒一镜，每 4 拍切 = 2 秒一镜。</p>
+        </div>
+        <div class="card story"><span class="tag">行话 · 米老鼠式配乐</span>
+          <p>早期迪士尼动画（如 1928 年《汽船威利》）里，角色<b>每个动作都和音乐严丝合缝</b>。行内就把这种对齐叫“米老鼠式”。真人短片每镜都卡点，会像动画片，很快让人累。</p>
+        </div>
+        <div class="punch">关键转折卡点，最有效。</div>
+      </div>
+      <div class="lab beat">
+        <span class="label">互动 · 卡点实验（16 拍一循环，打开声音）</span>
+        <div class="bt-screen" id="btScreen"><b id="btShot">镜头 1</b><span id="btName">走廊 · 远景</span></div>
+        <svg id="btSvg" viewBox="0 0 640 112" role="img" aria-label="16 拍时间轴，色块是镜头，竖线是剪辑点"></svg>
+        <div class="row seg" id="btModes">
+          <button class="btn" type="button" data-mode="1">每 1 拍切</button>
+          <button class="btn on" type="button" data-mode="2">每 2 拍切</button>
+          <button class="btn" type="button" data-mode="4">每 4 拍切</button>
+          <button class="btn" type="button" data-mode="key">只在转折卡点</button>
+        </div>
+        <label class="row small">速度 BPM<input type="range" id="btBpm" min="60" max="160" step="5" value="120" style="flex:1"><b id="btBpmV" class="warm">120</b></label>
+        <div class="row"><button class="btn primary" id="btPlay" type="button">▶ 播放</button><span class="stat" id="btStat"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 J-cut / L-cut ============ -->
+<section class="slide" id="s-jl" data-min="1.5" data-note="J-cut 和 L-cut 第 3 课讲过概念，这里只回扣，并落到你们今天的粗剪上。看图：上面一行是画面，下面一行是声音，虚线是画面切换的位置。J-cut：声音比画面先到。比如画面还停在主角发呆的特写，下课铃声已经先响起来，然后才切到走廊。下面那条声音轨的形状像字母 J 的钩子伸到了前面。L-cut：声音比画面晚走。比如妈妈在电话里说话，画面已经切到女孩听电话的反应，妈妈的声音还在继续，形状像字母 L。为什么好用？因为现实里我们总是先听到、再转头去看；声音跨过剪辑点，就把两个镜头缝在了一起。剪映里的做法：把音频和视频分开放在两条轨道上，把音频的头往前拖或者尾往后拖。可以放一段 1 分钟的 J-cut、L-cut 讲解视频。落点：今天至少在一处转场里用一次。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 1 · 剪辑节奏</span><span>④ J-cut / L-cut · 回扣第 3 课</span></div>
+    <h2 class="h-l">声音先到，或者晚走</h2>
+    <div class="g2 wide-l">
+      <div class="lab svgbox"><span class="label">示意 · 画面轨与声音轨（虚线 = 画面切换处）</span>
+        <svg viewBox="0 0 620 196" role="img" aria-label="J-cut 中下一个镜头的声音提前进入；L-cut 中上一个镜头的声音延续到下一个画面">
+          <g font-size="15" font-weight="700"><text x="12" y="22" fill="#ffc46b">J-cut：声音先到</text><text x="322" y="22" fill="#ffc46b">L-cut：声音晚走</text></g>
+          <g font-size="12" fill="#9097ad"><text x="12" y="68">画面</text><text x="12" y="120">声音</text><text x="322" y="68">画面</text><text x="322" y="120">声音</text></g>
+          <rect x="50" y="46" width="110" height="34" rx="6" fill="rgba(91,140,255,.35)"/><text x="58" y="68" font-size="12" fill="#eef0f6">A 发呆特写</text>
+          <rect x="162" y="46" width="128" height="34" rx="6" fill="rgba(63,224,160,.3)"/><text x="170" y="68" font-size="12" fill="#eef0f6">B 走廊</text>
+          <rect x="50" y="98" width="68" height="34" rx="6" fill="rgba(91,140,255,.2)"/><text x="58" y="120" font-size="12" fill="#9097ad">A 声</text>
+          <rect x="120" y="98" width="170" height="34" rx="6" fill="rgba(63,224,160,.2)"/><rect x="120" y="98" width="42" height="34" rx="6" fill="rgba(255,196,107,.55)"/><text x="170" y="120" font-size="12" fill="#eef0f6">B 下课铃</text>
+          <line x1="161" y1="36" x2="161" y2="142" stroke="#eef0f6" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="360" y="46" width="110" height="34" rx="6" fill="rgba(91,140,255,.35)"/><text x="368" y="68" font-size="12" fill="#eef0f6">A 妈妈打电话</text>
+          <rect x="472" y="46" width="128" height="34" rx="6" fill="rgba(63,224,160,.3)"/><text x="480" y="68" font-size="12" fill="#eef0f6">B 女孩的反应</text>
+          <rect x="360" y="98" width="168" height="34" rx="6" fill="rgba(91,140,255,.2)"/><rect x="472" y="98" width="56" height="34" rx="6" fill="rgba(255,196,107,.55)"/><text x="368" y="120" font-size="12" fill="#eef0f6">A 妈妈的声音</text>
+          <rect x="530" y="98" width="70" height="34" rx="6" fill="rgba(63,224,160,.2)"/><text x="538" y="120" font-size="12" fill="#9097ad">B 声</text>
+          <line x1="471" y1="36" x2="471" y2="142" stroke="#eef0f6" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <g font-size="12.5" fill="#ffc46b"><text x="12" y="168">还在看 A，已经听到 B 的铃声</text><text x="322" y="168">已经看到 B，还在听 A 的声音</text></g>
+          <g font-size="12" fill="#9097ad"><text x="12" y="188">现实中我们总是先听到，再转头去看</text><text x="322" y="188">让观众看清这句话落在谁心上</text></g>
+        </svg>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">为什么好用</span>
+          <p>声音<b>跨过剪辑点</b>，把两个镜头缝在一起，转场就不再“咔”的一下。</p>
+          <p>剪映里：把音频单独放一条轨道，<b>头往前拖（J）或尾往后拖（L）</b>。</p>
+        </div>
+        <div class="slot" data-slot="jlcut"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 音效三类 + 拟音 ============ -->
+<section class="slide" id="s-foley" data-min="2.5" data-note="进入模块 2，声音设计与混音，一共 12 分钟。先讲一个故事：1920 年代末，有声电影刚出现，很多片子拍摄时没录好声音。环球影业有个叫杰克·弗利的人，和同事一边看放映的画面，一边现场“表演”出脚步声、关门声，同步录进去。后来电影行业就把这门手艺用他的名字命名，叫 Foley，中文叫拟音。今天的拟音师仍然用生活里的东西造声音：用两半椰子壳敲出马蹄声，捏一个装玉米淀粉的皮袋子听起来像踩雪，拍打一副皮手套像鸟扑翅膀。可以放一段 1 到 2 分钟拟音师工作的视频，学生通常会很惊讶。然后讲下面三类音效：环境底噪，比如教室里的风扇、远处操场、窗外的雨，它让空间活起来，没有环境声的画面会显得像在真空里，很假；动作拟音，脚步、开门、翻书，让动作有重量；强调音效，转场的嗖声、撞击声、渐强音效，提醒观众这里重要，但要少用，用多了就廉价。落点：观众听到的声音，很多不是现场录的，而是设计出来的；你们今天从音效库里找声音，就是在做拟音师的工作。课前核实：杰克·弗利在环球影业工作、1929 年参与《演艺船》（Show Boat）的补录声音，是常见说法，讲之前查一次；拟音道具的例子以视频里实际展示的为准。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 声音设计与混音</span><span>12 MIN</span><span>① 音效从哪来</span></div>
+    <h2 class="h-l">电影里的声音，很多是“做”出来的</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card story"><span class="tag">故事 · 环球影业 1920 年代末</span>
+          <b>拟音师杰克·弗利</b>
+          <p>有声电影刚出现，很多片子没录好声音。他和同事<b>一边看放映，一边现场表演</b>出脚步、关门声，同步录下来。这门手艺后来就叫“拟音”（Foley）。</p>
+          <p>今天的拟音师仍然这样做：<b>椰子壳 = 马蹄，玉米淀粉袋 = 踩雪，皮手套 = 鸟扑翅膀</b>。</p>
+        </div>
+      </div>
+      <div class="slot" data-slot="foley"></div>
+    </div>
+    <div class="fx3">
+      <div class="card" style="--c:var(--g)"><span class="k">环境底噪</span><p>教室风扇、远处操场、窗外的雨。<b>让空间活起来</b>；没有它，画面像在真空里。</p></div>
+      <div class="card" style="--c:var(--b)"><span class="k">动作拟音</span><p>脚步、开门、翻书。<b>让动作有重量</b>，和画面对齐到帧。</p></div>
+      <div class="card" style="--c:var(--r)"><span class="k">强调音效</span><p>转场的嗖声、撞击声、渐强。<b>提醒“这里重要”</b>；用多了就廉价。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 声音地图 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲声音地图，也是今天要交的产出之一。打比方：乐队的总谱，每一件乐器在第几小节进来、第几小节停下，都写在谱上，指挥一眼就能看到全局。声音地图就是你们片子的总谱：在分镜表上逐镜写明人声、音乐、音效、环境声分别是什么，在哪里进、在哪里出。看表里的例子，是一个“放学后的教室”片段：第 1 镜空教室全景，没有人声，音乐钢琴淡入，环境声是风扇和远处操场；第 3 镜旁白进来，注意音乐那一栏写着“压低”，这就是下一页要讲的闪避；第 4 镜门被推开，音乐突然停下，只剩开门声，这是高潮前的静音。两条要求：第一，每个镜头四栏都要想一遍，没有就写“无”，不要空着，空着说明没想过；第二，写清进出方式：淡入、硬切、压低、静音。分工上，实操时视觉总监就拿着这张图去音效库找声音。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 声音设计与混音</span><span>② 声音地图</span></div>
+    <h2 class="h-l">声音地图：给片子写一份“总谱”</h2>
+    <div class="g2 wide-l">
+      <div class="tbl-wrap">
+        <table class="smap">
+          <thead><tr><th>镜号 · 时间</th><th>画面</th><th class="v">人声</th><th class="m">音乐</th><th class="f">音效</th><th class="a">环境声</th></tr></thead>
+          <tbody>
+            <tr><td>1 · 0:00</td><td>空教室全景</td><td>无</td><td><b>钢琴淡入</b></td><td>无</td><td>风扇、远处操场</td></tr>
+            <tr><td>2 · 0:04</td><td>手翻开本子 · 特写</td><td>无</td><td>钢琴</td><td><b>翻书声</b></td><td>风扇</td></tr>
+            <tr><td>3 · 0:07</td><td>她望向窗外 · 近景</td><td><b>旁白进</b></td><td><b>压低（闪避）</b></td><td>无</td><td>风扇</td></tr>
+            <tr><td>4 · 0:12</td><td>门被推开 · 中景</td><td>无</td><td><b>突然停（静音）</b></td><td><b>开门声</b></td><td>无</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方 · 乐队总谱</span>
+          <p>每件乐器在第几小节进、第几小节停，都写在谱上。<b>声音地图就是你们片子的总谱。</b></p>
+        </div>
+        <div class="card idea"><span class="tag">两条要求</span>
+          <ul>
+            <li>每镜<b>四栏都想一遍</b>，没有就写“无”，不要空着</li>
+            <li>写清<b>进出方式</b>：淡入、硬切、压低、静音</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 混音：互动 ============ -->
+<section class="slide" id="s-mix" data-min="3.5" data-note="这一页讲混音层级，用右边的混音台现场演示，声音是浏览器实时合成的，打开音箱。先讲原则：人声最清楚，音乐让位于人声；有旁白的时候把音乐压低，这叫闪避。打比方：电台 DJ 一开口说话，背景音乐就自动低下去，说完又回来。按顺序演示：1. 点“播放”，听到三层：雨声一样的环境底噪、钢琴音乐、一串脚步声。2. 点“错误示范：音乐盖过人声”，再点“说一句旁白”，问学生能不能听清那句话。3. 点“推荐：人声优先”，再点“说一句旁白”，注意音乐在旁白时自动低头，说完又回来，下面的检查项全部变绿。4. 点“越响越好？”，总音量加到 +12，会听到声音发破，电平表变红，这就是爆音，一旦导出就修不回来了。然后讲响度：不同平台有不同的响度标准，主流视频平台常以约 -14 LUFS 作为参考，太响的片子会被平台自动压低，做得再响也没用，反而爆音。课堂上不要求测 LUFS，最基本的要求是三条：人声清楚、没有爆音、前后音量一致。降级：如果这台电脑没有中文语音，点“说一句旁白”时由老师自己念这句话，音乐照样会被压低。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 声音设计与混音</span><span>③ 混音层级</span></div>
+    <h2 class="h-l">人声最清楚，音乐让位</h2>
+    <div class="g2 wide-r">
+      <div class="col">
+        <div class="card idea"><span class="tag">混音层级</span>
+          <p><b>人声 &gt; 音效 &gt; 音乐 &gt; 环境声</b>（大致顺序，按镜头调整）。有旁白时把音乐压低，叫<b>闪避</b>。</p>
+          <p>平台各有响度标准，主流视频平台常以约 <b>-14 LUFS</b> 作参考：太响的片子会被自动压低。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方 · 电台 DJ</span>
+          <p>DJ 一开口，背景音乐就<b>自动低下去</b>；说完，音乐再回来。</p>
+        </div>
+        <div class="punch">课堂底线：人声清楚、没有爆音、前后音量一致。</div>
+      </div>
+      <div class="lab mixer">
+        <span class="label">互动 · 四层混音台（浏览器实时合成，打开声音）</span>
+        <div class="mx"><span class="nm" style="--c:var(--warm)">人声</span><input type="range" id="mxV" min="-30" max="0" step="1" value="0" aria-label="人声音量"><b id="mxVv">0 dB</b></div>
+        <div class="mx"><span class="nm" style="--c:var(--b)">音乐</span><input type="range" id="mxM" min="-30" max="6" step="1" value="-3" aria-label="音乐音量"><b id="mxMv">-3 dB</b></div>
+        <div class="mx"><span class="nm" style="--c:var(--r)">音效</span><input type="range" id="mxF" min="-30" max="6" step="1" value="-8" aria-label="音效音量"><b id="mxFv">-8 dB</b></div>
+        <div class="mx"><span class="nm" style="--c:var(--g)">环境声</span><input type="range" id="mxA" min="-30" max="6" step="1" value="-14" aria-label="环境声音量"><b id="mxAv">-14 dB</b></div>
+        <div class="mx master"><span class="nm" style="--c:var(--fg)">总音量</span><input type="range" id="mxT" min="-12" max="12" step="1" value="0" aria-label="总音量"><b id="mxTv">0 dB</b></div>
+        <label class="row small"><input type="checkbox" id="mxDuck"> 旁白时音乐自动压低 12 dB（闪避）</label>
+        <div class="row"><button class="btn primary" id="mxPlay" type="button">▶ 播放</button><button class="btn" id="mxSay" type="button">说一句旁白</button></div>
+        <div class="row"><button class="btn" id="mxBad" type="button">错误示范：音乐盖过人声</button><button class="btn" id="mxGood" type="button">推荐：人声优先</button><button class="btn" id="mxLoud" type="button">越响越好？</button></div>
+        <div class="meter" id="mxMeter"><i></i></div>
+        <div class="checks"><span id="ckV">人声清楚？</span><span id="ckC">没有爆音？（播放后检测）</span><span id="ckD">旁白时音乐让位？</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 AI 配音 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲 AI 配音，也就是文本转语音，剪映里叫“文本朗读”。它能选音色、语速和情绪，几秒钟就能出一段旁白，但有三个坑要自己检查。看上面这句话：“他重新数了数，这箱行李真重。”里面有三个多音字：重新的重读 chóng，数了数的数读 shǔ，真重的重读 zhòng。AI 经常读错，所以生成后一定要完整听一遍。读错了怎么办？换一个同音字、改写句子，或者用工具提供的读音修正功能，以当期界面为准。第二个坑是断句，第三个是停顿：下面这句“那天下午，我终于，推开了那扇门”，关键句前面手动加一个停顿，可以用逗号、省略号，或者把一句拆成两段分别朗读，听起来就有了情绪。打比方：播音员拿到稿子先要备稿，标停顿、标重音、查读音。AI 配音员不会备稿，你来替它备。最后一句提醒：只用平台提供的音色，或者自己录，不要克隆同学、老师或明星的声音，声音权第 10 课详细讲。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 声音设计与混音</span><span>④ AI 配音</span></div>
+    <h2 class="h-l">AI 配音：你来替它“备稿”</h2>
+    <div class="g2 wide-l">
+      <div class="col">
+        <div class="sent"><span class="label">多音字</span><br>他<ruby><em>重</em><rt>chóng</rt></ruby>新<ruby><em>数</em><rt>shǔ</rt></ruby>了数，这箱行李真<ruby><em>重</em><rt>zhòng</rt></ruby>。</div>
+        <div class="sent"><span class="label">停顿</span><br>那天下午，我终于<span class="pz">‖停顿</span>推开了那扇门。</div>
+        <div class="card idea"><span class="tag">剪映 · 文本朗读</span>
+          <ul>
+            <li>选<b>音色、语速、情绪</b>，生成后完整听一遍</li>
+            <li>读错字：换同音字、改写句子，或用读音修正功能</li>
+            <li>关键句前<b>手动加停顿</b>：逗号、省略号，或拆成两段朗读</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card analogy"><span class="tag">打个比方 · 播音员备稿</span>
+          <p>播音员拿到稿子，先<b>标停顿、标重音、查读音</b>，再开口。AI 配音员不会备稿，你来替它备。</p>
+        </div>
+        <div class="card ask"><span class="tag">底线</span>
+          <p>只用平台提供的音色或自己录。<b>不克隆同学、老师、明星的声音</b>，第 10 课讲声音权。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 AI 音乐 + 授权 ============ -->
+<section class="slide" data-min="2" data-note="这一页讲 AI 音乐和授权。AI 音乐生成工具，比如我们课程里用的 MiniMax，可以用文字描述生成配乐。描述按四个要素写：风格、情绪、速度、乐器。看左边的例子，这一句里四个要素都有，比只写“好听的背景音乐”可控得多，道理和第 1 课讲的提示词一样，越具体越准。如果要做带歌词的歌，比如组里的片尾曲，用段落标记组织歌词：主歌、副歌分开写，具体标记写法以工具当期说明为准。MiniMax 今天是选做，开课前要先内测，内测不通过就跳过。然后讲右边的授权，这一条是硬规定：所有音乐和音效只能来自三个地方：授权库、自己原创录音、条款允许使用的 AI 生成。生成后要确认平台条款对使用和署名怎么规定。打比方：用别人的歌像借衣服穿，授权就是借条，生产日志里那一行记录就是借条的存根，第 10 课合规检查时要逐条查。问学生：剪映音乐库里的歌，能直接用在投稿作品里吗？答案是要看条款，课前老师确认过可用范围，按老师给的范围用。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 2 · 声音设计与混音</span><span>⑤ AI 音乐与授权</span></div>
+    <h2 class="h-l">AI 配乐：写清楚，记下来</h2>
+    <div class="g2">
+      <div class="col">
+        <div class="card idea"><span class="tag">描述四要素：风格 · 情绪 · 速度 · 乐器</span>
+          <p><span class="code">钢琴独奏，轻微弦乐铺底，温暖、怀旧，80 BPM，适合放学后的空教室</span></p>
+          <p>带歌词的歌：用<b>段落标记</b>分开主歌、副歌（写法以工具说明为准）。</p>
+          <p class="small">工具：MiniMax 音乐生成（选做，开课前内测）。</p>
+        </div>
+        <div class="card ask"><span class="tag">想一想</span><p>剪映音乐库里的歌，能直接用在投稿作品里吗？</p></div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">授权 · 只有三个来源</span>
+          <ul>
+            <li><b>授权库</b>：剪映音乐 / 音效库（按老师确认的范围）或课程包</li>
+            <li><b>原创录音</b>：自己录的旁白、拟音</li>
+            <li><b>条款允许的 AI 生成</b>：确认使用与署名规定</li>
+          </ul>
+          <p>来源<b>一律写进生产日志</b>。</p>
+        </div>
+        <div class="card analogy"><span class="tag">打个比方</span>
+          <p>用别人的歌像借衣服穿：<b>授权是借条，生产日志是借条的存根</b>，第 10 课合规检查逐条查。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 字幕 ============ -->
+<section class="slide" data-min="3" data-note="模块 3，字幕规范，3 分钟。打比方：字幕像高速公路上的路牌，司机只有一眼的时间，所以字要少、位置固定、在什么背景上都看得清。对照左右两张示意图讲四条：第一，每行中文不超过约 15 个字，太长了一行读不完画面就切了，左边这句明显太长；第二，每条至少停留 1 秒以上；第三，放在画面下方的安全区里，虚线框就是安全区，左边字幕贴着画面最底边，在手机或电视上可能被裁掉，也不要挡住人物的脸；第四，字体统一，白字加黑色描边，左边白字没有描边，落在亮背景上几乎看不见。补充：专业流媒体平台的中文字幕规范，每行上限也在十几个字左右。今天用剪映的识别字幕自动生成，但一定要逐句校对错字和断句，AI 识别经常把同音字弄错。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 3 · 字幕规范</span><span>3 MIN</span></div>
+    <h2 class="h-l">字幕像路牌：一眼读完</h2>
+    <div class="g2">
+      <div class="subf bad" role="img" aria-label="错误示范：字幕太长、贴边、白字无描边">
+        <span class="mark">✗ 不要这样</span><div class="safe"></div><div class="who"></div>
+        <span class="cap">那天下午我一个人在教室里等了很久很久可是她一直都没有来</span>
+      </div>
+      <div class="subf good" role="img" aria-label="正确示范：短句、在安全区内、白字黑描边">
+        <span class="mark">✓ 这样做</span><div class="safe"></div><div class="who"></div>
+        <span class="cap">那天下午，她一直没有来</span>
+      </div>
+    </div>
+    <div class="g4">
+      <div class="card idea"><span class="tag">① 字数</span><p>每行中文<b>不超过约 15 字</b>，长句拆成两条。</p></div>
+      <div class="card idea"><span class="tag">② 时长</span><p>每条<b>至少停留 1 秒以上</b>。</p></div>
+      <div class="card idea"><span class="tag">③ 位置</span><p>在<b>下方安全区</b>内，不挡住人物的脸。</p></div>
+      <div class="card analogy"><span class="tag">④ 样式</span><p>字体统一；<b>白字 + 黑描边</b>，亮暗背景都看得清。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 反馈：智囊团 ============ -->
+<section class="slide" data-min="2.5" data-note="模块 4，如何收集有效反馈，5 分钟。先讲皮克斯的故事。皮克斯每部电影在制作过程中，会定期把半成品放给一群资深导演和编剧看，这个小组叫“智囊团”。皮克斯创始人之一艾德·卡特姆在《创新公司》这本书里写过两件事。第一，皮克斯的电影在早期版本里都很糟糕，这是正常的，粗剪本来就是用来发现问题的，所以今天你们的粗剪不好看，一点也不丢人。第二，智囊团没有决定权：他们只负责坦率地指出哪里不对，怎么改由导演自己决定。按 → 显示右边。打比方：看病，病人负责说清楚哪里疼、什么时候疼，开药是医生的事。观众就是病人，作者就是医生。所以我们收反馈只收两样：看到了什么、理解了什么，不收“我觉得应该怎么改”。还有一条：作者在放映时不解释。片子发出去以后，你不可能跟着它到每个观众身边去解释；需要解释的地方，就是需要修改的地方。课前核实：卡特姆《Creativity, Inc.》（2014，中文版《创新公司：皮克斯的启示》）中关于智囊团没有决定权、早期版本都很糟的表述，讲时用转述。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 4 · 如何收集有效反馈</span><span>5 MIN</span></div>
+    <h2 class="h-l">观众说哪里疼，你来开药</h2>
+    <div class="g2">
+      <div class="card story"><span class="tag">故事 · 皮克斯“智囊团”</span>
+        <b>半成品放给同行看，但他们不做决定</b>
+        <p>皮克斯在每部电影制作中，会定期把半成品放给一群资深导演和编剧看。创始人之一艾德·卡特姆写道：</p>
+        <ul>
+          <li>皮克斯的电影在<b>早期版本里都很糟糕</b>，粗剪就是用来找问题的；</li>
+          <li>智囊团<b>没有决定权</b>：只坦率指出哪里不对，怎么改由导演决定。</li>
+        </ul>
+        <p class="src">来源：Ed Catmull, Creativity, Inc.（《创新公司》），2014，转述</p>
+      </div>
+      <div class="step">
+        <div class="card analogy"><span class="tag">打个比方 · 看病</span>
+          <p>病人说清楚<b>哪里疼、什么时候疼</b>；开药是医生的事。观众是病人，作者是医生。</p>
+        </div>
+        <div class="card idea"><span class="tag">两条规矩</span>
+          <ul>
+            <li>只收<b>“看到了什么、理解了什么”</b>，不收“我觉得应该怎么改”</li>
+            <li>放映时<b>作者不解释</b></li>
+          </ul>
+        </div>
+        <div class="punch">需要解释的地方，就是需要修改的地方。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 反馈表怎么写 ============ -->
+<section class="slide" data-min="2.5" data-note="这一页教学生怎么写反馈表，放映时马上要用。反馈表只有两栏：“我看懂了什么”和“我没看懂或被打断的地方”，第二栏一定要写时间点。先只露出左边，念三条“不要这样写”，问学生：这些话哪里有问题？引导出：“挺好的”没有信息；“应该加点音乐”是在开药，不是说症状；“节奏有点慢”太笼统，作者不知道是哪里。按 → 显示右边，同一个意思改成有效的写法：写清时间点和你当时的真实感受。比如“节奏有点慢”改成“0:25 到 0:35 我开始走神，不知道她在等什么”。作者拿到这一条，自己就能判断：是镜头太长，还是信息没交代清楚。再强调：第一栏同样重要，“我看懂了什么”用一句话复述故事，如果全班复述出来的故事和作者想讲的不一样，这就是最重要的修改项。讲完进入实操。">
+  <div class="inner">
+    <div class="tc"><span class="ch">模块 4 · 如何收集有效反馈</span><span>反馈表怎么写</span></div>
+    <h2 class="h-l">只写两栏：看懂了什么，哪里被打断</h2>
+    <div class="fb">
+      <div class="fbi">
+        <span class="label" style="color:var(--r)">✗ 不要这样写</span>
+        <div class="x"><b>“挺好的。”</b> 没有任何信息</div>
+        <div class="x"><b>“应该加点音乐。”</b> 在开药，不是在说症状</div>
+        <div class="x"><b>“节奏有点慢。”</b> 太笼统，作者不知道是哪里</div>
+      </div>
+      <div class="fbi step">
+        <span class="label" style="color:var(--g)">✓ 改成这样</span>
+        <div class="o"><b>看懂了：</b>一个女生在等一个不会来的朋友。</div>
+        <div class="o"><b>0:18</b><span class="arrow">→</span>旁白被音乐盖住，没听清她说了什么。</div>
+        <div class="o"><b>0:25–0:35</b><span class="arrow">→</span>我开始走神，不知道她在等什么。</div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card idea"><span class="tag">第一栏 · 我看懂了什么</span><p>用<b>一句话复述故事</b>。全班复述的和作者想讲的不一样，就是最重要的修改项。</p></div>
+      <div class="card idea"><span class="tag">第二栏 · 我没看懂或被打断的地方</span><p>每条<b>写时间点 + 当时的真实感受</b>，不写改法。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 实操总览 ============ -->
+<section class="slide chapter practice" data-min="1" data-note="进入实操，40 分钟，三个任务，三人分工。确认每组已经把第 7 课的全部镜头放进同一台电脑的一个文件夹，打开剪映专业版，声音地图模板和同伴反馈表已经发下去。说明分工：任务 1 剪辑与声音负责人主操作，导演坐在旁边把关，视觉总监同时开始整理声音地图；任务 2 三个人并行；任务 3 一起检查。时间到 70 分钟必须导出，放映不等人。如果某组第 7 课镜头没齐，按第 7 课的降级方案用关键帧加剪映关键帧动画补位，今天照样进入粗剪。">
+  <div class="inner">
+    <span class="num">实操 · 40 MIN</span>
+    <h2 class="h-xl">把镜头剪成<br>一部有声音的片子</h2>
+    <div class="g3">
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 1 · 15 分钟</span><b>画面粗剪</b><p>剪辑与声音负责人主操作，导演把关。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 2 · 15 分钟</span><b>声音：三人并行</b><p>音乐卡点 + 旁白 / AI 配音 + 音效与环境声。</p></div>
+      <div class="card" style="border-top:3px solid var(--g)"><span class="timechip">任务 3 · 10 分钟</span><b>字幕与导出</b><p>识别字幕、统一样式、全片检查、导出 v1。</p></div>
+    </div>
+    <div class="toolrow">
+      <span class="label">今天的工具</span>
+      <span class="tool"><img src="../media/logos/jianying.png" alt="">剪映专业版 <i>含音乐库、音效库、文本朗读、识别字幕</i></span>
+      <span class="tool">手机录音 / 剪映录音</span>
+      <span class="tool">MiniMax 音乐生成 <i>选做 · 开课前内测</i></span>
+      <span class="tool">声音地图模板</span>
+      <span class="tool">同伴反馈表</span>
+    </div>
+    <p class="small">素材：第 7 课的全部镜头。音乐和音效只用老师确认过的剪映库范围或课程包授权音乐库。</p>
+  </div>
+</section>
+
+<!-- ============ 16 任务 1：画面粗剪 ============ -->
+<section class="slide practice" data-min="15" data-note="任务 1，15 分钟。先花 1 分钟放一下教师示范片的粗剪 v1，让学生看到“粗剪长什么样”：故事通了，但还不精致，这就够了。然后开始。步骤：1. 新建项目，画布 16:9、1080p、30 帧每秒，剪映里在草稿参数或导出设置里设，按钮名称以当期版本为准。2. 按分镜顺序把所有镜头放上主轨道，缺的镜头先放关键帧图片或者一段黑场加文字占位，不要因为一个镜头卡住整部片子。3. 逐镜修剪，只保留最好的 2 到 4 秒，删掉开头的起势和结尾的收势，也就是 AI 视频开头那段还没动起来、结尾那段开始变形的部分；分割快捷键 Windows 是 Ctrl+B，Mac 是 Cmd+B。4. 看总时长，控制在 50 到 70 秒。导演的任务：每切一刀问一句，观众读完这个镜头了吗？想想今天讲的三种剪辑点。巡视时重点看：有没有组把 5 秒原样全放进去；有没有组在纠结某个镜头的细节，提醒他们先把故事剪通。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 1</span><span class="timechip">15 分钟</span><span>剪辑与声音负责人主操作 · 导演把关</span></div>
+    <h2 class="h-m">画面粗剪：先把故事剪通，再谈好看</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>新建项目：画布 16:9、1080p、30 帧/秒。</b><span>在草稿参数或导出设置里设，按钮以当期界面为准。</span></div></li>
+        <li><div><b>按分镜顺序，把所有镜头放上主轨道。</b><span>缺的镜头先放关键帧图片或黑场 + 文字占位。</span></div></li>
+        <li><div><b>逐镜修剪，只留最好的 2–4 秒。</b><span>删掉开头的“起势”和结尾的“收势”。分割：</span><span class="code">Ctrl+B</span><span> / </span><span class="code">Cmd+B</span></div></li>
+        <li><div><b>检查总时长：50–70 秒。</b><span>超了就删整个镜头，不要每个都剪一点点。</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="slot" data-slot="demoRough"></div>
+        <div class="card ask"><span class="tag">导演把关</span><p>每切一刀问一句：<b>观众读完这个镜头了吗？</b></p></div>
+        <div class="done-box"><span class="label">完成标准</span>镜头齐全、按分镜顺序；每镜约 2–4 秒；总长 <b>50–70 秒</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 任务 2：声音三人并行 ============ -->
+<section class="slide practice" data-min="15" data-note="任务 2，15 分钟，三个人同时做，最后合到剪辑负责人的电脑上。剪辑与声音负责人：导入 BGM，用剪映的自动踩点标出节拍，只把关键转折处的剪辑点对齐节拍，不要每个都卡；在有旁白的段落把 BGM 音量降低，可以在旁白前后打音量关键帧。导演或编剧：写好旁白或台词，找一个安静的角落用手机录，或者用剪映文本朗读生成 AI 配音，生成后完整听一遍，检查多音字和停顿。视觉总监：拿着声音地图，从音效库里找环境声和动作音效，对齐画面，同时把每个声音的来源写进生产日志。选做：给片尾曲写 4 到 8 行歌词，课后用 MiniMax 生成。降级方案：自动踩点找不到，就边听边在节拍处手动打标记；教室太吵录不了，就全部改用文本朗读；片子没有旁白的组，导演改为负责检查混音，用今天的三条底线听一遍。巡视时重点检查：四层声音至少有三层；旁白处音乐有没有压低。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 2</span><span class="timechip">15 分钟</span><span>三人分工并行</span></div>
+    <h2 class="h-m">声音：三个人同时做，最后合到一条时间线上</h2>
+    <div class="role3">
+      <div class="card" style="--c:var(--b)"><span class="k">剪辑与声音负责人 · 音乐</span>
+        <ol>
+          <li>导入 BGM，用<b>自动踩点</b>标出节拍</li>
+          <li>只把<b>关键转折</b>的剪辑点对齐节拍</li>
+          <li>旁白段落把 BGM <b>压低</b>（前后打音量关键帧）</li>
+        </ol>
+      </div>
+      <div class="card" style="--c:var(--warm)"><span class="k">导演 / 编剧 · 人声</span>
+        <ol>
+          <li>写好旁白或台词</li>
+          <li>安静处<b>手机录制</b>，或用<b>文本朗读</b>生成 AI 配音</li>
+          <li>完整听一遍：<b>多音字、断句、停顿</b></li>
+        </ol>
+      </div>
+      <div class="card" style="--c:var(--g)"><span class="k">视觉总监 · 音效与环境声</span>
+        <ol>
+          <li>拿着<b>声音地图</b>去音效库找声音</li>
+          <li>环境声铺底，动作音效<b>对齐到帧</b></li>
+          <li>每个声音的<b>来源写进生产日志</b></li>
+        </ol>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="done-box"><span class="label">完成标准</span>四层声音<b>至少三层</b>；旁白处音乐已压低；声音地图填完。</div>
+      <div class="card"><b>选做 · 片尾曲</b><p>写 4–8 行歌词（分主歌、副歌），课后用 MiniMax 生成。</p></div>
+    </div>
+    <p class="small">降级：找不到自动踩点 → 边听边手动打节拍标记；教室太吵 → 全部改用文本朗读；没有旁白的组 → 导演改为按三条底线检查混音。</p>
+  </div>
+</section>
+
+<!-- ============ 18 任务 3：字幕与导出 ============ -->
+<section class="slide practice" data-min="9" data-note="任务 3，10 分钟，其中 1 分钟已经在实操开头用于分工说明。三个人一起做。1. 用剪映的识别字幕为人声生成字幕，逐句校对错字和断句，对照今天讲的每行约 15 字。2. 统一字幕样式：字号、颜色、描边、位置，改一条，应用到全部。3. 完整播放一遍，三个人各盯一样：一个听有没有爆音和突然的音量跳变，一个听有没有声音空白，一个看有没有跳帧或黑帧。4. 导出 1080p，文件名 G 加组号、下划线粗剪、下划线 v1，交到老师指定的放映文件夹。到第 70 分钟必须交，没剪完的部分保留占位直接导出，放映时如实说明是占位即可，这是唯一允许作者开口的情况。">
+  <div class="inner">
+    <div class="tc"><span class="ch">实操 · 任务 3</span><span class="timechip">10 分钟</span><span>三人一起</span></div>
+    <h2 class="h-m">字幕与导出：第 70 分钟必须交到放映文件夹</h2>
+    <div class="g2 wide-l">
+      <ol class="steps">
+        <li><div><b>识别字幕，逐句校对。</b><span>改错字、调断句，每行约 15 字以内。</span></div></li>
+        <li><div><b>统一样式。</b><span>字号、颜色、描边、位置，改一条应用到全部。</span></div></li>
+        <li><div><b>完整播放一遍，三人各盯一样。</b><span>爆音和音量跳变 / 声音空白 / 跳帧或黑帧。</span></div></li>
+        <li><div><b>导出 1080p，交到放映文件夹。</b><span>文件名：</span><span class="code">G组号_粗剪_v1</span></div></li>
+      </ol>
+      <div class="col">
+        <div class="done-box"><span class="label">本课完成标准（关卡 2b）</span>
+          <b>50–70 秒</b>粗剪；四层声音<b>至少三层</b>；<b>有字幕</b>；能<b>完整播放</b>。</div>
+        <div class="card"><b>没剪完怎么办？</b><p>保留占位，<b>照常导出</b>。放映时如实说明是占位，这是唯一允许作者开口的情况。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 中期放映 ============ -->
+<section class="slide" data-min="14" data-note="中期放映，一共 20 分钟，这一页约 14 分钟。准备：所有组的 v1 文件已经在一台电脑上按组号排好，全屏连续播放，不要每组上台找文件。流程：每组粗剪连续播放两遍，作者坐在座位上，不解释、不道歉、不说“这里本来应该”。观众在反馈表上只写两栏，第二栏写时间点。两遍放完，给 20 秒写完，再换下一组。每组放完，老师只做一件事：请一位观众用一句话复述这个故事。复述得出来，说明关卡 2b 最重要的一条过了；复述不出来，这就是这组的第一条修改项。时间估算：每组两遍约 2 分钟加 20 秒，6 组约 14 分钟。降级：超过 6 组时，第二遍只放作者自己最担心的那 20 秒；或者分两个区域同时放映。对照右边的关卡 2 标准：观众能复述主线、声音有叙事功能。">
+  <div class="inner">
+    <div class="tc"><span class="ch">中期放映</span><span>20 MIN</span><span>关卡 2b</span></div>
+    <h2 class="h-l">中期放映：作者不说话</h2>
+    <div class="flow3">
+      <div class="card" style="--c:var(--b)"><span class="k">① 连放两遍</span><p>按组号全屏连续播放，<b>每组两遍</b>。</p></div>
+      <div class="card" style="--c:var(--r)"><span class="k">② 作者不解释</span><p>不解释、不道歉、不说“这里本来应该”。<b>需要解释的地方，就是要改的地方。</b></p></div>
+      <div class="card" style="--c:var(--g)"><span class="k">③ 观众写两栏</span><p>“我看懂了什么”“我没看懂或被打断的地方”，<b>写时间点</b>。</p></div>
+    </div>
+    <div class="g2">
+      <div class="card idea"><span class="tag">每组放完，只问一个问题</span>
+        <p>请一位观众<b>用一句话复述这个故事</b>。复述不出来，就是这组的第一条修改项。</p>
+      </div>
+      <div class="card idea"><span class="tag">关卡 2 · 粗剪标准</span>
+        <ul>
+          <li><b>观众能复述主线</b></li>
+          <li><b>声音有叙事功能</b>，不只是背景</li>
+          <li>50–70 秒，能完整播放</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 修改清单 ============ -->
+<section class="slide" data-min="4" data-note="各组拿回自己的反馈表，用 4 分钟汇总，列出不超过 5 条修改项。为什么最多 5 条？因为第 10 课精修的时间有限，清单太长等于没有重点。排序规则：先改影响理解的，再改影响情绪的，最后改影响观感的。看例子：第 1、2 条影响理解，观众没看出两人是同学、旁白被盖住，不改观众就看不懂；第 3、4 条影响情绪；第 5 条衣服变色影响观感，虽然最显眼，但排在最后。每条都写四样：时间点、观众的反应、打算怎么改、谁负责。这张清单交上来，就是关卡 2b 的最后一项，第 10 课精修时逐条处理，处理一条勾一条。">
+  <div class="inner">
+    <div class="tc"><span class="ch">中期放映</span><span>修改清单</span></div>
+    <h2 class="h-l">修改清单：最多 5 条，先改看不懂的</h2>
+    <div class="g2 wide-l">
+      <div class="rev">
+        <div style="--c:var(--r)"><span class="k">理解</span><span><b>0:05–0:12</b> 观众没看出两人是同学 → 加一个同框镜头 · 导演</span></div>
+        <div style="--c:var(--r)"><span class="k">理解</span><span><b>0:18</b> 旁白被音乐盖住 → 该段 BGM 再压低 · 剪辑</span></div>
+        <div style="--c:var(--warm)"><span class="k">情绪</span><span><b>0:40</b> 高潮来得太突然 → 前面留 2 秒静音“爬坡” · 剪辑</span></div>
+        <div style="--c:var(--warm)"><span class="k">情绪</span><span><b>结尾</b> 音乐戛然而止 → 延长 2 秒淡出 · 剪辑</span></div>
+        <div style="--c:var(--b)"><span class="k">观感</span><span><b>0:22</b> 角色衣服变色 → 换生成版本或剪短 · 视觉总监</span></div>
+      </div>
+      <div class="col">
+        <div class="card idea"><span class="tag">排序</span>
+          <p><b>影响理解 → 影响情绪 → 影响观感</b>。最显眼的问题，不一定最重要。</p>
+        </div>
+        <div class="done-box"><span class="label">完成标准</span>≤ 5 条；每条写<b>时间点、观众反应、改法、负责人</b>。第 10 课精修逐条处理。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 21 总结 ============ -->
+<section class="slide" data-min="2" data-note="最后 2 分钟，快速回收三个问题，各请一位同学用一句话回答。参考答案：什么时候该切，在动作中、视线落点后、情绪顶点后稍晚一点，冲突时情绪优先，镜头信息读完就切，关键转折卡点；四层声音怎么不打架，人声最清楚、音乐让位，旁白时闪避，没有爆音，前后音量一致；怎样拿到有用的反馈，只问看到了什么和哪里被打断，写时间点，作者不解释。确认四样产出都交了：带声音粗剪、声音地图、同伴反馈表、修改清单。布置课后任务：选做衍生作品，用 MiniMax 生成片尾曲，用课上写的 4 到 8 行歌词，生成后把工具、提示、条款写进生产日志。提醒：修改清单留好，第 10 课精修时逐条处理。">
+  <div class="inner">
+    <div class="tc"><span class="ch">总结</span><span>关卡 2b 交付</span></div>
+    <h2 class="h-l">三个问题，请你来回答</h2>
+    <div class="g3">
+      <div class="q" style="--c:var(--b)"><span class="n">剪辑</span><b>什么时候该切？冲突时先保什么？</b></div>
+      <div class="q" style="--c:var(--g)"><span class="n">声音</span><b>四层声音怎样才不打架？</b></div>
+      <div class="q" style="--c:var(--r)"><span class="n">反馈</span><b>有效的反馈长什么样？</b></div>
+    </div>
+    <div class="step">
+      <div class="card"><b>今天交四样</b><p>带声音粗剪 <span class="code">G组号_粗剪_v1</span> · 声音地图 · 同伴反馈表 · 修改清单</p></div>
+    </div>
+    <div class="step">
+      <div class="punch">课后选做：用 MiniMax 为片尾曲生成音乐。<small>用课上写的 4–8 行歌词；工具、提示和平台条款写进生产日志。修改清单留到第 10 课精修。</small></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="navbtn" id="prevBtn" type="button" aria-label="上一页">←</button>
+  <div class="track" id="track"></div>
+  <button class="navbtn" id="nextBtn" type="button" aria-label="下一页">→</button>
+  <span class="clock" id="clock">00:00 / 90:00</span>
+  <button class="navbtn" id="notesBtn" type="button">讲稿 N</button>
+</div>
+<div class="notes" id="notes" hidden></div>
+<input type="file" id="slotFile" hidden>
+
+<script>
+/* 本课媒体位：find 指向搜索页，老师找到合适片段后拖进来，或存成 lessons/media/<id>.mp4 / .jpg */
+window.SLOTS = {
+  murch: { type: 'media', label: '沃尔特·默奇 · 访谈或剪辑台照片', hint: '一张默奇在剪辑台前的照片，或 1 分钟访谈片段', find: 'https://search.bilibili.com/all?keyword=%E6%B2%83%E5%B0%94%E7%89%B9%C2%B7%E9%BB%98%E5%A5%87%20%E5%89%AA%E8%BE%91', cred: 'Walter Murch · In the Blink of an Eye' },
+  jlcut: { type: 'media', label: 'J-cut / L-cut 讲解片段', hint: '约 1 分钟，有前后对比的讲解视频', find: 'https://search.bilibili.com/all?keyword=J-cut%20L-cut%20%E5%89%AA%E8%BE%91', cred: 'J-cut / L-cut' },
+  foley: { type: 'media', label: '拟音师工作现场', hint: '1–2 分钟：用生活物品做出脚步、马蹄、踩雪等声音', find: 'https://search.bilibili.com/all?keyword=%E6%8B%9F%E9%9F%B3%E5%B8%88%20Foley', cred: 'Foley · 拟音' },
+  demoRough: { type: 'media', label: '教师示范片 · 粗剪 v1', hint: '课程示范项目的粗剪版（约 60 秒），放 1 分钟即可', find: 'https://search.bilibili.com/all?keyword=%E5%89%AA%E6%98%A0%20%E7%B2%97%E5%89%AA%20%E6%95%99%E7%A8%8B', cred: '课程示范项目 · 粗剪 v1' },
+};
+window.onSlideEnter = new Map();
+</script>
+<script src="assets/deck.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  let AC = null;
+  const getAC = () => { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); return AC; };
+  const onLeave = (id, fn) => { const el = document.getElementById(id); new MutationObserver(() => { if (!el.classList.contains('active')) fn(); }).observe(el, { attributes: true, attributeFilter: ['class'] }); };
+  const db2g = d => Math.pow(10, d / 20);
+
+  /* ---------- 节奏曲线 ---------- */
+  (() => {
+    const P = [[0, .78], [4, .5], [10, .48], [18, .56], [26, .64], [34, .72], [41, .8], [44.5, .32], [48, .98], [52, .62], [56, .32], [60, .24]];
+    const X = t => 40 + t * 9.2, Y = v => 205 - v * 165;
+    const pts = P.map(([t, v]) => [X(t), Y(v)]);
+    let d = `M${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    const lab = (t, v, txt, col, dx = 0, dy = -14, anchor = 'middle') => `<circle cx="${X(t)}" cy="${Y(v)}" r="5" fill="${col}"/><text x="${X(t) + dx}" y="${Y(v) + dy}" fill="${col}" font-size="14" font-weight="700" text-anchor="${anchor}">${txt}</text>`;
+    $('#curveSvg').innerHTML = `<g stroke="rgba(220,228,255,.1)"><line x1="40" y1="205" x2="592" y2="205"/><line x1="40" y1="30" x2="40" y2="205"/></g>
+      <g fill="#9097ad" font-size="12" font-family="JetBrains Mono, monospace"><text x="40" y="224">0s</text><text x="${X(30) - 8}" y="224">30s</text><text x="${X(60) - 22}" y="224">60s</text><text x="46" y="24" font-family="sans-serif">↑ 紧张度 / 剪辑密度</text></g>
+      <path d="${d} L${X(60)} 205 L40 205 Z" fill="rgba(255,196,107,.08)"/><path d="${d}" fill="none" stroke="#ffc46b" stroke-width="3"/>
+      ${lab(0, .78, '① 开头 3–5 秒抓住人', '#5b8cff', 4, -12, 'start')}
+      ${lab(26, .64, '② 中段逐步加快', '#3fe0a0', 0, -14)}
+      ${lab(44.5, .32, '③ 放慢 / 静音', '#9097ad', -6, 24)}
+      ${lab(48, .98, '④ 高潮', '#ff5468', -10, -10, 'end')}
+      ${lab(60, .24, '⑤ 留呼吸', '#5b8cff', -4, -14, 'end')}`;
+  })();
+
+  /* ---------- 卡点实验 ---------- */
+  (() => {
+    const LOOP = 16;
+    const SHOTS = [['走廊 · 远景', '#1d2a4a'], ['推门 · 中景', '#2a1f3d'], ['手 · 特写', '#3a2a1a'], ['转身 · 近景', '#18332b'], ['窗外 · 空镜', '#1a3040'], ['回头 · 特写', '#3a1d26'], ['操场 · 全景', '#28331a'], ['合上本子 · 特写', '#2e2a40']];
+    const KEY = [0, 2.6, 5.3, 8, 11.4, 14.2];
+    let mode = '2', bpm = 120, playing = false, t0 = 0, nextBeat = 0, raf = 0, lastShot = -1;
+    const cuts = () => mode === 'key' ? KEY : Array.from({ length: LOOP / +mode }, (_, i) => i * +mode);
+    const svg = $('#btSvg'), W = 640, L = 14, R = 626, bx = b => L + b / LOOP * (R - L);
+    const render = () => {
+      const c = cuts(); let s = '';
+      c.forEach((b, i) => {
+        const e = c[i + 1] ?? LOOP, col = SHOTS[i % SHOTS.length][1];
+        s += `<rect x="${bx(b) + 1}" y="16" width="${bx(e) - bx(b) - 2}" height="52" rx="5" fill="${col}" stroke="rgba(255,255,255,.12)"/>`;
+        if (bx(e) - bx(b) > 20) s += `<text x="${bx(b) + 6}" y="36" fill="#eef0f6" font-size="12">${i + 1}</text>`;
+      });
+      for (let b = 0; b < LOOP; b++) s += `<line x1="${bx(b)}" y1="${b % 4 ? 72 : 68}" x2="${bx(b)}" y2="86" stroke="${b % 4 ? '#3a4260' : '#9097ad'}" stroke-width="${b % 4 ? 1 : 2}"/>`;
+      for (let b = 0; b < LOOP; b += 4) s += `<text x="${bx(b) + 3}" y="104" fill="#9097ad" font-size="11">第${b + 1}拍</text>`;
+      c.forEach(b => { const key = mode === 'key' && b === 8; s += `<line x1="${bx(b)}" y1="10" x2="${bx(b)}" y2="74" stroke="${key ? '#ffc46b' : 'rgba(238,240,246,.55)'}" stroke-width="${key ? 3 : 1.5}"/>`; if (key) s += `<text x="${bx(b) + 5}" y="62" fill="#ffc46b" font-size="11">转折·重拍</text>`; });
+      s += `<line id="btHead" x1="${L}" y1="8" x2="${L}" y2="90" stroke="#ff5468" stroke-width="2"/>`;
+      svg.innerHTML = s;
+      const spb = 60 / bpm, avg = LOOP * spb / c.length;
+      $('#btStat').innerHTML = `每拍 <b>${spb.toFixed(2)}</b> 秒 · 平均每镜 <b>${avg.toFixed(2)}</b> 秒`;
+    };
+    const showShot = i => {
+      if (i === lastShot) return; lastShot = i;
+      const [name, col] = SHOTS[i % SHOTS.length], sc = $('#btScreen');
+      $('#btShot').textContent = `镜头 ${i + 1}`; $('#btName').textContent = name; sc.style.setProperty('--bc', col);
+      sc.classList.remove('flash'); void sc.offsetWidth; sc.classList.add('flash');
+    };
+    const click = (t, accent) => {
+      const ac = getAC(), o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'square'; o.frequency.value = accent ? 1760 : 1100;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(accent ? .22 : .12, t + .002); g.gain.exponentialRampToValueAtTime(.001, t + .05);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + .06);
+    };
+    const tick = () => {
+      if (!playing) return;
+      const ac = getAC(), spb = 60 / bpm, now = ac.currentTime;
+      while (t0 + nextBeat * spb < now + .15) { click(t0 + nextBeat * spb, nextBeat % 4 === 0); nextBeat++; }
+      const pos = Math.max(0, ((now - t0) / spb)) % LOOP, c = cuts();
+      let idx = 0; c.forEach((b, i) => { if (pos >= b) idx = i; });
+      showShot(idx);
+      const h = document.getElementById('btHead'); if (h) { h.setAttribute('x1', bx(pos)); h.setAttribute('x2', bx(pos)); }
+      raf = requestAnimationFrame(tick);
+    };
+    const start = () => { const ac = getAC(); playing = true; t0 = ac.currentTime + .08; nextBeat = 0; lastShot = -1; $('#btPlay').textContent = '■ 停止'; cancelAnimationFrame(raf); tick(); };
+    const stop = () => { playing = false; cancelAnimationFrame(raf); $('#btPlay').textContent = '▶ 播放'; };
+    $('#btPlay').onclick = () => playing ? stop() : start();
+    $('#btModes').onclick = e => {
+      const b = e.target.closest('[data-mode]'); if (!b) return;
+      mode = b.dataset.mode; document.querySelectorAll('#btModes .btn').forEach(x => x.classList.toggle('on', x === b));
+      render(); lastShot = -1; if (playing) start(); else showShot(0);
+    };
+    $('#btBpm').oninput = e => { bpm = +e.target.value; $('#btBpmV').textContent = bpm; render(); if (playing) start(); };
+    render(); showShot(0);
+    onLeave('s-beat', stop);
+  })();
+
+  /* ---------- 四层混音台 ---------- */
+  (() => {
+    const F = { V: $('#mxV'), M: $('#mxM'), Fx: $('#mxF'), A: $('#mxA'), T: $('#mxT') };
+    const OUT = { V: $('#mxVv'), M: $('#mxMv'), Fx: $('#mxFv'), A: $('#mxAv'), T: $('#mxTv') };
+    const duck = $('#mxDuck');
+    let N = null, playing = false, timer = 0, raf = 0, nextStep = 0, nextNote = 0, noteIdx = 0, clipAt = -9, speaking = false, peakHold = 0;
+    const BPM = 80, SPB = 60 / BPM;
+    const CH = [[261.63, 329.63, 392.0], [220.0, 261.63, 329.63], [174.61, 220.0, 261.63], [196.0, 246.94, 293.66]];
+    const build = () => {
+      const ac = getAC();
+      const master = ac.createGain(), an = ac.createAnalyser(), shaper = ac.createWaveShaper();
+      const curve = new Float32Array(2049); for (let i = 0; i < curve.length; i++) curve[i] = (i / 1024) - 1;
+      shaper.curve = curve; an.fftSize = 2048;
+      master.connect(an); an.connect(shaper); shaper.connect(ac.destination);
+      const mk = () => { const g = ac.createGain(); g.connect(master); return g; };
+      const amb = mk(), mus = ac.createGain(), musDuck = mk(), fx = mk();
+      mus.connect(musDuck);
+      const buf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), ch = buf.getChannelData(0);
+      for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+      N = { ac, master, an, amb, mus, musDuck, fx, buf, src: null };
+      apply();
+    };
+    const startAmb = () => {
+      const { ac, buf, amb } = N, s = ac.createBufferSource(), bp = ac.createBiquadFilter(), g = ac.createGain();
+      s.buffer = buf; s.loop = true; bp.type = 'bandpass'; bp.frequency.value = 900; bp.Q.value = .4; g.gain.value = .55;
+      s.connect(bp).connect(g).connect(amb); s.start(); N.src = s;
+    };
+    const note = (t, f, dur, type, vol, dest) => {
+      const { ac } = N, o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+      o.connect(g).connect(dest); o.start(t); o.stop(t + dur + .05);
+    };
+    const step = t => {
+      const { ac, buf, fx } = N, s = ac.createBufferSource(), lp = ac.createBiquadFilter(), g = ac.createGain();
+      s.buffer = buf; lp.type = 'lowpass'; lp.frequency.value = 420;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1.6, t + .005); g.gain.exponentialRampToValueAtTime(.001, t + .12);
+      s.connect(lp).connect(g).connect(fx); s.start(t, Math.random()); s.stop(t + .15);
+    };
+    const schedule = () => {
+      const now = N.ac.currentTime;
+      while (nextNote < now + .3) {
+        const bar = Math.floor(noteIdx / 4) % 4, chord = CH[bar], beat = noteIdx % 4;
+        if (beat === 0) chord.forEach(f => note(nextNote, f / 2, SPB * 4, 'sine', .07, N.mus));
+        note(nextNote, chord[beat % 3] * 2, SPB * .9, 'triangle', .2, N.mus);
+        nextNote += SPB; noteIdx++;
+      }
+      while (nextStep < now + .3) {
+        const k = Math.floor((nextStep - N.startT) / .5) % 8;
+        if (k < 4) step(nextStep);
+        nextStep += .5;
+      }
+    };
+    const meter = () => {
+      if (!playing) return;
+      const a = new Float32Array(N.an.fftSize); N.an.getFloatTimeDomainData(a);
+      let pk = 0; for (const v of a) pk = Math.max(pk, Math.abs(v));
+      peakHold = Math.max(pk, peakHold * .9);
+      if (pk >= 1) clipAt = N.ac.currentTime;
+      const db = peakHold > 0 ? 20 * Math.log10(peakHold) : -60;
+      const m = $('#mxMeter');
+      m.querySelector('i').style.width = Math.max(0, Math.min(100, (db + 48) / 54 * 100)) + '%';
+      m.classList.toggle('hot', N.ac.currentTime - clipAt < 1.2);
+      checks();
+      raf = requestAnimationFrame(meter);
+    };
+    const val = k => +F[k].value;
+    const apply = () => {
+      Object.keys(F).forEach(k => { const v = val(k); OUT[k].textContent = (v > 0 ? '+' : '') + v + ' dB'; });
+      if (N) {
+        const t = N.ac.currentTime;
+        N.mus.gain.setTargetAtTime(val('M') <= -30 ? 0 : db2g(val('M')), t, .03);
+        N.fx.gain.setTargetAtTime(val('Fx') <= -30 ? 0 : db2g(val('Fx')), t, .03);
+        N.amb.gain.setTargetAtTime(val('A') <= -30 ? 0 : db2g(val('A')), t, .03);
+        N.master.gain.setTargetAtTime(playing ? db2g(val('T')) : 0, t, .03);
+      }
+      checks();
+    };
+    const set = (c, ok, txt) => { c.className = ok ? 'ok' : 'bad'; c.textContent = (ok ? '✓ ' : '✗ ') + txt; };
+    const checks = () => {
+      const effM = val('M') + (duck.checked ? -12 : 0), diff = val('V') - effM;
+      set($('#ckV'), diff >= 6, diff >= 6 ? `人声清楚：比旁白时的音乐高 ${diff} dB` : `人声只比音乐高 ${diff} dB，可能听不清`);
+      if (playing) { const hot = N.ac.currentTime - clipAt < 1.2; set($('#ckC'), !hot, hot ? '爆音！把总音量拉低' : '没有爆音'); }
+      else { $('#ckC').className = ''; $('#ckC').textContent = '没有爆音？（播放后检测）'; }
+      set($('#ckD'), duck.checked, duck.checked ? '旁白时音乐自动让位（闪避）' : '旁白时音乐没有让位');
+    };
+    const start = () => {
+      if (!N) build();
+      playing = true; N.startT = N.ac.currentTime + .05; nextNote = nextStep = N.startT; noteIdx = 0;
+      apply(); startAmb(); schedule(); timer = setInterval(schedule, 100); meter();
+      $('#mxPlay').textContent = '■ 停止';
+    };
+    const stop = () => {
+      if (!playing) return;
+      playing = false; clearInterval(timer); cancelAnimationFrame(raf);
+      if (N && N.src) { try { N.src.stop(); } catch (e) {} N.src = null; }
+      if (window.speechSynthesis) speechSynthesis.cancel();
+      $('#mxMeter i').style.width = '0'; $('#mxMeter').classList.remove('hot');
+      $('#mxPlay').textContent = '▶ 播放'; apply();
+    };
+    const duckOn = on => {
+      if (!N) return;
+      const t = N.ac.currentTime;
+      N.musDuck.gain.cancelScheduledValues(t);
+      N.musDuck.gain.setTargetAtTime(on && duck.checked ? db2g(-12) : 1, t, on ? .06 : .25);
+    };
+    const LINE = '放学以后，教室里只剩下我一个人。';
+    $('#mxSay').onclick = () => {
+      if (!playing) start();
+      if (speaking) return;
+      const ss = window.speechSynthesis;
+      const voices = ss ? ss.getVoices().filter(v => /^zh/i.test(v.lang)) : [];
+      speaking = true; duckOn(true);
+      const end = () => { speaking = false; duckOn(false); };
+      if (!ss || !voices.length) { window.deckToast('本机没有中文语音：请老师念这句旁白'); setTimeout(end, 3200); return; }
+      const u = new SpeechSynthesisUtterance(LINE);
+      u.lang = 'zh-CN'; u.voice = voices.find(v => /CN/i.test(v.lang)) || voices[0]; u.rate = .95;
+      u.volume = val('V') <= -30 ? 0 : Math.min(1, db2g(val('V')));
+      u.onend = end; u.onerror = end;
+      ss.cancel(); ss.speak(u);
+      setTimeout(() => { if (speaking) end(); }, 9000);
+    };
+    if (window.speechSynthesis) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); }
+    const preset = (o, d) => { Object.entries(o).forEach(([k, v]) => { F[k].value = v; }); duck.checked = d; apply(); if (!playing) start(); };
+    $('#mxBad').onclick = () => preset({ V: -8, M: 4, Fx: -8, A: -14, T: -3 }, false);
+    $('#mxGood').onclick = () => preset({ V: 0, M: -6, Fx: -8, A: -16, T: 0 }, true);
+    $('#mxLoud').onclick = () => preset({ V: 0, M: 6, Fx: 6, A: 0, T: 12 }, true);
+    Object.values(F).forEach(f => { f.oninput = apply; });
+    duck.onchange = () => { apply(); if (speaking) duckOn(true); };
+    $('#mxPlay').onclick = () => playing ? stop() : start();
+    apply();
+    onLeave('s-mix', stop);
+  })();
+})();
+</script>
+</body>
